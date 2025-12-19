@@ -67,8 +67,10 @@
         }
 
         .sidebar {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
         }
 
         .crm-header {
@@ -374,8 +376,10 @@
         .menu-content {
             flex: 1;
             overflow-y: auto;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
         }
 
         .menu-content::-webkit-scrollbar {
@@ -539,9 +543,13 @@
             <div class="brand-header">
                 <div class="brand-logo">
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
-                        <rect x="-0.257263" y="-0.257178" width="30" height="30" rx="2.05714" fill="#5C59E8"/>
-                        <path d="M14.7823 12.3714C14.9073 12.1768 15.1219 12.0582 15.3532 12.0561L21.3075 12.002C21.8555 11.997 22.1877 12.6051 21.8873 13.0635L14.5637 24.2413C14.4382 24.4328 14.2254 24.5491 13.9964 24.5511L8.19259 24.6039C7.64752 24.6088 7.31485 24.0066 7.60927 23.5478L14.7823 12.3714Z" fill="#F1F1F1"/>
-                        <path d="M12.4382 5.42558C12.5662 5.23962 12.7774 5.12853 13.0032 5.12853L18.8803 5.12863C19.4376 5.12864 19.7621 5.75821 19.4388 6.21215L15.2513 12.0915C15.1239 12.2704 14.9186 12.3774 14.699 12.3794L8.92828 12.4318C8.37324 12.4369 8.04251 11.8148 8.35712 11.3575L12.4382 5.42558Z" fill="#F1F1F1"/>
+                        <rect x="-0.257263" y="-0.257178" width="30" height="30" rx="2.05714" fill="#5C59E8" />
+                        <path
+                            d="M14.7823 12.3714C14.9073 12.1768 15.1219 12.0582 15.3532 12.0561L21.3075 12.002C21.8555 11.997 22.1877 12.6051 21.8873 13.0635L14.5637 24.2413C14.4382 24.4328 14.2254 24.5491 13.9964 24.5511L8.19259 24.6039C7.64752 24.6088 7.31485 24.0066 7.60927 23.5478L14.7823 12.3714Z"
+                            fill="#F1F1F1" />
+                        <path
+                            d="M12.4382 5.42558C12.5662 5.23962 12.7774 5.12853 13.0032 5.12853L18.8803 5.12863C19.4376 5.12864 19.7621 5.75821 19.4388 6.21215L15.2513 12.0915C15.1239 12.2704 14.9186 12.3774 14.699 12.3794L8.92828 12.4318C8.37324 12.4369 8.04251 11.8148 8.35712 11.3575L12.4382 5.42558Z"
+                            fill="#F1F1F1" />
                     </svg>
                 </div>
                 <div class="brand-name">Intellostack</div>
@@ -553,7 +561,8 @@
                 <div class="menu-section-heading">MAIN MENU</div>
                 <ul class="menu-list">
                     <li class="menu-item">
-                        <a href="{% url 'saas_dashboard' %}" class="menu-link {% if request.path == '/dashboard/' %}active{% endif %}">
+                        <a href="{% url 'saas_dashboard' %}"
+                            class="menu-link {% if request.path == '/dashboard/' %}active{% endif %}">
                             <i class="bi bi-grid"></i>
                             <span style="margin-left: 12px;">Overview</span>
                         </a>
@@ -564,13 +573,15 @@
                 <div class="menu-section-heading">TENANTS</div>
                 <ul class="menu-list">
                     <li class="menu-item">
-                        <a href="{% url 'users' %}" class="menu-link {% if request.path == '/users/' %}active{% endif %}">
+                        <a href="{% url 'users' %}"
+                            class="menu-link {% if request.path == '/users/' %}active{% endif %}">
                             <i class="bi bi-people"></i>
                             <span style="margin-left: 12px;">All Users</span>
                         </a>
                     </li>
                     <li class="menu-item">
-                        <a href="#" class="menu-link">
+                        <a href="{% url 'users' %}"
+                            class="menu-link {% if request.path == '/users/' %}active{% endif %}">
                             <i class="bi bi-person-gear"></i>
                             <span style="margin-left: 12px;">Admin User</span>
                         </a>
@@ -601,12 +612,19 @@
                     </li>
                     <div class="dropdown-content expanded" id="plansDropdown">
                         <li class="menu-item dropdown-item">
+                            <a href="{% url 'plans:plan_list' %}"
+                                class="menu-link {% if 'plans' in request.path and 'plan_list' in request.path %}active{% endif %}">
+                                <span>Manage Plans</span>
+                            </a>
+                        </li>
+                        <li class="menu-item dropdown-item">
                             <a href="#" class="menu-link">
                                 <span>One Time</span>
                             </a>
                         </li>
                         <li class="menu-item dropdown-item">
-                            <a href="{% url 'subscription:list_plans' %}" class="menu-link {% if 'subscription' in request.path %}active{% endif %}">
+                            <a href="{% url 'subscription:list_plans' %}"
+                                class="menu-link {% if 'subscription' in request.path %}active{% endif %}">
                                 <span>Subscription Plans</span>
                             </a>
                         </li>
@@ -617,13 +635,28 @@
                         </li>
                     </div>
                     <li class="menu-item">
+                        <a href="{% url 'features:feature_list' %}"
+                            class="menu-link {% if 'features' in request.path %}active{% endif %}">
+                            <i class="bi bi-toggles"></i>
+                            <span style="margin-left: 12px;">Features</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{% url 'addon_list' %}"
+                            class="menu-link {% if 'addons' in request.path %}active{% endif %}">
+                            <i class="bi bi-puzzle-piece"></i>
+                            <span style="margin-left: 12px;">Add-ons</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
                         <a href="#" class="menu-link">
                             <i class="bi bi-percent"></i>
                             <span style="margin-left: 12px;">Discount</span>
                         </a>
                     </li>
                     <li class="menu-item">
-                        <a href="{% url 'payment:invoices_list' %}" class="menu-link {% if 'invoices' in request.path %}active{% endif %}">
+                        <a href="{% url 'payment:invoices_list' %}"
+                            class="menu-link {% if 'invoices' in request.path %}active{% endif %}">
                             <i class="bi bi-receipt"></i>
                             <span style="margin-left: 12px;">Invoice & Billing</span>
                         </a>
@@ -640,15 +673,10 @@
                 <div class="menu-section-heading">ACCESS CONTROL</div>
                 <ul class="menu-list">
                     <li class="menu-item">
-                        <a href="{% url 'access_control:dashboard' %}" class="menu-link {% if 'roles-permissions' in request.path %}active{% endif %}">
+                        <a href="{% url 'access_control:dashboard' %}"
+                            class="menu-link {% if 'roles-permissions' in request.path %}active{% endif %}">
                             <i class="bi bi-shield-check"></i>
                             <span style="margin-left: 12px;">Roles & Permission</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="{% url 'features:feature_list' %}" class="menu-link {% if 'features' in request.path %}active{% endif %}">
-                            <i class="bi bi-toggles"></i>
-                            <span style="margin-left: 12px;">Features & Toggles</span>
                         </a>
                     </li>
                 </ul>
@@ -713,7 +741,8 @@
                 </div>
                 <form method="POST" action="{% url 'logout' %}" style="margin: 0;">
                     {% csrf_token %}
-                    <button type="submit" style="background: none; border: none; color: var(--Grey-Grey-500); cursor: pointer;">
+                    <button type="submit"
+                        style="background: none; border: none; color: var(--Grey-Grey-500); cursor: pointer;">
                         <i class="bi bi-box-arrow-right"></i>
                     </button>
                 </form>
@@ -820,7 +849,7 @@
         function toggleDropdown(dropdownId) {
             const dropdown = document.getElementById(dropdownId);
             const chevron = document.getElementById(dropdownId.replace('Dropdown', 'Chevron'));
-            
+
             if (dropdown.classList.contains('collapsed')) {
                 dropdown.classList.remove('collapsed');
                 dropdown.classList.add('expanded');
