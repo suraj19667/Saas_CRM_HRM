@@ -1,0 +1,277 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <!-- Progress Steps - All Complete -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="text-center flex-fill">
+                            <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <i class="bi bi-check"></i>
+                            </div>
+                            <div class="mt-2"><small>Company Details</small></div>
+                        </div>
+                        <div class="flex-fill" style="border-top: 2px solid #28a745; margin: 0 10px;"></div>
+                        <div class="text-center flex-fill">
+                            <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <i class="bi bi-check"></i>
+                            </div>
+                            <div class="mt-2"><small>Payment</small></div>
+                        </div>
+                        <div class="flex-fill" style="border-top: 2px solid #28a745; margin: 0 10px;"></div>
+                        <div class="text-center flex-fill">
+                            <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <i class="bi bi-check"></i>
+                            </div>
+                            <div class="mt-2"><small><strong>Dashboard</strong></small></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Success Message -->
+            <div class="text-center mb-4">
+                <div class="mb-3">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+                </div>
+                <h1 class="display-4 text-success">Payment Successful!</h1>
+                <p class="lead">Welcome to {{ plan.name }} Plan, {{ tenant.name }}!</p>
+            </div>
+
+            <!-- Subscription Details -->
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">📦 Subscription Details</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless mb-0">
+                                <tr>
+                                    <td><strong>Plan:</strong></td>
+                                    <td>{{ plan.name }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Billing Cycle:</strong></td>
+                                    <td class="text-capitalize">{{ subscription.billing_cycle }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Amount Paid:</strong></td>
+                                    <td><strong>₹{{ subscription.amount }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Start Date:</strong></td>
+                                    <td>{{ subscription.start_date }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Status:</strong></td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">🏢 Company Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless mb-0">
+                                <tr>
+                                    <td><strong>Company:</strong></td>
+                                    <td>{{ tenant.name }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Domain:</strong></td>
+                                    <td>{{ tenant.domain|default:"Not set" }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Email:</strong></td>
+                                    <td>{{ tenant.contact_email }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Phone:</strong></td>
+                                    <td>{{ tenant.contact_phone }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Status:</strong></td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plan Features -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">✨ Your Plan Features</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 col-6 mb-3 text-center">
+                            <div class="p-3 bg-light rounded">
+                                <i class="bi bi-people-fill text-primary" style="font-size: 2rem;"></i>
+                                <h4 class="mt-2">{{ plan.max_users }}</h4>
+                                <small class="text-muted">Max Users</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6 mb-3 text-center">
+                            <div class="p-3 bg-light rounded">
+                                <i class="bi bi-hdd-fill text-success" style="font-size: 2rem;"></i>
+                                <h4 class="mt-2">{{ plan.storage_limit }}GB</h4>
+                                <small class="text-muted">Storage</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6 mb-3 text-center">
+                            <div class="p-3 bg-light rounded">
+                                <i class="bi bi-shield-check text-warning" style="font-size: 2rem;"></i>
+                                <h4 class="mt-2">24/7</h4>
+                                <small class="text-muted">Support</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6 mb-3 text-center">
+                            <div class="p-3 bg-light rounded">
+                                <i class="bi bi-cloud-check-fill text-info" style="font-size: 2rem;"></i>
+                                <h4 class="mt-2">Cloud</h4>
+                                <small class="text-muted">Backup</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Start Guide -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0">🚀 Quick Start Guide</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex align-items-start">
+                                <div class="flex-shrink-0">
+                                    <span class="badge bg-primary rounded-circle" style="width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center;">1</span>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6>Setup Your Profile</h6>
+                                    <small class="text-muted">Complete your company profile and preferences</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex align-items-start">
+                                <div class="flex-shrink-0">
+                                    <span class="badge bg-primary rounded-circle" style="width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center;">2</span>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6>Invite Team Members</h6>
+                                    <small class="text-muted">Add users and assign roles to your team</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex align-items-start">
+                                <div class="flex-shrink-0">
+                                    <span class="badge bg-primary rounded-circle" style="width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center;">3</span>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6>Start Using Features</h6>
+                                    <small class="text-muted">Explore CRM, HRM and other modules</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demo Dashboard Preview -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">📊 Your Dashboard Preview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <div class="card border-primary">
+                                <div class="card-body">
+                                    <i class="bi bi-people text-primary" style="font-size: 2rem;"></i>
+                                    <h3 class="mt-2">0</h3>
+                                    <p class="text-muted mb-0">Total Users</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <div class="card border-success">
+                                <div class="card-body">
+                                    <i class="bi bi-briefcase text-success" style="font-size: 2rem;"></i>
+                                    <h3 class="mt-2">0</h3>
+                                    <p class="text-muted mb-0">Active Projects</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <div class="card border-warning">
+                                <div class="card-body">
+                                    <i class="bi bi-clipboard-check text-warning" style="font-size: 2rem;"></i>
+                                    <h3 class="mt-2">0</h3>
+                                    <p class="text-muted mb-0">Tasks</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <div class="card border-info">
+                                <div class="card-body">
+                                    <i class="bi bi-graph-up text-info" style="font-size: 2rem;"></i>
+                                    <h3 class="mt-2">0%</h3>
+                                    <p class="text-muted mb-0">Growth</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="text-center mb-5">
+                <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg me-2">
+                    <i class="bi bi-speedometer2"></i> Go to Full Dashboard
+                </a>
+                <a href="{% url 'subscription:list_plans' %}" class="btn btn-outline-secondary btn-lg">
+                    <i class="bi bi-arrow-left"></i> View All Plans
+                </a>
+            </div>
+
+            <!-- Support Info -->
+            <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle-fill"></i> 
+                <strong>Need Help?</strong> Our support team is available 24/7 at 
+                <a href="mailto:support@yourcompany.com">support@yourcompany.com</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .container > .row > .col-md-10 > * {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+</style>
+{% endblock %}

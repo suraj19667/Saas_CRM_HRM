@@ -1,0 +1,353 @@
+{% extends 'saas/base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }} - SaaS Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .plans-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 50px 0;
+    }
+    
+    .plans-header {
+        text-align: center;
+        margin-bottom: 50px;
+        color: white;
+    }
+    
+    .plans-header h1 {
+        font-size: 48px;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+    
+    .plans-header p {
+        font-size: 20px;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .plans-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    .plan-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .plan-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+    }
+    
+    .plan-card.featured {
+        border: 3px solid #f39c12;
+        transform: scale(1.05);
+    }
+    
+    .plan-card.featured::before {
+        content: "MOST POPULAR";
+        position: absolute;
+        top: 20px;
+        right: -30px;
+        background: #f39c12;
+        color: white;
+        padding: 5px 40px;
+        font-size: 12px;
+        font-weight: 600;
+        transform: rotate(45deg);
+    }
+    
+    .plan-header {
+        padding: 30px;
+        text-align: center;
+        background: linear-gradient(135deg, #2C3E50 0%, #3498DB 100%);
+        color: white;
+    }
+    
+    .plan-name {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    
+    .plan-price {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    
+    .plan-period {
+        font-size: 14px;
+        opacity: 0.8;
+    }
+    
+    .plan-body {
+        padding: 30px;
+    }
+    
+    .plan-features {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 30px 0;
+    }
+    
+    .plan-features li {
+        padding: 10px 0;
+        border-bottom: 1px solid #f1f1f1;
+        display: flex;
+        align-items: center;
+    }
+    
+    .plan-features li:last-child {
+        border-bottom: none;
+    }
+    
+    .plan-features li::before {
+        content: "✓";
+        color: #27AE60;
+        font-weight: bold;
+        margin-right: 10px;
+        font-size: 16px;
+    }
+    
+    .plan-features li.unavailable {
+        color: #bdc3c7;
+    }
+    
+    .plan-features li.unavailable::before {
+        content: "✗";
+        color: #e74c3c;
+    }
+    
+    .btn-subscribe {
+        width: 100%;
+        padding: 15px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+    
+    .btn-subscribe.primary {
+        background: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);
+        color: white;
+    }
+    
+    .btn-subscribe.primary:hover {
+        background: linear-gradient(135deg, #229954 0%, #27AE60 100%);
+        color: white;
+        text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+    }
+    
+    .btn-subscribe.secondary {
+        background: #3498DB;
+        color: white;
+    }
+    
+    .btn-subscribe.secondary:hover {
+        background: #2980B9;
+        color: white;
+        text-decoration: none;
+    }
+    
+    .billing-toggle {
+        background: white;
+        border-radius: 50px;
+        padding: 5px;
+        display: inline-flex;
+        margin: 20px auto 40px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .billing-option {
+        padding: 10px 25px;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+    }
+    
+    .billing-option.active {
+        background: #3498DB;
+        color: white;
+    }
+    
+    .yearly-discount {
+        background: #e8f5e8;
+        color: #27AE60;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 5px 10px;
+        border-radius: 15px;
+        margin-left: 10px;
+    }
+    
+    .features-comparison {
+        background: white;
+        border-radius: 15px;
+        margin-top: 50px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .features-comparison h3 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #2C3E50;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="plans-container">
+    <div class="container">
+        <!-- Header -->
+        <div class="plans-header">
+            <h1>Choose Your Plan</h1>
+            <p>Select the perfect plan for your business needs. Start your journey to better CRM management today.</p>
+        </div>
+        
+        <!-- Billing Toggle -->
+        <div class="text-center">
+            <div class="billing-toggle">
+                <div class="billing-option active" onclick="toggleBilling('monthly')">Monthly</div>
+                <div class="billing-option" onclick="toggleBilling('yearly')">
+                    Yearly 
+                    <span class="yearly-discount">Save 20%</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Plans Grid -->
+        <div class="plans-grid">
+            {% for plan in plans %}
+            <div class="plan-card {% if forloop.counter0 == 1 %}featured{% endif %}">
+                <div class="plan-header">
+                    <div class="plan-name">{{ plan.name }}</div>
+                    <div class="plan-price">
+                        <span class="monthly-price">₹{{ plan.price_monthly }}</span>
+                        <span class="yearly-price" style="display: none;">₹{{ plan.price_yearly|floatformat:0 }}</span>
+                    </div>
+                    <div class="plan-period">
+                        <span class="monthly-period">per month</span>
+                        <span class="yearly-period" style="display: none;">per year</span>
+                    </div>
+                </div>
+                
+                <div class="plan-body">
+                    <ul class="plan-features">
+                        <li>Up to {{ plan.max_users }} users</li>
+                        <li>{{ plan.max_storage_mb }}MB storage space</li>
+                        <li>{{ plan.max_projects }} active projects</li>
+                        <li>Advanced CRM features</li>
+                        <li>Email & SMS notifications</li>
+                        <li>24/7 customer support</li>
+                        {% if plan.name == "Basic" %}
+                            <li class="unavailable">Advanced analytics</li>
+                            <li class="unavailable">Custom integrations</li>
+                        {% elif plan.name == "Professional" %}
+                            <li>Advanced analytics</li>
+                            <li class="unavailable">Custom integrations</li>
+                        {% else %}
+                            <li>Advanced analytics</li>
+                            <li>Custom integrations</li>
+                            <li>Priority support</li>
+                            <li>White-label options</li>
+                        {% endif %}
+                    </ul>
+                    
+                    <a href="{% url 'tenant_mgmt:create' %}?plan_id={{ plan.id }}" 
+                       class="btn-subscribe {% if forloop.counter0 == 1 %}primary{% else %}secondary{% endif %}">
+                        Subscribe Now
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Features Comparison -->
+        <div class="features-comparison">
+            <h3>Need help choosing? Compare all features</h3>
+            <div class="row text-center">
+                <div class="col-md-4">
+                    <h5>Perfect for small teams</h5>
+                    <p>Basic plan includes everything you need to get started with CRM management.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Great for growing businesses</h5>
+                    <p>Professional plan adds advanced analytics and reporting capabilities.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Enterprise-grade solution</h5>
+                    <p>Enterprise plan offers unlimited scalability and custom integrations.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleBilling(period) {
+    const monthlyOptions = document.querySelectorAll('.billing-option');
+    const monthlyPrices = document.querySelectorAll('.monthly-price');
+    const yearlyPrices = document.querySelectorAll('.yearly-price');
+    const monthlyPeriods = document.querySelectorAll('.monthly-period');
+    const yearlyPeriods = document.querySelectorAll('.yearly-period');
+    
+    // Update active toggle
+    monthlyOptions.forEach(option => {
+        option.classList.remove('active');
+        if (option.textContent.includes(period.charAt(0).toUpperCase() + period.slice(1))) {
+            option.classList.add('active');
+        }
+    });
+    
+    if (period === 'yearly') {
+        // Show yearly prices
+        monthlyPrices.forEach(price => price.style.display = 'none');
+        yearlyPrices.forEach(price => price.style.display = 'inline');
+        monthlyPeriods.forEach(period => period.style.display = 'none');
+        yearlyPeriods.forEach(period => period.style.display = 'inline');
+    } else {
+        // Show monthly prices
+        monthlyPrices.forEach(price => price.style.display = 'inline');
+        yearlyPrices.forEach(price => price.style.display = 'none');
+        monthlyPeriods.forEach(period => period.style.display = 'inline');
+        yearlyPeriods.forEach(period => period.style.display = 'none');
+    }
+    
+    // Update subscribe buttons to pass billing cycle
+    const subscribeButtons = document.querySelectorAll('.btn-subscribe');
+    subscribeButtons.forEach(button => {
+        const currentHref = button.getAttribute('href');
+        const url = new URL(currentHref, window.location.origin);
+        url.searchParams.set('billing_cycle', period);
+        button.setAttribute('href', url.toString());
+    });
+}
+</script>
+{% endblock %}

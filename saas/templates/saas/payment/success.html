@@ -1,0 +1,161 @@
+{% extends 'saas/base.html' %}
+{% load static %}
+
+{% block title %}Payment Successful - SaaS Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .success-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        padding: 20px 0;
+    }
+    
+    .success-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        overflow: hidden;
+        max-width: 500px;
+        width: 100%;
+        margin: 0 auto;
+        text-align: center;
+    }
+    
+    .success-header {
+        background: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);
+        color: white;
+        padding: 40px 30px;
+    }
+    
+    .success-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+    }
+    
+    .success-icon i {
+        font-size: 40px;
+    }
+    
+    .success-header h2 {
+        margin: 0 0 10px;
+        font-size: 28px;
+        font-weight: 600;
+    }
+    
+    .success-header p {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 16px;
+    }
+    
+    .card-body {
+        padding: 40px 30px;
+    }
+    
+    .success-message {
+        color: #2C3E50;
+        margin-bottom: 30px;
+    }
+    
+    .success-message h4 {
+        margin: 0 0 15px;
+        font-weight: 600;
+    }
+    
+    .success-message p {
+        margin: 0 0 10px;
+        color: #666;
+    }
+    
+    .btn-dashboard {
+        background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%);
+        border: none;
+        border-radius: 8px;
+        padding: 15px 30px;
+        font-size: 16px;
+        font-weight: 600;
+        color: white;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-dashboard:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .next-steps {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+        text-align: left;
+    }
+    
+    .next-steps h5 {
+        color: #2C3E50;
+        margin: 0 0 15px;
+        font-weight: 600;
+    }
+    
+    .next-steps ul {
+        margin: 0;
+        padding-left: 20px;
+        color: #666;
+    }
+    
+    .next-steps li {
+        margin-bottom: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="success-container">
+    <div class="container">
+        <div class="success-card">
+            <div class="success-header">
+                <div class="success-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h2>Payment Successful!</h2>
+                <p>Your subscription has been activated</p>
+            </div>
+            
+            <div class="card-body">
+                <div class="success-message">
+                    <h4>Welcome aboard! 🎉</h4>
+                    <p>Your account has been successfully set up and your subscription is now active.</p>
+                    <p>You can now access all the features of your selected plan.</p>
+                </div>
+                
+                <div class="next-steps">
+                    <h5>What's Next?</h5>
+                    <ul>
+                        <li>Set up your team members</li>
+                        <li>Configure your CRM preferences</li>
+                        <li>Import your existing data</li>
+                        <li>Start managing your leads and deals</li>
+                    </ul>
+                </div>
+                
+                <a href="{% url 'saas:dashboard' %}" class="btn-dashboard">
+                    Go to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Leads - CRM System{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h1>Leads Management</h1>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">All Leads</h5>
+        <p class="card-text">Manage your leads here. This section will contain all your lead information and management
+            tools.</p>
+
+        <div class="table-responsive mt-4">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>John Doe</td>
+                        <td>john@example.com</td>
+                        <td>(555) 123-4567</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td><button class="btn btn-sm btn-primary">View</button></td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Jane Smith</td>
+                        <td>jane@example.com</td>
+                        <td>(555) 987-6543</td>
+                        <td><span class="badge bg-warning">Pending</span></td>
+                        <td><button class="btn btn-sm btn-primary">View</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

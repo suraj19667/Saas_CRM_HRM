@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0">{{ title }}</h1>
+                    <p class="text-muted mb-0">Edit system permission details</p>
+                </div>
+                <a href="{% url 'permissions:permissions_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i> Back to Permissions
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- Form -->
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lock me-2"></i>
+                        Permission Details
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="{{ form.name.id_for_label }}" class="form-label">
+                                Permission Name <span class="text-danger">*</span>
+                            </label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.name.errors|first }}
+                            </div>
+                            {% endif %}
+                            <small class="form-text text-muted">
+                                Human-readable name for the permission (e.g., "Create User")
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.codename.id_for_label }}" class="form-label">
+                                Codename <span class="text-danger">*</span>
+                            </label>
+                            {{ form.codename }}
+                            {% if form.codename.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.codename.errors|first }}
+                            </div>
+                            {% endif %}
+                            <small class="form-text text-muted">
+                                Unique code for programmatic checks (e.g., "create_user"). Use lowercase with
+                                underscores.
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.module.id_for_label }}" class="form-label">
+                                Module <span class="text-danger">*</span>
+                            </label>
+                            {{ form.module }}
+                            {% if form.module.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.module.errors|first }}
+                            </div>
+                            {% endif %}
+                            <small class="form-text text-muted">
+                                Category or module this permission belongs to
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">
+                                Description
+                            </label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.description.errors|first }}
+                            </div>
+                            {% endif %}
+                            <small class="form-text text-muted">
+                                Detailed description of what this permission allows
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                {{ form.is_active }}
+                                <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                    Active
+                                </label>
+                            </div>
+                            <small class="form-text text-muted d-block">
+                                Inactive permissions cannot be assigned to roles
+                            </small>
+                        </div>
+
+                        <div class="alert alert-info" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Created:</strong> {{ permission.created_at|date:"M d, Y H:i" }}<br>
+                            <strong>Last Updated:</strong> {{ permission.updated_at|date:"M d, Y H:i" }}
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>
+                                Update Permission
+                            </button>
+                            <a href="{% url 'permissions:permissions_list' %}" class="btn btn-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

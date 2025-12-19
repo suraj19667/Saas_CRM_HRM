@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Permissions Management{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0">Permissions Management</h1>
+                    <p class="text-muted mb-0">Manage system permissions and access controls</p>
+                </div>
+                <a href="{% url 'permissions:add_permission' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i> Add Permission
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- Filter Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="module" class="form-label">Module</label>
+                            <select class="form-select" id="module" name="module">
+                                <option value="">All Modules</option>
+                                {% for value, label in modules %}
+                                <option value="{{ value }}" {% if selected_module==value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="">All Status</option>
+                                <option value="active" {% if selected_status=='active' %}selected{% endif %}>Active
+                                </option>
+                                <option value="inactive" {% if selected_status=='inactive' %}selected{% endif %}>
+                                    Inactive</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="search" class="form-label">Search</label>
+                            <input type="text" class="form-control" id="search" name="search"
+                                placeholder="Search permissions..." value="{{ search_query }}">
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end gap-2">
+                            <button type="submit" class="btn btn-primary flex-grow-1">Search</button>
+                            <a href="{% url 'permissions:permissions_list' %}"
+                                class="btn btn-outline-secondary">Reset</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Permissions List -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        Permissions ({{ pagination.total_count }})
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if permissions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Codename</th>
+                                    <th>Module</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                    <th>Roles Using</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for permission in permissions %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ permission.name }}</strong>
+                                    </td>
+                                    <td>
+                                        <code class="bg-light px-2 py-1">{{ permission.codename }}</code>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">
+                                            {{ permission.get_module_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            {{ permission.description|truncatewords:15 }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        {% if permission.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning text-dark">
+                                            {{ permission.role_count }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="{% url 'permissions:edit_permission' permission.id %}"
+                                                class="btn btn-outline-primary" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form method="post"
+                                                action="{% url 'permissions:delete_permission' permission.id %}"
+                                                class="d-inline" onsubmit="return confirm('Are you sure?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-outline-danger" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="p-4 text-center text-muted">
+                        <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                        <p>No permissions found. Try adjusting your filters.</p>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if pagination.total_pages > 1 %}
+                <div class="card-footer bg-light">
+                    <nav>
+                        <ul class="pagination mb-0 justify-content-center">
+                            {% if pagination.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1">First</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ pagination.current_page|add:'-1' }}">Previous</a>
+                            </li>
+                            {% endif %}
+
+                            <li class="page-item active">
+                                <span class="page-link">
+                                    Page {{ pagination.current_page }} of {{ pagination.total_pages }}
+                                </span>
+                            </li>
+
+                            {% if pagination.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ pagination.current_page|add:'1' }}">Next</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ pagination.total_pages }}">Last</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

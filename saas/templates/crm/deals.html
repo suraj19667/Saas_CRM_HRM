@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Deals - CRM System{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h1>Deals Management</h1>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">All Deals</h5>
+        <p class="card-text">Track and manage your deals pipeline here.</p>
+
+        <div class="table-responsive mt-4">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Deal ID</th>
+                        <th>Client</th>
+                        <th>Value</th>
+                        <th>Stage</th>
+                        <th>Probability</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>D001</td>
+                        <td>ABC Corp</td>
+                        <td>$50,000</td>
+                        <td><span class="badge bg-info">Negotiation</span></td>
+                        <td>75%</td>
+                        <td><button class="btn btn-sm btn-primary">View</button></td>
+                    </tr>
+                    <tr>
+                        <td>D002</td>
+                        <td>XYZ Ltd</td>
+                        <td>$35,000</td>
+                        <td><span class="badge bg-success">Closed Won</span></td>
+                        <td>100%</td>
+                        <td><button class="btn btn-sm btn-primary">View</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

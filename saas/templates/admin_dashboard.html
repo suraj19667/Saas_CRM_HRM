@@ -1,0 +1,600 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Intellostack{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --blue: #3B82F6;
+    --green: #10B981;
+    --orange: #F59E0B;
+    --purple: #8B5CF6;
+    --red: #EF4444;
+    --teal: #14B8A6;
+    --pink: #EC4899;
+    --dark-teal: #0F766E;
+  }
+
+  .admin-header {
+    background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);
+    border-radius: 16px;
+    padding: 32px;
+    color: white;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 20px rgba(231, 76, 60, 0.3);
+  }
+
+  .admin-header-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .admin-header-icon {
+    font-size: 32px;
+  }
+
+  .admin-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+  }
+
+  .admin-header p {
+    font-size: 16px;
+    margin: 0;
+    opacity: 0.95;
+  }
+
+  .dashboard-controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .control-btn {
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .control-btn:hover {
+    background: #F9FAFB;
+    border-color: #D1D5DB;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid #E5E7EB;
+    height: 100%;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .stat-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .stat-icon.blue {
+    background: var(--blue);
+  }
+
+  .stat-icon.green {
+    background: var(--green);
+  }
+
+  .stat-icon.orange {
+    background: var(--orange);
+  }
+
+  .stat-icon.purple {
+    background: var(--purple);
+  }
+
+  .stat-icon.red {
+    background: var(--red);
+  }
+
+  .stat-icon.teal {
+    background: var(--teal);
+  }
+
+  .stat-icon.pink {
+    background: var(--pink);
+  }
+
+  .stat-icon.dark-teal {
+    background: var(--dark-teal);
+  }
+
+  .stat-chart {
+    width: 120px;
+    height: 40px;
+  }
+
+  .stat-content {
+    margin-bottom: 16px;
+  }
+
+  .stat-label {
+    font-size: 14px;
+    color: #6B7280;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .stat-value {
+    font-size: 36px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+
+  .stat-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .stat-change {
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .stat-change.positive {
+    color: var(--green);
+  }
+
+  .stat-change.negative {
+    color: var(--red);
+  }
+
+  .stat-link {
+    font-size: 14px;
+    color: #6366F1;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+
+  .stat-link:hover {
+    color: #4F46E5;
+    text-decoration: underline;
+  }
+
+  /* Mini Chart SVG */
+  .mini-chart {
+    position: absolute;
+    right: 24px;
+    top: 24px;
+    opacity: 0.15;
+  }
+
+  .chart-section {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid #E5E7EB;
+    height: 100%;
+  }
+
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .chart-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+  }
+
+  .activity-section {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid #E5E7EB;
+    height: 100%;
+  }
+
+  .activity-item {
+    padding: 16px;
+    border-radius: 8px;
+    background: #F9FAFB;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .activity-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .activity-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .activity-content {
+    flex: 1;
+  }
+
+  .activity-title {
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 4px;
+    font-size: 14px;
+  }
+
+  .activity-desc {
+    font-size: 13px;
+    color: #6B7280;
+  }
+
+  .activity-badge {
+    background: var(--green);
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 6px;
+  }
+
+  .empty-state {
+    color: #9CA3AF;
+    text-align: center;
+    padding: 60px 20px;
+    font-size: 14px;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .admin-header {
+      padding: 24px;
+    }
+
+    .admin-header h1 {
+      font-size: 24px;
+    }
+
+    .stat-value {
+      font-size: 28px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Top Navigation Bar -->
+<div style="background: white; border-bottom: 2px solid #E5E7EB; padding: 12px 24px; margin-bottom: 24px;">
+  <div style="display: flex; align-items: center; justify-content: space-between; max-width: 100%;">
+    <div style="display: flex; align-items: center; gap: 16px; flex: 1;">
+      <button style="background: none; border: none; color: #6B7280; font-size: 18px; cursor: pointer; padding: 8px;">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+      <div style="display: flex; align-items: center; gap: 12px; flex: 1; max-width: 400px;">
+        <i class="bi bi-search" style="color: #9CA3AF; font-size: 16px;"></i>
+        <input type="text" placeholder="Search in Payroll"
+          style="border: none; outline: none; font-size: 14px; color: #6B7280; width: 100%; background: transparent;">
+        <span
+          style="background: #F3F4F6; padding: 4px 8px; border-radius: 4px; font-size: 12px; color: #6B7280; font-weight: 500;">CTRL
+          + /</span>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 20px;">
+      <div style="position: relative;">
+        <i class="bi bi-bell" style="font-size: 20px; color: #6B7280; cursor: pointer;"></i>
+        <span
+          style="position: absolute; top: -4px; right: -4px; background: #EF4444; color: white; font-size: 10px; font-weight: 600; padding: 2px 5px; border-radius: 10px;">5</span>
+      </div>
+      <i class="bi bi-envelope" style="font-size: 20px; color: #6B7280; cursor: pointer;"></i>
+      <i class="bi bi-bell" style="font-size: 20px; color: #6B7280; cursor: pointer;"></i>
+      <div
+        style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #F59E0B, #D97706); cursor: pointer;">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid px-4">
+  <!-- Dashboard Controls -->
+  <div class="dashboard-controls">
+    <button class="control-btn">
+      <i class="bi bi-download"></i>
+      Export
+    </button>
+    <button class="control-btn">
+      <i class="bi bi-calendar3"></i>
+      2025 - 2025
+    </button>
+  </div>
+
+  <!-- First Row of Stats Cards -->
+  <div class="row mb-4">
+    <div class="col-xl-3 col-lg-6 mb-4">
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-icon blue">
+            <i class="bi bi-building"></i>
+          </div>
+          <svg class="mini-chart" width="100" height="40" viewBox="0 0 100 40">
+            <path d="M0,20 L10,25 L20,15 L30,28 L40,18 L50,22 L60,12 L70,20 L80,10 L90,15 L100,8" fill="none"
+              stroke="currentColor" stroke-width="2" class="text-blue-500" />
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-label">Total Companies</div>
+          <div class="stat-value">248</div>
+        </div>
+        <div class="stat-footer">
+          <span class="stat-change positive">
+            <i class="bi bi-arrow-up"></i> +2.1%
+          </span>
+          <a href="#" class="stat-link">View Details</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-lg-6 mb-4">
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-icon dark-teal">
+            <i class="bi bi-credit-card"></i>
+          </div>
+          <svg class="mini-chart" width="100" height="40" viewBox="0 0 100 40">
+            <path d="M0,25 L10,20 L20,22 L30,18 L40,15 L50,20 L60,12 L70,18 L80,10 L90,12 L100,8" fill="none"
+              stroke="currentColor" stroke-width="2" class="text-teal-700" />
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-label">Active Subscriptions</div>
+          <div class="stat-value">223</div>
+        </div>
+        <div class="stat-footer">
+          <span class="stat-change positive">
+            <i class="bi bi-arrow-up"></i> +2.1%
+          </span>
+          <a href="#" class="stat-link">View Details</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-lg-6 mb-4">
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-icon blue">
+            <i class="bi bi-currency-rupee"></i>
+          </div>
+          <svg class="mini-chart" width="100" height="40" viewBox="0 0 100 40">
+            <path d="M0,30 L10,25 L20,28 L30,20 L40,22 L50,18 L60,15 L70,20 L80,12 L90,10 L100,5" fill="none"
+              stroke="currentColor" stroke-width="2" class="text-blue-500" />
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-label">Monthly Revenue</div>
+          <div class="stat-value">₹72.4L</div>
+        </div>
+        <div class="stat-footer">
+          <span class="stat-change positive">
+            <i class="bi bi-arrow-up"></i> +2.1%
+          </span>
+          <a href="#" class="stat-link">View Details</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-lg-6 mb-4">
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-icon pink">
+            <i class="bi bi-clock-history"></i>
+          </div>
+          <svg class="mini-chart" width="100" height="40" viewBox="0 0 100 40">
+            <path d="M0,15 L10,18 L20,12 L30,20 L40,15 L50,25 L60,20 L70,28 L80,22 L90,30 L100,25" fill="none"
+              stroke="currentColor" stroke-width="2" class="text-pink-500" />
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-label">Active Trials</div>
+          <div class="stat-value">25</div>
+        </div>
+        <div class="stat-footer">
+          <span class="stat-change positive">
+            <i class="bi bi-arrow-up"></i> +2.1%
+          </span>
+          <a href="#" class="stat-link">View Details</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Second Row of Stats Cards -->
+  <div class="row mb-4">
+    <div class="col-xl-3 col-lg-6 mb-4">
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-icon blue">
+            <i class="bi bi-pause-circle"></i>
+          </div>
+          <svg class="mini-chart" width="100" height="40" viewBox="0 0 100 40">
+            <path d="M0,20 L10,22 L20,18 L30,25 L40,20 L50,28 L60,25 L70,30 L80,28 L90,32 L100,30" fill="none"
+              stroke="currentColor" stroke-width="2" class="text-blue-500" />
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-label">Suspended Accounts</div>
+          <div class="stat-value">8</div>
+        </div>
+        <div class="stat-footer">
+          <span class="stat-change positive">
+            <i class="bi bi-arrow-up"></i> +2.1%
+          </span>
+          <a href="#" class="stat-link">View Details</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-lg-6 mb-4">
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-icon dark-teal">
+            <i class="bi bi-graph-up-arrow"></i>
+          </div>
+          <svg class="mini-chart" width="100" height="40" viewBox="0 0 100 40">
+            <path d="M0,25 L10,20 L20,22 L30,15 L40,18 L50,12 L60,15 L70,10 L80,8 L90,5 L100,3" fill="none"
+              stroke="currentColor" stroke-width="2" class="text-teal-700" />
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-label">Trial Conversion Rate</div>
+          <div class="stat-value">68%</div>
+        </div>
+        <div class="stat-footer">
+          <span class="stat-change positive">
+            <i class="bi bi-arrow-up"></i> +2.1%
+          </span>
+          <a href="#" class="stat-link">View Details</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-lg-6 mb-4">
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-icon blue">
+            <i class="bi bi-people"></i>
+          </div>
+          <svg class="mini-chart" width="100" height="40" viewBox="0 0 100 40">
+            <path d="M0,30 L10,28 L20,25 L30,22 L40,20 L50,18 L60,15 L70,12 L80,10 L90,8 L100,5" fill="none"
+              stroke="currentColor" stroke-width="2" class="text-blue-500" />
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-label">Total Admin Users</div>
+          <div class="stat-value">892</div>
+        </div>
+        <div class="stat-footer">
+          <span class="stat-change positive">
+            <i class="bi bi-arrow-up"></i> +2.1%
+          </span>
+          <a href="#" class="stat-link">View Details</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-lg-6 mb-4">
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-icon pink">
+            <i class="bi bi-exclamation-triangle"></i>
+          </div>
+          <svg class="mini-chart" width="100" height="40" viewBox="0 0 100 40">
+            <path d="M0,5 L10,8 L20,10 L30,12 L40,15 L50,18 L60,20 L70,22 L80,25 L90,28 L100,30" fill="none"
+              stroke="currentColor" stroke-width="2" class="text-pink-500" />
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-label">Churn Risk</div>
+          <div class="stat-value">12</div>
+        </div>
+        <div class="stat-footer">
+          <span class="stat-change positive">
+            <i class="bi bi-arrow-up"></i> +2.1%
+          </span>
+          <a href="#" class="stat-link">Companies flagged</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Section: Activity Cards -->
+  <div class="row">
+    <div class="col-md-4 mb-4">
+      <div class="activity-section">
+        <div class="chart-header">
+          <h5 class="chart-title">Recent Tenants</h5>
+          <a href="#" style="color: #6B7280; text-decoration: none; font-size: 14px;">All Activity</a>
+        </div>
+        <div class="empty-state">No tenants found</div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="activity-section">
+        <div class="chart-header">
+          <h5 class="chart-title">Recent Users</h5>
+          <a href="#" style="color: #6B7280; text-decoration: none; font-size: 14px;">Today</a>
+        </div>
+        <div class="activity-item">
+          <div class="activity-avatar">A</div>
+          <div class="activity-content">
+            <div class="activity-title">admin</div>
+            <div class="activity-desc">admin@example.com</div>
+          </div>
+          <div class="activity-badge">Active</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="activity-section">
+        <div class="chart-header">
+          <h5 class="chart-title">Upcoming Renewals</h5>
+          <a href="#" style="color: #6B7280; text-decoration: none; font-size: 14px;">All Renewals</a>
+        </div>
+        <div class="empty-state">No active subscriptions</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}6

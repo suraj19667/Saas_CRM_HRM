@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard Overview{% endblock %}
+
+{% block content %}
+<div
+  style="background-color: #f7f9fc; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom" style="padding: 1rem 2rem;">
+    <div class="container-fluid">
+      <button class="btn btn-link text-dark p-0" style="font-size: 24px; text-decoration: none;">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <div class="d-flex align-items-center gap-3 ms-auto">
+        <!-- Search -->
+        <div class="input-group" style="max-width: 420px; width: 420px;">
+          <span class="input-group-text bg-white border-end-0" style="padding-left: 16px;">
+            <i class="fas fa-search text-muted"></i>
+          </span>
+          <input type="text" class="form-control border-start-0 ps-0" placeholder="Search..."
+            style="border-left: none; box-shadow: none;" />
+          <span class="input-group-text bg-white border-start-0 text-muted" style="border-left: none;">
+            ⌘K
+          </span>
+        </div>
+
+        <!-- Notifications -->
+        <button class="btn btn-link text-dark position-relative p-0"
+          style="width: 44px; height: 44px; border-radius: 50%; background-color: #f1f3f5;">
+          <i class="fas fa-bell"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+            style="font-size: 10px; padding: 2px 6px;">
+            3
+          </span>
+        </button>
+
+        <!-- Messages -->
+        <button class="btn btn-link text-dark p-0"
+          style="width: 44px; height: 44px; border-radius: 50%; background-color: #f1f3f5;">
+          <i class="fas fa-envelope"></i>
+        </button>
+
+        <!-- User Menu -->
+        <button class="btn btn-link text-dark position-relative p-0"
+          style="width: 44px; height: 44px; border-radius: 50%; background-color: #f1f3f5;">
+          <i class="fas fa-user"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
+            style="font-size: 10px; padding: 2px 6px;">
+            1
+          </span>
+        </button>
+
+        <!-- User Avatar -->
+        <div class="rounded-circle d-flex align-items-center justify-content-center"
+          style="width: 44px; height: 44px; background-color: #fbbf24;">
+          <img
+            src="https://ui-avatars.com/api/?name={{ user.get_full_name|default:user.username }}&background=fbbf24&color=fff&bold=true"
+            alt="User" style="width: 100%; height: 100%; border-radius: 50%;" />
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container-fluid" style="padding: 2rem 2.5rem;">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h1 class="mb-2" style="font-size: 32px; font-weight: 700; color: #1a1a1a;">Dashboard</h1>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-0" style="font-size: 14px;">
+            <li class="breadcrumb-item">
+              <a href="#" class="text-decoration-none" style="color: #6c757d;">
+                <i class="fas fa-home" style="margin-top: -2px;"></i>
+              </a>
+            </li>
+            <li class="breadcrumb-item">
+              <a href="#" class="text-decoration-none" style="color: #6c757d;">Dashboard</a>
+            </li>
+            <li class="breadcrumb-item" style="color: #adb5bd;">/</li>
+            <li class="breadcrumb-item active" style="color: #6c757d;">Overview</li>
+          </ol>
+        </nav>
+      </div>
+
+      <div class="d-flex gap-3">
+        <button class="btn btn-outline-secondary d-flex align-items-center gap-2"
+          style="border-radius: 8px; padding: 8px 20px; font-size: 14px; font-weight: 500; border: 1.5px solid #dee2e6;">
+          <i class="fas fa-download"></i>
+          Export
+        </button>
+        <button class="btn btn-outline-secondary d-flex align-items-center gap-2"
+          style="border-radius: 8px; padding: 8px 20px; font-size: 14px; font-weight: 500; border: 1.5px solid #dee2e6;">
+          <i class="fas fa-calendar"></i>
+          2025 - 2025
+        </button>
+      </div>
+    </div>
+
+    <!-- Metrics Grid -->
+    <div class="row">
+      <!-- Total Companies -->
+      <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+        <div class="card h-100 border-0"
+          style="border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.2s, box-shadow 0.2s;">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div class="rounded-circle d-flex align-items-center justify-content-center"
+                style="width: 56px; height: 56px; background-color: #e0e7ff; flex-shrink: 0;">
+                <i class="fas fa-building" style="font-size: 28px; color: #6366f1;"></i>
+              </div>
+            </div>
+
+            <div class="text-muted mb-2"
+              style="font-size: 12px; font-weight: 500; letter-spacing: 0.5px; color: #6c757d;">
+              Total Companies
+            </div>
+
+            <div class="mb-2">
+              <h2 class="mb-0" style="font-size: 36px; font-weight: 700; color: #212529; line-height: 1.2;">
+                {{ total_companies|default:'248' }}
+              </h2>
+            </div>
+
+            <div class="mb-3">
+              <span class="text-success d-inline-flex align-items-center"
+                style="font-size: 14px; font-weight: 600; color: #10b981;">
+                <i class="fas fa-arrow-up me-1"></i>
+                +2.1%
+              </span>
+            </div>
+
+            <div class="mb-3">
+              <!-- Simple chart placeholder -->
+              <div
+                style="height: 60px; background: linear-gradient(to right, #e0e7ff 0%, #f8fafc 100%); border-radius: 4px;">
+              </div>
+            </div>
+
+            <a href="#" class="text-decoration-none fw-semibold" style="color: #5865f2; font-size: 14px;">
+              View Details
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Subscriptions -->
+      <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+        <div class="card h-100 border-0"
+          style="border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.2s, box-shadow 0.2s;">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div class="rounded-circle d-flex align-items-center justify-content-center"
+                style="width: 56px; height: 56px; background-color: #ccfbf1; flex-shrink: 0;">
+                <i class="fas fa-credit-card" style="font-size: 28px; color: #14b8a6;"></i>
+              </div>
+            </div>
+
+            <div class="text-muted mb-2"
+              style="font-size: 12px; font-weight: 500; letter-spacing: 0.5px; color: #6c757d;">
+              Active Subscriptions
+            </div>
+
+            <div class="mb-2">
+              <h2 class="mb-0" style="font-size: 36px; font-weight: 700; color: #212529; line-height: 1.2;">
+                {{ active_subscriptions|default:'223' }}
+              </h2>
+            </div>
+
+            <div class="mb-3">
+              <span class="text-success d-inline-flex align-items-center"
+                style="font-size: 14px; font-weight: 600; color: #10b981;">
+                <i class="fas fa-arrow-up me-1"></i>
+                +2.1%
+              </span>
+            </div>
+
+            <div class="mb-3">
+              <div
+                style="height: 60px; background: linear-gradient(to right, #ccfbf1 0%, #f8fafc 100%); border-radius: 4px;">
+              </div>
+            </div>
+
+            <a href="#" class="text-decoration-none fw-semibold" style="color: #5865f2; font-size: 14px;">
+              View Details
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Monthly Revenue -->
+      <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+        <div class="card h-100 border-0"
+          style="border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.2s, box-shadow 0.2s;">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div class="rounded-circle d-flex align-items-center justify-content-center"
+                style="width: 56px; height: 56px; background-color: #dbeafe; flex-shrink: 0;">
+                <i class="fas fa-dollar-sign" style="font-size: 28px; color: #3b82f6;"></i>
+              </div>
+            </div>
+
+            <div class="text-muted mb-2"
+              style="font-size: 12px; font-weight: 500; letter-spacing: 0.5px; color: #6c757d;">
+              Monthly Revenue
+            </div>
+
+            <div class="mb-2">
+              <h2 class="mb-0" style="font-size: 36px; font-weight: 700; color: #212529; line-height: 1.2;">
+                ₹{{ monthly_revenue|default:'72.4L' }}
+              </h2>
+            </div>
+
+            <div class="mb-3">
+              <span class="text-success d-inline-flex align-items-center"
+                style="font-size: 14px; font-weight: 600; color: #10b981;">
+                <i class="fas fa-arrow-up me-1"></i>
+                +2.1%
+              </span>
+            </div>
+
+            <div class="mb-3">
+              <div
+                style="height: 60px; background: linear-gradient(to right, #dbeafe 0%, #f8fafc 100%); border-radius: 4px;">
+              </div>
+            </div>
+
+            <a href="#" class="text-decoration-none fw-semibold" style="color: #5865f2; font-size: 14px;">
+              View Details
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Trials -->
+      <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+        <div class="card h-100 border-0"
+          style="border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.2s, box-shadow 0.2s;">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div class="rounded-circle d-flex align-items-center justify-content-center"
+                style="width: 56px; height: 56px; background-color: #fef3c7; flex-shrink: 0;">
+                <i class="fas fa-clock" style="font-size: 28px; color: #f59e0b;"></i>
+              </div>
+            </div>
+
+            <div class="text-muted mb-2"
+              style="font-size: 12px; font-weight: 500; letter-spacing: 0.5px; color: #6c757d;">
+              Active Trials
+            </div>
+
+            <div class="mb-2">
+              <h2 class="mb-0" style="font-size: 36px; font-weight: 700; color: #212529; line-height: 1.2;">
+                {{ active_trials|default:'25' }}
+              </h2>
+            </div>
+
+            <div class="mb-3">
+              <span class="text-success d-inline-flex align-items-center"
+                style="font-size: 14px; font-weight: 600; color: #10b981;">
+                <i class="fas fa-arrow-up me-1"></i>
+                +2.1%
+              </span>
+            </div>
+
+            <div class="mb-3">
+              <div
+                style="height: 60px; background: linear-gradient(to right, #fef3c7 0%, #f8fafc 100%); border-radius: 4px;">
+              </div>
+            </div>
+
+            <a href="#" class="text-decoration-none fw-semibold" style="color: #5865f2; font-size: 14px;">
+              View Details
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}

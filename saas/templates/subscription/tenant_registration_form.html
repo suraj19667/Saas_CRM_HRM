@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Progress Steps -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="text-center flex-fill">
+                            <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <strong>1</strong>
+                            </div>
+                            <div class="mt-2"><small><strong>Company Details</strong></small></div>
+                        </div>
+                        <div class="flex-fill" style="border-top: 2px solid #ddd; margin: 0 10px;"></div>
+                        <div class="text-center flex-fill">
+                            <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <strong>2</strong>
+                            </div>
+                            <div class="mt-2"><small>Payment</small></div>
+                        </div>
+                        <div class="flex-fill" style="border-top: 2px solid #ddd; margin: 0 10px;"></div>
+                        <div class="text-center flex-fill">
+                            <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <strong>3</strong>
+                            </div>
+                            <div class="mt-2"><small>Dashboard</small></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plan Summary -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">📦 Selected Plan: {{ plan.name }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Monthly:</strong> ₹{{ plan.price_monthly }}</p>
+                            <p class="mb-1"><strong>Yearly:</strong> ₹{{ plan.price_yearly }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Max Users:</strong> {{ plan.max_users }}</p>
+                            <p class="mb-1"><strong>Storage:</strong> {{ plan.storage_limit }}GB</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Registration Form -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">🏢 Company Registration</h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">Please provide your company details to continue with the subscription.</p>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" enctype="multipart/form-data" id="tenantForm">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}</label>
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                    <div class="text-danger small">{{ form.name.errors }}</div>
+                                {% endif %}
+                                {% if form.name.help_text %}
+                                    <div class="form-text">{{ form.name.help_text }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.contact_email.id_for_label }}" class="form-label">{{ form.contact_email.label }}</label>
+                                {{ form.contact_email }}
+                                {% if form.contact_email.errors %}
+                                    <div class="text-danger small">{{ form.contact_email.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.contact_phone.id_for_label }}" class="form-label">{{ form.contact_phone.label }}</label>
+                                {{ form.contact_phone }}
+                                {% if form.contact_phone.errors %}
+                                    <div class="text-danger small">{{ form.contact_phone.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.address.id_for_label }}" class="form-label">{{ form.address.label }}</label>
+                                {{ form.address }}
+                                {% if form.address.errors %}
+                                    <div class="text-danger small">{{ form.address.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.logo.id_for_label }}" class="form-label">{{ form.logo.label }}</label>
+                                {{ form.logo }}
+                                {% if form.logo.errors %}
+                                    <div class="text-danger small">{{ form.logo.errors }}</div>
+                                {% endif %}
+                                {% if form.logo.help_text %}
+                                    <div class="form-text">{{ form.logo.help_text }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h6 class="mb-3">Notification Preferences</h6>
+                                        <div class="form-check mb-2">
+                                            {{ form.allow_email_notifications }}
+                                            <label class="form-check-label" for="{{ form.allow_email_notifications.id_for_label }}">
+                                                {{ form.allow_email_notifications.label }}
+                                            </label>
+                                            {% if form.allow_email_notifications.help_text %}
+                                                <div class="form-text">{{ form.allow_email_notifications.help_text }}</div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-check">
+                                            {{ form.allow_sms_notifications }}
+                                            <label class="form-check-label" for="{{ form.allow_sms_notifications.id_for_label }}">
+                                                {{ form.allow_sms_notifications.label }}
+                                            </label>
+                                            {% if form.allow_sms_notifications.help_text %}
+                                                <div class="form-text">{{ form.allow_sms_notifications.help_text }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'subscription:list_plans' %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Back to Plans
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                Continue to Payment <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+    .card {
+        border-radius: 10px;
+    }
+</style>
+{% endblock %}

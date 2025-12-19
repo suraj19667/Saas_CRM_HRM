@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Progress Steps -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="text-center flex-fill">
+                            <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <i class="bi bi-check"></i>
+                            </div>
+                            <div class="mt-2"><small>Company Details</small></div>
+                        </div>
+                        <div class="flex-fill" style="border-top: 2px solid #28a745; margin: 0 10px;"></div>
+                        <div class="text-center flex-fill">
+                            <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <strong>2</strong>
+                            </div>
+                            <div class="mt-2"><small><strong>Payment</strong></small></div>
+                        </div>
+                        <div class="flex-fill" style="border-top: 2px solid #ddd; margin: 0 10px;"></div>
+                        <div class="text-center flex-fill">
+                            <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <strong>3</strong>
+                            </div>
+                            <div class="mt-2"><small>Dashboard</small></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Company Summary -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">✅ Company Registered: {{ tenant.name }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Email:</strong> {{ tenant.contact_email }}</p>
+                            <p class="mb-1"><strong>Phone:</strong> {{ tenant.contact_phone }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Domain:</strong> {{ tenant.domain|default:"Will be generated" }}</p>
+                            <p class="mb-1"><strong>Status:</strong> <span class="badge bg-warning">Pending Payment</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Gateway -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">💳 Payment Details</h4>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ plan.name }} Plan</h5>
+                                    <p class="card-text text-muted">{{ plan.description }}</p>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <p class="mb-1"><strong>Max Users:</strong> {{ plan.max_users }}</p>
+                                            <p class="mb-1"><strong>Storage:</strong> {{ plan.storage_limit }}GB</p>
+                                        </div>
+                                        <div class="col-6">
+                                            <p class="mb-1"><strong>Monthly:</strong> ₹{{ plan.price_monthly }}</p>
+                                            <p class="mb-1"><strong>Yearly:</strong> ₹{{ plan.price_yearly }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="post" id="paymentForm">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label class="form-label"><strong>Select Billing Cycle</strong></label>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="card border-primary">
+                                        <div class="card-body text-center">
+                                            <input type="radio" class="btn-check" name="billing_cycle" id="monthly" value="monthly" checked>
+                                            <label class="btn btn-outline-primary w-100" for="monthly">
+                                                <h5>Monthly</h5>
+                                                <h3>₹{{ plan.price_monthly }}</h3>
+                                                <small>per month</small>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="card border-success">
+                                        <div class="card-body text-center position-relative">
+                                            <span class="badge bg-success position-absolute top-0 start-50 translate-middle">SAVE 17%</span>
+                                            <input type="radio" class="btn-check" name="billing_cycle" id="yearly" value="yearly">
+                                            <label class="btn btn-outline-success w-100" for="yearly">
+                                                <h5>Yearly</h5>
+                                                <h3>₹{{ plan.price_yearly }}</h3>
+                                                <small>per year</small>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label"><strong>Payment Method</strong></label>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" name="payment_method" id="razorpay" value="razorpay" checked>
+                                        <label class="form-check-label" for="razorpay">
+                                            <strong>Razorpay</strong> - Credit/Debit Card, UPI, Net Banking
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="payment_method" id="paypal" value="paypal">
+                                        <label class="form-check-label" for="paypal">
+                                            <strong>PayPal</strong> - Pay with PayPal account
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="bi bi-shield-check"></i> <strong>Secure Payment</strong>
+                            <p class="mb-0 small">Your payment information is encrypted and secure. We never store your card details.</p>
+                        </div>
+
+                        <div class="card bg-light mb-4">
+                            <div class="card-body">
+                                <h6>Order Summary</h6>
+                                <div class="d-flex justify-content-between">
+                                    <span id="summaryPlan">{{ plan.name }} (Monthly)</span>
+                                    <span id="summaryAmount">₹{{ plan.price_monthly }}</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <strong>Total Amount</strong>
+                                    <strong id="totalAmount">₹{{ plan.price_monthly }}</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'subscription:list_plans' %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-credit-card"></i> Proceed to Payment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Update summary based on billing cycle selection
+    document.addEventListener('DOMContentLoaded', function() {
+        const monthlyRadio = document.getElementById('monthly');
+        const yearlyRadio = document.getElementById('yearly');
+        const summaryPlan = document.getElementById('summaryPlan');
+        const summaryAmount = document.getElementById('summaryAmount');
+        const totalAmount = document.getElementById('totalAmount');
+        
+        const planName = "{{ plan.name }}";
+        const monthlyPrice = {{ plan.price_monthly }};
+        const yearlyPrice = {{ plan.price_yearly }};
+        
+        function updateSummary() {
+            if (monthlyRadio.checked) {
+                summaryPlan.textContent = planName + ' (Monthly)';
+                summaryAmount.textContent = '₹' + monthlyPrice;
+                totalAmount.textContent = '₹' + monthlyPrice;
+            } else if (yearlyRadio.checked) {
+                summaryPlan.textContent = planName + ' (Yearly)';
+                summaryAmount.textContent = '₹' + yearlyPrice;
+                totalAmount.textContent = '₹' + yearlyPrice;
+            }
+        }
+        
+        monthlyRadio.addEventListener('change', updateSummary);
+        yearlyRadio.addEventListener('change', updateSummary);
+    });
+</script>
+
+<style>
+    .btn-check:checked + .btn-outline-primary,
+    .btn-check:checked + .btn-outline-success {
+        background-color: var(--bs-primary);
+        color: white;
+    }
+    .card {
+        border-radius: 10px;
+    }
+</style>
+{% endblock %}
