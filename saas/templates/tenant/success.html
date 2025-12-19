@@ -1,0 +1,21 @@
+{% extends 'standalone_base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Subscription Activated</h4>
+            </div>
+            <div class="card-body">
+                {% if tenant %}
+                <p><strong>Company:</strong> {{ tenant.name }}</p>
+                <p>Your subscription is now active. Thank you for subscribing.</p>
+                {% else %}
+                <p>Subscription completed. (Tenant not found)</p>
+                {% endif %}
+                <a href="{% url 'hrm_home' %}" class="btn btn-primary">Go to Home</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

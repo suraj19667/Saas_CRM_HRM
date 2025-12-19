@@ -1,0 +1,856 @@
+{% extends 'base.html' %}
+
+{% block title %}CRM System Setup - CRM System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1050;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .modal.show {
+        display: block;
+    }
+
+    .modal-dialog {
+        position: relative;
+        margin: 3% auto;
+        max-width: 600px;
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+        padding: 20px;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-body {
+        padding: 20px;
+        max-height: 500px;
+        overflow-y: auto;
+    }
+
+    .modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #dee2e6;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .close {
+        background: none;
+        border: none;
+        font-size: 28px;
+        font-weight: bold;
+        color: #aaa;
+        cursor: pointer;
+    }
+
+    .close:hover {
+        color: #000;
+    }
+
+    .badge {
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+    }
+
+    .badge.bg-success {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .badge.bg-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .badge.bg-info {
+        background-color: #17a2b8;
+        color: white;
+    }
+
+    .permission-group {
+        margin-bottom: 20px;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        padding: 15px;
+    }
+
+    .permission-group h6 {
+        margin-bottom: 10px;
+        color: #667eea;
+        font-weight: 600;
+    }
+
+    .form-check {
+        margin-bottom: 8px;
+    }
+
+    .btn-action {
+        padding: 5px 10px;
+        font-size: 14px;
+        margin: 0 3px;
+    }
+
+    .table-responsive {
+        margin-top: 15px;
+    }
+
+    .alert {
+        padding: 12px 20px;
+        margin-bottom: 20px;
+        border-radius: 6px;
+        border: 1px solid transparent;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h1>CRM System Setup</h1>
+</div>
+
+<!-- Alert Messages -->
+<div id="alertContainer"></div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-gear"></i> General Settings</h5>
+                <p class="card-text">Configure basic CRM settings and preferences.</p>
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Company Name
+                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Time Zone
+                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Currency
+                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-people"></i> User Management</h5>
+                <p class="card-text">Manage users, roles, and permissions.</p>
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Add New User
+                        <button class="btn btn-sm btn-success" onclick="showAddUserModal()">Add</button>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Role Management
+                        <button class="btn btn-sm btn-outline-primary" onclick="showRolesModal()">Configure</button>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Permissions
+                        <button class="btn btn-sm btn-outline-primary"
+                            onclick="showPermissionsModal()">Configure</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Users List Section -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">All Users</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <tr>
+                                <td colspan="6" class="text-center">Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Roles List Section -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">All Roles</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Role Name</th>
+                                <th>Description</th>
+                                <th>Users</th>
+                                <th>Permissions</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rolesTableBody">
+                            <tr>
+                                <td colspan="5" class="text-center">Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit User Modal -->
+<div id="userModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="userModalTitle">Add New User</h5>
+                <button type="button" class="close" onclick="closeUserModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <input type="hidden" id="userId">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username *</label>
+                        <input type="text" class="form-control" id="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email *</label>
+                        <input type="email" class="form-control" id="email" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="firstName" class="form-label">First Name *</label>
+                            <input type="text" class="form-control" id="firstName" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="lastName" class="form-label">Last Name *</label>
+                            <input type="text" class="form-control" id="lastName" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="tel" class="form-control" id="phone">
+                    </div>
+                    <div class="mb-3" id="passwordField">
+                        <label for="password" class="form-label">Password *</label>
+                        <input type="password" class="form-control" id="password">
+                    </div>
+                    <div class="mb-3">
+                        <label for="userRole" class="form-label">Role</label>
+                        <select class="form-control" id="userRole">
+                            <option value="">No Role</option>
+                        </select>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input" id="isActive" checked>
+                        <label class="form-check-label" for="isActive">Active</label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input" id="isStaff">
+                        <label class="form-check-label" for="isStaff">Staff Status</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeUserModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveUser()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Role Modal -->
+<div id="roleModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="roleModalTitle">Add New Role</h5>
+                <button type="button" class="close" onclick="closeRoleModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="roleForm">
+                    <input type="hidden" id="roleId">
+                    <div class="mb-3">
+                        <label for="roleName" class="form-label">Role Name *</label>
+                        <input type="text" class="form-control" id="roleName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="roleDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="roleDescription" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Permissions</label>
+                        <div id="permissionsCheckboxes">
+                            <p class="text-muted">Loading permissions...</p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeRoleModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveRole()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Roles Management Modal -->
+<div id="rolesManagementModal" class="modal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Role Management</h5>
+                <button type="button" class="close" onclick="closeRolesModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <button class="btn btn-primary mb-3" onclick="showAddRoleModal()">
+                    <i class="bi bi-plus"></i> Add New Role
+                </button>
+                <div id="rolesListContainer">
+                    <p>Loading roles...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeRolesModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Permissions Management Modal -->
+<div id="permissionsManagementModal" class="modal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Permissions Management</h5>
+                <button type="button" class="close" onclick="closePermissionsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <button class="btn btn-primary mb-3" onclick="showAddPermissionModal()">
+                    <i class="bi bi-plus"></i> Add New Permission
+                </button>
+                <div id="permissionsListContainer">
+                    <p>Loading permissions...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closePermissionsModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Get CSRF token
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+    }
+
+    // Show alert message
+    function showAlert(message, type = 'success') {
+        const alertContainer = document.getElementById('alertContainer');
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type} alert-dismissible fade show`;
+        alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+    `;
+        alertContainer.appendChild(alert);
+
+        setTimeout(() => {
+            alert.remove();
+        }, 5000);
+    }
+
+    let CURRENT_USER_PERMISSIONS = [];
+
+    // Fetch current user permissions first
+    (function () {
+        fetch('/api/me')
+            .then(r => r.json())
+            .then(d => {
+                if (d && d.success && d.user) {
+                    CURRENT_USER_PERMISSIONS = d.user.permissions || [];
+                }
+                loadUsers();
+            })
+            .catch(() => {
+                loadUsers();
+            });
+    })();
+
+
+    function loadUsers() {
+        fetch('/api/users/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const tbody = document.getElementById('usersTableBody');
+                    tbody.innerHTML = '';
+
+                    if (data.users.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" class="text-center">No users found</td></tr>';
+                        return;
+                    }
+
+                    data.users.forEach(user => {
+                        const canDelete = CURRENT_USER_PERMISSIONS.includes('delete_user') || CURRENT_USER_PERMISSIONS.includes('delete_user');
+                        const canEdit = CURRENT_USER_PERMISSIONS.includes('edit_user') || user.role === null;
+
+                        const editBtn = `<button class="btn btn-sm btn-primary btn-action" onclick="editUser(${user.id})">Edit</button>`;
+                        const deleteBtn = canDelete ? `<button class="btn btn-sm btn-danger btn-action" onclick="deleteUser(${user.id}, '${user.username}')">Delete</button>` : '';
+
+                        const row = `
+                        <tr>
+                            <td>${user.username}</td>
+                            <td>${user.full_name}</td>
+                            <td>${user.email}</td>
+                            <td><span class="badge bg-info">${user.role}</span></td>
+                            <td><span class="badge ${user.is_active ? 'bg-success' : 'bg-danger'}">${user.is_active ? 'Active' : 'Inactive'}</span></td>
+                            <td>
+                                ${canEdit ? editBtn : ''}
+                                ${deleteBtn}
+                            </td>
+                        </tr>
+                    `;
+                        tbody.innerHTML += row;
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error loading users:', error);
+                showAlert('Error loading users', 'danger');
+            });
+    }
+
+    // Load roles
+    function loadRoles() {
+        fetch('/api/roles/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const tbody = document.getElementById('rolesTableBody');
+                    tbody.innerHTML = '';
+
+                    // Update role dropdown
+                    const roleSelect = document.getElementById('userRole');
+                    roleSelect.innerHTML = '<option value="">No Role</option>';
+
+                    if (data.roles.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center">No roles found</td></tr>';
+                        return;
+                    }
+
+                    data.roles.forEach(role => {
+                        // Add to table
+                        const row = `
+                        <tr>
+                            <td>${role.name}</td>
+                            <td>${role.description || '-'}</td>
+                            <td>${role.user_count}</td>
+                            <td>${role.permissions.length} permissions</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary btn-action" onclick="editRole(${role.id})">Edit</button>
+                                <button class="btn btn-sm btn-danger btn-action" onclick="deleteRole(${role.id}, '${role.name}')">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                        tbody.innerHTML += row;
+
+                        // Add to dropdown
+                        const option = document.createElement('option');
+                        option.value = role.id;
+                        option.textContent = role.name;
+                        roleSelect.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error loading roles:', error);
+                showAlert('Error loading roles', 'danger');
+            });
+    }
+
+    // Load permissions
+    function loadPermissions() {
+        fetch('/api/permissions/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const container = document.getElementById('permissionsCheckboxes');
+                    container.innerHTML = '';
+
+                    // Group permissions by module
+                    Object.keys(data.modules).forEach(module => {
+                        const group = document.createElement('div');
+                        group.className = 'permission-group';
+                        group.innerHTML = `<h6>${module.charAt(0).toUpperCase() + module.slice(1)}</h6>`;
+
+                        data.modules[module].forEach(perm => {
+                            const check = document.createElement('div');
+                            check.className = 'form-check';
+                            check.innerHTML = `
+                            <input class="form-check-input permission-check" type="checkbox" 
+                                   value="${perm.id}" id="perm_${perm.id}">
+                            <label class="form-check-label" for="perm_${perm.id}">
+                                ${perm.name} <small class="text-muted">(${perm.codename})</small>
+                            </label>
+                        `;
+                            group.appendChild(check);
+                        });
+
+                        container.appendChild(group);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error loading permissions:', error);
+            });
+    }
+
+    // Show add user modal
+    function showAddUserModal() {
+        document.getElementById('userModalTitle').textContent = 'Add New User';
+        document.getElementById('userForm').reset();
+        document.getElementById('userId').value = '';
+        document.getElementById('passwordField').style.display = 'block';
+        document.getElementById('password').required = true;
+        document.getElementById('username').readOnly = false;
+        document.getElementById('userModal').classList.add('show');
+    }
+
+    // Close user modal
+    function closeUserModal() {
+        document.getElementById('userModal').classList.remove('show');
+    }
+
+    // Edit user
+    function editUser(userId) {
+        fetch('/api/users/')
+            .then(response => response.json())
+            .then(data => {
+                const user = data.users.find(u => u.id === userId);
+                if (user) {
+                    document.getElementById('userModalTitle').textContent = 'Edit User';
+                    document.getElementById('userId').value = user.id;
+                    document.getElementById('username').value = user.username;
+                    document.getElementById('username').readOnly = true;
+                    document.getElementById('email').value = user.email;
+                    document.getElementById('firstName').value = user.first_name;
+                    document.getElementById('lastName').value = user.last_name;
+                    document.getElementById('phone').value = user.phone || '';
+                    document.getElementById('userRole').value = user.role_id || '';
+                    document.getElementById('isActive').checked = user.is_active;
+                    document.getElementById('isStaff').checked = user.is_staff;
+                    document.getElementById('passwordField').style.display = 'none';
+                    document.getElementById('password').required = false;
+                    document.getElementById('userModal').classList.add('show');
+                }
+            });
+    }
+
+    // Save user
+    function saveUser() {
+        const userId = document.getElementById('userId').value;
+        const isEdit = userId !== '';
+
+        const userData = {
+            username: document.getElementById('username').value,
+            email: document.getElementById('email').value,
+            first_name: document.getElementById('firstName').value,
+            last_name: document.getElementById('lastName').value,
+            phone: document.getElementById('phone').value,
+            role_id: document.getElementById('userRole').value || null,
+            is_active: document.getElementById('isActive').checked,
+            is_staff: document.getElementById('isStaff').checked,
+        };
+
+        if (!isEdit) {
+            userData.password = document.getElementById('password').value;
+        }
+
+        const url = isEdit ? `/api/users/${userId}/update/` : '/api/users/create/';
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(userData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert(data.message, 'success');
+                    closeUserModal();
+                    loadUsers();
+                } else {
+                    showAlert(data.error, 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('Error saving user', 'danger');
+            });
+    }
+
+    // Delete user
+    function deleteUser(userId, username) {
+        if (!confirm(`Are you sure you want to delete user "${username}"?`)) {
+            return;
+        }
+
+        fetch(`/api/users/${userId}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert(data.message, 'success');
+                    loadUsers();
+                } else {
+                    showAlert(data.error, 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('Error deleting user', 'danger');
+            });
+    }
+
+    // Show roles modal
+    function showRolesModal() {
+        document.getElementById('rolesManagementModal').classList.add('show');
+        loadRoles();
+    }
+
+    // Close roles modal
+    function closeRolesModal() {
+        document.getElementById('rolesManagementModal').classList.remove('show');
+    }
+
+    // Show add role modal
+    function showAddRoleModal() {
+        document.getElementById('roleModalTitle').textContent = 'Add New Role';
+        document.getElementById('roleForm').reset();
+        document.getElementById('roleId').value = '';
+        loadPermissions();
+        document.getElementById('roleModal').classList.add('show');
+    }
+
+    // Close role modal
+    function closeRoleModal() {
+        document.getElementById('roleModal').classList.remove('show');
+    }
+
+    // Edit role
+    function editRole(roleId) {
+        fetch('/api/roles/')
+            .then(response => response.json())
+            .then(data => {
+                const role = data.roles.find(r => r.id === roleId);
+                if (role) {
+                    document.getElementById('roleModalTitle').textContent = 'Edit Role';
+                    document.getElementById('roleId').value = role.id;
+                    document.getElementById('roleName').value = role.name;
+                    document.getElementById('roleDescription').value = role.description;
+
+                    loadPermissions();
+                    setTimeout(() => {
+                        // Check role permissions
+                        role.permissions.forEach(perm => {
+                            const checkbox = document.getElementById(`perm_${perm.id}`);
+                            if (checkbox) checkbox.checked = true;
+                        });
+                    }, 500);
+
+                    document.getElementById('roleModal').classList.add('show');
+                }
+            });
+    }
+
+    // Save role
+    function saveRole() {
+        const roleId = document.getElementById('roleId').value;
+        const isEdit = roleId !== '';
+
+        const permissionIds = Array.from(document.querySelectorAll('.permission-check:checked'))
+            .map(cb => parseInt(cb.value));
+
+        const roleData = {
+            name: document.getElementById('roleName').value,
+            description: document.getElementById('roleDescription').value,
+            permission_ids: permissionIds
+        };
+
+        const url = isEdit ? `/api/roles/${roleId}/update/` : '/api/roles/create/';
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(roleData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert(data.message, 'success');
+                    closeRoleModal();
+                    loadRoles();
+                } else {
+                    showAlert(data.error, 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('Error saving role', 'danger');
+            });
+    }
+
+    // Delete role
+    function deleteRole(roleId, roleName) {
+        if (!confirm(`Are you sure you want to delete role "${roleName}"?`)) {
+            return;
+        }
+
+        fetch(`/api/roles/${roleId}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert(data.message, 'success');
+                    loadRoles();
+                } else {
+                    showAlert(data.error, 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('Error deleting role', 'danger');
+            });
+    }
+
+    // Show permissions modal
+    function showPermissionsModal() {
+        document.getElementById('permissionsManagementModal').classList.add('show');
+        loadPermissionsForManagement();
+    }
+
+    // Close permissions modal
+    function closePermissionsModal() {
+        document.getElementById('permissionsManagementModal').classList.remove('show');
+    }
+
+    // Load permissions for management
+    function loadPermissionsForManagement() {
+        fetch('/api/permissions/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const container = document.getElementById('permissionsListContainer');
+                    container.innerHTML = '';
+
+                    const table = document.createElement('table');
+                    table.className = 'table table-hover';
+                    table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Codename</th>
+                            <th>Module</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.permissions.map(perm => `
+                            <tr>
+                                <td>${perm.name}</td>
+                                <td><code>${perm.codename}</code></td>
+                                <td><span class="badge bg-info">${perm.module}</span></td>
+                                <td>${perm.description || '-'}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                `;
+                    container.appendChild(table);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading permissions:', error);
+            });
+    }
+
+    // Show add permission modal (placeholder)
+    function showAddPermissionModal() {
+        alert('Add Permission functionality will be implemented');
+    }
+
+    // Load initial data
+    document.addEventListener('DOMContentLoaded', function () {
+        loadUsers();
+        loadRoles();
+    });
+</script>
+
+{% csrf_token %}
+{% endblock %}

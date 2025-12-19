@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="content-header">
+    <h1>Payments</h1>
+</div>
+<div class="card">
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tenant</th>
+                    <th>Plan</th>
+                    <th>Order ID</th>
+                    <th>Payment ID</th>
+                    <th>Amount</th>
+                    <th>Currency</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if transactions and transactions|length > 0 %}
+                {% for tx in transactions %}
+                <tr>
+                    <td>{{ tx.id }}</td>
+                    <td>{% if tx.tenant %}{{ tx.tenant.name }} ({{ tx.tenant.id }}){% else %}-{% endif %}</td>
+                    <td>{% if tx.plan %}{{ tx.plan.name }} ({{ tx.plan.id }}){% else %}-{% endif %}</td>
+                    <td>{{ tx.razorpay_order_id }}</td>
+                    <td>{% if tx.razorpay_payment_id %}{{ tx.razorpay_payment_id }}{% else %}-{% endif %}</td>
+                    <td>{{ tx.amount }}</td>
+                    <td>{{ tx.currency }}</td>
+                    <td>{{ tx.status }}</td>
+                    <td>{{ tx.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>
+                        {% if tx.tenant %}
+                        <a class="btn btn-sm btn-primary"
+                            href="{% url 'payment:order_detail' tx.tenant.id %}">Tenant</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="10">No payments found.</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

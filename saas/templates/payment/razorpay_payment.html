@@ -1,0 +1,61 @@
+{% extends 'standalone_base.html' %}
+{% load static %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Payment for {{ plan.name }}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Company:</strong> {{ tenant.name }}<br>
+                        <strong>Plan:</strong> {{ plan.name }}<br>
+                        <strong>Amount:</strong> ₹{{ plan.price_monthly }}
+                    </div>
+                    <button id="payBtn" class="btn btn-success w-100">Pay with Razorpay</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    document.getElementById('payBtn').onclick = function (e) {
+        var options = {
+            "key": "{{ razorpay_key_id }}",
+            "amount": "{{ amount }}",
+            "currency": "INR",
+            "name": "{{ tenant.name }}",
+            "description": "Subscription Payment",
+            "order_id": "{{ razorpay_order_id }}",
+            "handler": function (response) {
+                // AJAX to verify
+                fetch("{{ callback_url }}", {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        'razorpay_payment_id': response.razorpay_payment_id,
+                        'razorpay_order_id': response.razorpay_order_id,
+                        'razorpay_signature': response.razorpay_signature,
+                        'tenant_id': "{{ tenant.id }}"
+                    })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.href = data.redirect_url;
+                        } else {
+                            alert(data.error || 'Payment failed.');
+                        }
+                    });
+            },
+            "theme": { "color": "#3399cc" }
+        };
+        var rzp = new Razorpay(options);
+        rzp.open();
+        e.preventDefault();
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,463 @@
+{% extends 'base.html' %}
+
+{% block title %}Roles & Permissions - Management{% endblock %}
+
+{% block extra_css %}
+<style>
+    .nav-tabs {
+        border-bottom: 2px solid #e9ecef;
+        margin-bottom: 25px;
+    }
+
+    .nav-tabs .nav-link {
+        color: #6c757d;
+        border: none;
+        border-bottom: 3px solid transparent;
+        font-weight: 500;
+        padding: 12px 20px;
+        transition: all 0.3s ease;
+    }
+
+    .nav-tabs .nav-link:hover {
+        color: #6AD66A;
+        border-bottom-color: #6AD66A;
+    }
+
+    .nav-tabs .nav-link.active {
+        color: #6AD66A;
+        border-bottom-color: #6AD66A;
+        background-color: transparent;
+    }
+
+    .table-responsive {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table thead {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .table thead th {
+        font-weight: 600;
+        color: #2c3e50;
+        border: none;
+        padding: 15px;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .table tbody td {
+        padding: 15px;
+        border: none;
+        color: #4a4a4a;
+        vertical-align: middle;
+    }
+
+    .badge-count {
+        display: inline-block;
+        background-color: #6AD66A;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .btn-primary-custom {
+        background: linear-gradient(135deg, #6AD66A 0%, #5BC75B 100%);
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+    .btn-primary-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(106, 214, 106, 0.3);
+        color: white;
+    }
+
+    .action-links {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .action-link {
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        text-decoration: none;
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .action-link.view {
+        color: #0066cc;
+        border-color: #0066cc;
+    }
+
+    .action-link.view:hover {
+        background-color: #0066cc;
+        color: white;
+    }
+
+    .action-link.edit {
+        color: #6AD66A;
+        border-color: #6AD66A;
+    }
+
+    .action-link.edit:hover {
+        background-color: #6AD66A;
+        color: white;
+    }
+
+    .action-link.delete {
+        color: #dc3545;
+        border-color: #dc3545;
+    }
+
+    .action-link.delete:hover {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .action-link.manage {
+        color: #ff9800;
+        border-color: #ff9800;
+    }
+
+    .action-link.manage:hover {
+        background-color: #ff9800;
+        color: white;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 12px;
+        color: #6c757d;
+    }
+
+    .empty-state-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+        opacity: 0.5;
+    }
+
+    .empty-state-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .pagination {
+        margin-top: 20px;
+    }
+
+    .pagination .page-link {
+        color: #6AD66A;
+        border-color: #e9ecef;
+    }
+
+    .pagination .page-link:hover {
+        color: #5BC75B;
+        background-color: #f8f9fa;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #6AD66A;
+        border-color: #6AD66A;
+    }
+
+    .filter-section {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .search-box {
+        position: relative;
+    }
+
+    .search-box input {
+        padding-left: 35px;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h1><i class="bi bi-shield-lock"></i> Roles & Permissions Management</h1>
+</div>
+
+<!-- Tabs Navigation -->
+<ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link {% if tab == 'roles' %}active{% endif %}" href="?tab=roles">
+            <i class="bi bi-person-badge"></i> Roles Management
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if tab == 'permissions' %}active{% endif %}" href="?tab=permissions">
+            <i class="bi bi-key"></i> Permissions Management
+        </a>
+    </li>
+</ul>
+
+<!-- Roles Tab -->
+{% if tab == 'roles' %}
+<div class="action-buttons">
+    <a href="{% url 'access_control:create_role' %}" class="btn-primary-custom">
+        <i class="bi bi-plus-circle"></i> Create New Role
+    </a>
+</div>
+
+{% if roles %}
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Role Name</th>
+                <th>Description</th>
+                <th>Permissions Assigned</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for role in roles %}
+            <tr>
+                <td>
+                    <strong>{{ role.name }}</strong>
+                </td>
+                <td>
+                    <small>{{ role.description|truncatewords:15|default:"No description" }}</small>
+                </td>
+                <td>
+                    <span class="badge-count">{{ role.role_permissions.count }}</span>
+                </td>
+                <td>
+                    <span class="badge bg-success">Active</span>
+                </td>
+                <td>
+                    <div class="action-links">
+                        <a href="{% url 'access_control:role_detail' role.id %}" class="action-link view"
+                            title="View Details">
+                            <i class="bi bi-eye"></i> View
+                        </a>
+                        <a href="{% url 'access_control:edit_role' role.id %}" class="action-link edit"
+                            title="Edit Role">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                        <a href="{% url 'access_control:manage_role_permissions' role.id %}" class="action-link manage"
+                            title="Manage Permissions">
+                            <i class="bi bi-sliders"></i> Manage Perms
+                        </a>
+                        {% if user.is_superuser or user.is_staff %}
+                        <a href="{% url 'access_control:delete_role' role.id %}" class="action-link delete"
+                            title="Delete Role" onclick="return confirm('Are you sure?')">
+                            <i class="bi bi-trash"></i> Delete
+                        </a>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination for Roles -->
+{% if paginator.num_pages > 1 %}
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?tab=roles&page=1">First</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?tab=roles&page={{ page_obj.previous_page_number }}">Previous</a>
+        </li>
+        {% endif %}
+
+        {% for num in paginator.page_range %}
+        {% if page_obj.number == num %}
+        <li class="page-item active">
+            <span class="page-link">{{ num }}</span>
+        </li>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <li class="page-item">
+            <a class="page-link" href="?tab=roles&page={{ num }}">{{ num }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?tab=roles&page={{ page_obj.next_page_number }}">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?tab=roles&page={{ paginator.num_pages }}">Last</a>
+            </li>
+            {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="empty-state">
+    <div class="empty-state-icon">
+        <i class="bi bi-inbox"></i>
+    </div>
+    <div class="empty-state-title">No Roles Found</div>
+    <p>Get started by <a href="{% url 'access_control:create_role' %}"
+            style="color: #6AD66A; font-weight: 600;">creating your first role</a></p>
+</div>
+{% endif %}
+
+<!-- Permissions Tab -->
+{% elif tab == 'permissions' %}
+<div class="action-buttons">
+    <a href="{% url 'access_control:create_permission' %}" class="btn-primary-custom">
+        <i class="bi bi-plus-circle"></i> Create New Permission
+    </a>
+</div>
+
+{% if permissions %}
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Permission Name</th>
+                <th>Code</th>
+                <th>Description</th>
+                <th>Assigned to Roles</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for permission in permissions %}
+            <tr>
+                <td>
+                    <strong>{{ permission.name }}</strong>
+                </td>
+                <td>
+                    <code
+                        style="background-color: #f8f9fa; padding: 4px 8px; border-radius: 4px; font-size: 12px;">{{ permission.codename }}</code>
+                </td>
+                <td>
+                    <small>{{ permission.description|truncatewords:15|default:"No description" }}</small>
+                </td>
+                <td>
+                    <span class="badge-count">{{ permission.rolepermission_set.count }}</span>
+                </td>
+                <td>
+                    <div class="action-links">
+                        <a href="{% url 'access_control:permission_detail' permission.id %}" class="action-link view"
+                            title="View Details">
+                            <i class="bi bi-eye"></i> View
+                        </a>
+                        <a href="{% url 'access_control:edit_permission' permission.id %}" class="action-link edit"
+                            title="Edit Permission">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                        {% if user.is_superuser or user.is_staff %}
+                        <a href="{% url 'access_control:delete_permission' permission.id %}" class="action-link delete"
+                            title="Delete Permission" onclick="return confirm('Are you sure?')">
+                            <i class="bi bi-trash"></i> Delete
+                        </a>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination for Permissions -->
+{% if paginator.num_pages > 1 %}
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?tab=permissions&page=1">First</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?tab=permissions&page={{ page_obj.previous_page_number }}">Previous</a>
+        </li>
+        {% endif %}
+
+        {% for num in paginator.page_range %}
+        {% if page_obj.number == num %}
+        <li class="page-item active">
+            <span class="page-link">{{ num }}</span>
+        </li>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <li class="page-item">
+            <a class="page-link" href="?tab=permissions&page={{ num }}">{{ num }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?tab=permissions&page={{ page_obj.next_page_number }}">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?tab=permissions&page={{ paginator.num_pages }}">Last</a>
+            </li>
+            {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="empty-state">
+    <div class="empty-state-icon">
+        <i class="bi bi-inbox"></i>
+    </div>
+    <div class="empty-state-title">No Permissions Found</div>
+    <p>Get started by <a href="{% url 'access_control:create_permission' %}"
+            style="color: #6AD66A; font-weight: 600;">creating your first permission</a></p>
+</div>
+{% endif %}
+
+{% endif %}
+
+{% endblock %}

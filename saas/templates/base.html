@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CRM System{% endblock %}</title>
+
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --Base-Color-White: #FFF;
+            --Grey-Grey-200: #E5E7EB;
+            --Grey-Grey-500: #6B7280;
+            --Grey-Grey-700: #374151;
+            --Grey-Grey-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            overflow-x: hidden;
+        }
+
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 252px;
+            background: var(--Base-Color-White, #FFF);
+            border-right: 1px solid var(--Grey-Grey-200, #E5E7EB);
+            padding: 16px;
+            position: fixed;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 24px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        /* Hide scrollbar for all browsers */
+        .sidebar::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+            display: none;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: transparent;
+        }
+
+        .sidebar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        .crm-header {
+            background: linear-gradient(135deg, #6AD66A 0%, #5BC75B 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(106, 214, 106, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.3s ease;
+        }
+
+        .crm-header:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(106, 214, 106, 0.4);
+        }
+
+        .crm-header-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .crm-icon {
+            width: 45px;
+            height: 45px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #6AD66A;
+        }
+
+        .crm-title {
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .crm-dropdown {
+            color: #ffffff;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .user-profile-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .user-profile-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .user-avatar {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6AD66A 0%, #5BC75B 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            box-shadow: 0 3px 10px rgba(106, 214, 106, 0.3);
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .user-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0 0 4px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-email {
+            font-size: 13px;
+            color: #6c757d;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .user-action-btn {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .profile-btn {
+            background-color: #6AD66A;
+            color: white;
+        }
+
+        .profile-btn:hover {
+            background-color: #5BC75B;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(106, 214, 106, 0.3);
+            color: white;
+        }
+
+        .logout-btn-sidebar {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .logout-btn-sidebar:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+        }
+
+        .menu-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-item {
+            margin-bottom: 8px;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            text-decoration: none;
+            color: var(--Grey-Grey-700, #374151);
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            position: relative;
+            margin-bottom: 2px;
+        }
+
+        .menu-link:hover {
+            background-color: #F3F4F6;
+            color: var(--Grey-Grey-900, #111827);
+        }
+
+        .menu-link.active {
+            background-color: #EEF2FF;
+            color: #3B82F6;
+            font-weight: 600;
+        }
+
+        .menu-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 70%;
+            background-color: #6AD66A;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .menu-bullet {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 15px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .menu-link .menu-bullet {
+            background-color: #d0d0d0;
+            border: 2px solid #d0d0d0;
+        }
+
+        .menu-link:hover .menu-bullet {
+            background-color: #6AD66A;
+            border-color: #6AD66A;
+        }
+
+        .menu-section-heading {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--Grey-Grey-500, #6B7280);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 16px 0 8px 0;
+            padding: 0 8px;
+        }
+
+        .menu-badge {
+            background: #EF4444;
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: auto;
+        }
+
+        .menu-badge.new {
+            background: #10B981;
+        }
+
+        .brand-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            margin-bottom: 8px;
+        }
+
+        .brand-logo {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--Grey-Grey-900, #111827);
+        }
+
+        .user-profile-bottom {
+            margin-top: auto;
+            padding: 12px;
+            border-top: 1px solid var(--Grey-Grey-200, #E5E7EB);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar-small {
+            width: 36px;
+            height: 36px;
+            background: var(--Grey-Grey-500, #6B7280);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-info-small {
+            flex: 1;
+        }
+
+        .user-name-small {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--Grey-Grey-900, #111827);
+            margin: 0;
+        }
+
+        .user-email-small {
+            font-size: 12px;
+            color: var(--Grey-Grey-500, #6B7280);
+            margin: 0;
+        }
+
+        .menu-content {
+            flex: 1;
+            overflow-y: auto;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        .menu-content::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+            display: none;
+        }
+
+        /* Dropdown functionality */
+        .dropdown-item {
+            margin-left: 24px !important;
+            padding-left: 12px;
+            border-left: 2px solid #E5E7EB;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item.active {
+            border-left-color: #3B82F6;
+        }
+
+        .dropdown-toggle {
+            cursor: pointer;
+        }
+
+        .dropdown-content {
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .dropdown-content.collapsed {
+            max-height: 0;
+        }
+
+        .dropdown-content.expanded {
+            max-height: 300px;
+        }
+
+        .chevron-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .chevron-icon.rotated {
+            transform: rotate(180deg);
+        }
+
+        .menu-link.active .menu-bullet {
+            background-color: #6AD66A;
+            border-color: #6AD66A;
+            box-shadow: 0 0 0 4px rgba(106, 214, 106, 0.2);
+        }
+
+        .main-content {
+            margin-left: 252px;
+            flex: 1;
+            padding: 30px;
+            width: calc(100% - 252px);
+        }
+
+        .content-header {
+            background-color: #ffffff;
+            padding: 25px 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .content-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 250px;
+            }
+
+            .main-content {
+                margin-left: 250px;
+                width: calc(100% - 250px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+    <style>
+        .payments-section {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fdf8 100%);
+            border-radius: 12px;
+            padding: 14px;
+            margin-top: 18px;
+            border: 1px solid #e6f5ea;
+        }
+
+        .payments-section h5 {
+            margin: 0 0 10px 0;
+            font-size: 15px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .payments-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .payments-list li {
+            padding: 8px 6px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: #ffffff;
+            border: 1px solid #f0f7f0;
+            font-size: 13px;
+            color: #4a4a4a;
+        }
+
+        .payments-meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .payments-meta .small {
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+        .payments-empty {
+            font-size: 13px;
+            color: #6c757d;
+            padding: 8px 6px;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- Brand Header -->
+            <div class="brand-header">
+                <div class="brand-logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
+                        <rect x="-0.257263" y="-0.257178" width="30" height="30" rx="2.05714" fill="#5C59E8"/>
+                        <path d="M14.7823 12.3714C14.9073 12.1768 15.1219 12.0582 15.3532 12.0561L21.3075 12.002C21.8555 11.997 22.1877 12.6051 21.8873 13.0635L14.5637 24.2413C14.4382 24.4328 14.2254 24.5491 13.9964 24.5511L8.19259 24.6039C7.64752 24.6088 7.31485 24.0066 7.60927 23.5478L14.7823 12.3714Z" fill="#F1F1F1"/>
+                        <path d="M12.4382 5.42558C12.5662 5.23962 12.7774 5.12853 13.0032 5.12853L18.8803 5.12863C19.4376 5.12864 19.7621 5.75821 19.4388 6.21215L15.2513 12.0915C15.1239 12.2704 14.9186 12.3774 14.699 12.3794L8.92828 12.4318C8.37324 12.4369 8.04251 11.8148 8.35712 11.3575L12.4382 5.42558Z" fill="#F1F1F1"/>
+                    </svg>
+                </div>
+                <div class="brand-name">Intellostack</div>
+            </div>
+
+            <!-- Menu Items -->
+            <div class="menu-content">
+                <!-- MAIN MENU Section -->
+                <div class="menu-section-heading">MAIN MENU</div>
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a href="{% url 'saas_dashboard' %}" class="menu-link {% if request.path == '/dashboard/' %}active{% endif %}">
+                            <i class="bi bi-grid"></i>
+                            <span style="margin-left: 12px;">Overview</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- TENANTS Section -->
+                <div class="menu-section-heading">TENANTS</div>
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a href="{% url 'users' %}" class="menu-link {% if request.path == '/users/' %}active{% endif %}">
+                            <i class="bi bi-people"></i>
+                            <span style="margin-left: 12px;">All Users</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <i class="bi bi-person-gear"></i>
+                            <span style="margin-left: 12px;">Admin User</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <i class="bi bi-person-badge"></i>
+                            <span style="margin-left: 12px;">Admin Users</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <i class="bi bi-calendar-check"></i>
+                            <span style="margin-left: 12px;">Trials & Onboarding</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Plan Management Section -->
+                <div class="menu-section-heading">Plan management</div>
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a href="#" class="menu-link dropdown-toggle" onclick="toggleDropdown('plansDropdown')">
+                            <i class="bi bi-grid-3x3-gap"></i>
+                            <span style="margin-left: 12px;">Plans</span>
+                            <i class="bi bi-chevron-up chevron-icon" id="plansChevron" style="margin-left: auto;"></i>
+                        </a>
+                    </li>
+                    <div class="dropdown-content expanded" id="plansDropdown">
+                        <li class="menu-item dropdown-item">
+                            <a href="#" class="menu-link">
+                                <span>One Time</span>
+                            </a>
+                        </li>
+                        <li class="menu-item dropdown-item">
+                            <a href="{% url 'subscription:list_plans' %}" class="menu-link {% if 'subscription' in request.path %}active{% endif %}">
+                                <span>Subscription Plans</span>
+                            </a>
+                        </li>
+                        <li class="menu-item dropdown-item">
+                            <a href="#" class="menu-link">
+                                <span>Custom Plans</span>
+                            </a>
+                        </li>
+                    </div>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <i class="bi bi-percent"></i>
+                            <span style="margin-left: 12px;">Discount</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{% url 'payment:invoices_list' %}" class="menu-link {% if 'invoices' in request.path %}active{% endif %}">
+                            <i class="bi bi-receipt"></i>
+                            <span style="margin-left: 12px;">Invoice & Billing</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <i class="bi bi-ticket"></i>
+                            <span style="margin-left: 12px;">Coupons</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- ACCESS CONTROL Section -->
+                <div class="menu-section-heading">ACCESS CONTROL</div>
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a href="{% url 'access_control:dashboard' %}" class="menu-link {% if 'roles-permissions' in request.path %}active{% endif %}">
+                            <i class="bi bi-shield-check"></i>
+                            <span style="margin-left: 12px;">Roles & Permission</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{% url 'features:feature_list' %}" class="menu-link {% if 'features' in request.path %}active{% endif %}">
+                            <i class="bi bi-toggles"></i>
+                            <span style="margin-left: 12px;">Features & Toggles</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- OPERATIONS Section -->
+                <div class="menu-section-heading">OPERATIONS</div>
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <i class="bi bi-bar-chart"></i>
+                            <span style="margin-left: 12px;">Analytics</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <i class="bi bi-headset"></i>
+                            <span style="margin-left: 12px;">Support Tickets</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <span style="margin-left: 12px;">Audit logs</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- SYSTEM Section -->
+                <div class="menu-section-heading">SYSTEM</div>
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <i class="bi bi-person-gear"></i>
+                            <span style="margin-left: 12px;">Security</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <i class="bi bi-megaphone"></i>
+                            <span style="margin-left: 12px;">Announcements</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <i class="bi bi-gear"></i>
+                            <span style="margin-left: 12px;">Setting</span>
+                            <span class="menu-badge new">New</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- User Profile Bottom -->
+            {% if user.is_authenticated %}
+            <div class="user-profile-bottom">
+                <div class="user-avatar-small">
+                    {{ user.first_name.0|upper|default:user.username.0|upper }}
+                </div>
+                <div class="user-info-small">
+                    <div class="user-name-small">Super Admin</div>
+                    <div class="user-email-small">{{ user.email }}</div>
+                </div>
+                <form method="POST" action="{% url 'logout' %}" style="margin: 0;">
+                    {% csrf_token %}
+                    <button type="submit" style="background: none; border: none; color: var(--Grey-Grey-500); cursor: pointer;">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+
+            <!-- Payments Quick Peek removed from sidebar -->
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            {% block content %}
+            <div class="content-header">
+                <h1>Users and Roles</h1>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Users</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users %}
+                                    <tr>
+                                        <td>{{ user.get_full_name|default:user.username }}</td>
+                                        <td>{{ user.email }}</td>
+                                        <td>{% if user.role %}{{ user.role.name }}{% else %}No Role{% endif %}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3">No users found.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Roles</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group">
+                                {% for role in roles %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ role.name }}
+                                    <span class="badge bg-primary rounded-pill">{{ role.users.count }}</span>
+                                </li>
+                                {% empty %}
+                                <li class="list-group-item">No roles found.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endblock %}
+        </main>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Fetch current user role & permissions and hide sidebar items accordingly
+        (function () {
+            fetch('/api/me')
+                .then(r => r.json())
+                .then(data => {
+                    if (!data || !data.success) return;
+                    const perms = data.user.permissions || [];
+
+                    // Helper to hide menu by text match
+                    function hideMenu(text) {
+                        const items = document.querySelectorAll('.menu-link');
+                        items.forEach(a => {
+                            if (a.textContent.trim().toLowerCase().includes(text.toLowerCase())) {
+                                a.style.display = 'none';
+                            }
+                        });
+                    }
+
+                    if (!perms.includes('view_leads')) hideMenu('Leads');
+                    if (!perms.includes('view_deals')) hideMenu('Deals');
+                    if (!perms.includes('view_forms') && !perms.includes('view_form')) hideMenu('Form Builder');
+                    if (!perms.includes('view_contracts')) hideMenu('Contract');
+                    if (!perms.includes('view_users')) hideMenu('Users');
+                    if (!perms.includes('view_dashboard')) hideMenu('CRM System Setup');
+                })
+                .catch(() => { });
+        })();
+
+        // Dropdown toggle functionality
+        function toggleDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            const chevron = document.getElementById(dropdownId.replace('Dropdown', 'Chevron'));
+            
+            if (dropdown.classList.contains('collapsed')) {
+                dropdown.classList.remove('collapsed');
+                dropdown.classList.add('expanded');
+                chevron.classList.remove('rotated');
+            } else {
+                dropdown.classList.remove('expanded');
+                dropdown.classList.add('collapsed');
+                chevron.classList.add('rotated');
+            }
+        }
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

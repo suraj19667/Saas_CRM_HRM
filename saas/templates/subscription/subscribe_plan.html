@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Subscribe to {{ plan.name }}</h3>
+                </div>
+                <div class="card-body">
+                    <p>{{ plan.description }}</p>
+                    <div class="mb-3">
+                        <strong>Limits:</strong><br>
+                        Users: {{ plan.max_users }}<br>
+                        Storage: {{ plan.max_storage_mb }} MB<br>
+                        Projects: {{ plan.max_projects }}
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="billing_cycle" class="form-label">Billing Cycle</label>
+                            <select name="billing_cycle" id="billing_cycle" class="form-select" required>
+                                <option value="monthly">Monthly - ${{ plan.price_monthly }}</option>
+                                <option value="yearly">Yearly - ${{ plan.price_yearly }}</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Subscribe</button>
+                        <a href="{% url 'subscription:list_plans' %}" class="btn btn-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

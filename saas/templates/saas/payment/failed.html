@@ -1,0 +1,200 @@
+{% extends 'saas/base.html' %}
+{% load static %}
+
+{% block title %}Payment Failed - SaaS Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .failed-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        padding: 20px 0;
+    }
+    
+    .failed-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        overflow: hidden;
+        max-width: 500px;
+        width: 100%;
+        margin: 0 auto;
+        text-align: center;
+    }
+    
+    .failed-header {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+        padding: 40px 30px;
+    }
+    
+    .failed-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+    }
+    
+    .failed-icon i {
+        font-size: 40px;
+    }
+    
+    .failed-header h2 {
+        margin: 0 0 10px;
+        font-size: 28px;
+        font-weight: 600;
+    }
+    
+    .failed-header p {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 16px;
+    }
+    
+    .card-body {
+        padding: 40px 30px;
+    }
+    
+    .failed-message {
+        color: #2C3E50;
+        margin-bottom: 30px;
+    }
+    
+    .failed-message h4 {
+        margin: 0 0 15px;
+        font-weight: 600;
+    }
+    
+    .failed-message p {
+        margin: 0 0 10px;
+        color: #666;
+    }
+    
+    .btn-retry {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        border: none;
+        border-radius: 8px;
+        padding: 15px 30px;
+        font-size: 16px;
+        font-weight: 600;
+        color: white;
+        text-decoration: none;
+        display: inline-block;
+        margin-right: 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-retry:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .btn-plans {
+        background: #95a5a6;
+        border: none;
+        border-radius: 8px;
+        padding: 15px 30px;
+        font-size: 16px;
+        font-weight: 600;
+        color: white;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-plans:hover {
+        background: #7f8c8d;
+        color: white;
+        text-decoration: none;
+    }
+    
+    .help-section {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+        text-align: left;
+    }
+    
+    .help-section h5 {
+        color: #2C3E50;
+        margin: 0 0 15px;
+        font-weight: 600;
+    }
+    
+    .help-section ul {
+        margin: 0;
+        padding-left: 20px;
+        color: #666;
+    }
+    
+    .help-section li {
+        margin-bottom: 8px;
+    }
+    
+    .contact-info {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
+        color: #666;
+        font-size: 14px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="failed-container">
+    <div class="container">
+        <div class="failed-card">
+            <div class="failed-header">
+                <div class="failed-icon">
+                    <i class="fas fa-times"></i>
+                </div>
+                <h2>Payment Failed</h2>
+                <p>Unfortunately, your payment could not be processed</p>
+            </div>
+            
+            <div class="card-body">
+                <div class="failed-message">
+                    <h4>Don't worry, this happens sometimes</h4>
+                    <p>Your payment was not successful, but no charges have been made to your account.</p>
+                    <p>Please try again or contact our support team if the problem persists.</p>
+                </div>
+                
+                <div class="help-section">
+                    <h5>Common Solutions:</h5>
+                    <ul>
+                        <li>Check your internet connection</li>
+                        <li>Verify your card details are correct</li>
+                        <li>Ensure you have sufficient balance</li>
+                        <li>Try a different payment method</li>
+                        <li>Contact your bank if the issue persists</li>
+                    </ul>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <a href="{% url 'tenant_mgmt:razorpay_payment' %}" class="btn-retry">
+                        Try Again
+                    </a>
+                    <a href="{% url 'plans:public_list' %}" class="btn-plans">
+                        Back to Plans
+                    </a>
+                </div>
+                
+                <div class="contact-info">
+                    Need help? Contact our support team at <strong>support@yourcompany.com</strong>
+                    or call <strong>+1 (555) 123-4567</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

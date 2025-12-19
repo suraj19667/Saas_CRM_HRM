@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Plans - Mini SaaS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+
+        .plans-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .plan-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .plan-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .plan-price {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .plan-features {
+            list-style: none;
+            padding: 0;
+        }
+
+        .plan-features li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .plan-features li i {
+            color: #28a745;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    {% csrf_token %}
+    <div class="container plans-container">
+        <div class="text-center mb-5">
+            <h1 class="text-white">Choose Your Plan</h1>
+            <p class="text-white-50">Select the perfect plan for your business needs</p>
+        </div>
+
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <div class="row">
+            {% for plan in plans %}
+            <div class="col-md-4">
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <h3>{{ plan.name }}</h3>
+                        <div class="plan-price">₹{{ plan.price_monthly }}</div>
+                        <small class="text-muted">per month</small>
+                    </div>
+
+                    <p class="text-center text-muted mb-4">{{ plan.description }}</p>
+
+                    <ul class="plan-features">
+                        <li><i class="bi bi-check-circle"></i>Up to {{ plan.max_users }} users</li>
+                        <li><i class="bi bi-check-circle"></i>{{ plan.max_storage_mb }} MB storage</li>
+                        <li><i class="bi bi-check-circle"></i>{{ plan.max_projects }} projects</li>
+                        
+                        {% if plan.plan_features.all %}
+                        <li class="mt-3" style="border-top: 2px solid #667eea; padding-top: 10px;">
+                            <strong>Features:</strong>
+                        </li>
+                        {% for plan_feature in plan.plan_features.all %}
+                        <li>
+                            <i class="bi bi-star-fill" style="color: #ffd700;"></i>
+                            {{ plan_feature.feature.name }}
+                            {% if plan_feature.feature_limit %}
+                            <span class="badge bg-info">Limit: {{ plan_feature.feature_limit }}</span>
+                            {% else %}
+                            <span class="badge bg-success">Unlimited</span>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                        {% endif %}
+                    </ul>
+
+                    <div class="text-center mt-4">
+                        <button onclick="selectPlan({{ plan.id }}, '{{ plan.name }}', {{ plan.price_monthly }})" class="btn btn-primary btn-lg">
+                            <i class="bi bi-credit-card"></i> Subscribe Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Tenant Information Modal -->
+    <div class="modal fade" id="tenantInfoModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h5 class="modal-title">Complete Your Company Profile</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="tenantInfoForm">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="company_phone" class="form-label">Contact Phone</label>
+                                <input type="text" class="form-control" id="company_phone" name="contact_phone" placeholder="+91 9876543210">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="company_address" class="form-label">Company Address</label>
+                                <input type="text" class="form-control" id="company_address" name="address" placeholder="Street Address">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="company_logo" class="form-label">Company Logo (Optional)</label>
+                            <input type="file" class="form-control" id="company_logo" name="logo" accept="image/*">
+                        </div>
+                        <div class="form-check mb-3">
+                            <input type="checkbox" class="form-check-input" id="allow_email" name="allow_email_notifications" checked>
+                            <label class="form-check-label" for="allow_email">
+                                <i class="bi bi-envelope"></i> Allow Email Notifications
+                            </label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input type="checkbox" class="form-check-input" id="allow_sms" name="allow_sms_notifications">
+                            <label class="form-check-label" for="allow_sms">
+                                <i class="bi bi-phone"></i> Allow SMS Notifications
+                            </label>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <strong>Selected Plan:</strong> <span id="selectedPlanName"></span><br>
+                            <strong>Amount:</strong> ₹<span id="selectedPlanPrice"></span>/month
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="button" onclick="proceedToPayment()" class="btn btn-success btn-lg">
+                                <i class="bi bi-credit-card"></i> Proceed to Payment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Razorpay Modal -->
+    <div class="modal fade" id="razorpayModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Complete Payment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p>Processing payment...</p>
+                    <div id="razorpay-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <script>
+        // Get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        const csrftoken = getCookie('csrftoken');
+        
+        let selectedPlanId = null;
+        let selectedPlanName = '';
+        let selectedPlanPrice = 0;
+
+        function selectPlan(planId, planName, price) {
+            selectedPlanId = planId;
+            selectedPlanName = planName;
+            selectedPlanPrice = price;
+            
+            console.log('Plan selected:', planId, planName, price);
+            
+            // Update modal with plan details
+            document.getElementById('selectedPlanName').textContent = planName;
+            document.getElementById('selectedPlanPrice').textContent = price;
+            
+            // Show tenant info modal
+            const modal = new bootstrap.Modal(document.getElementById('tenantInfoModal'));
+            modal.show();
+        }
+
+        function proceedToPayment() {
+            console.log('Proceeding to payment...');
+            
+            // Get form data
+            const formData = new FormData(document.getElementById('tenantInfoForm'));
+            
+            // Update tenant info first
+            fetch('/company/update-tenant-info/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrftoken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Tenant info update response:', data);
+                
+                if (data.success) {
+                    // Close form modal
+                    bootstrap.Modal.getInstance(document.getElementById('tenantInfoModal')).hide();
+                    
+                    // Create order and proceed to payment
+                    createRazorpayOrder();
+                } else {
+                    alert('Failed to update tenant info: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error updating tenant info:', error);
+                alert('Failed to update tenant information');
+            });
+        }
+
+        function createRazorpayOrder() {
+            console.log('Creating Razorpay order for plan:', selectedPlanId);
+            
+            // Create order
+            fetch(`/company/create-order/${selectedPlanId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                }
+            })
+                .then(response => {
+                    console.log('Order creation response status:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Order data:', data);
+                    
+                    if (data.error) {
+                        alert('Error: ' + data.error);
+                        return;
+                    }
+
+                    // Initialize Razorpay
+                    const options = {
+                        key: data.key,
+                        amount: data.amount,
+                        currency: data.currency,
+                        order_id: data.order_id,
+                        name: 'Mini SaaS CRM & HRM',
+                        description: `Subscription to ${selectedPlanName} Plan`,
+                        image: '/static/logo.png',
+                        handler: function (response) {
+                            console.log('Payment successful:', response);
+                            // Redirect to success page with payment details
+                            window.location.href = `/company/payment/success/?order_id=${response.razorpay_order_id}&payment_id=${response.razorpay_payment_id}&signature=${response.razorpay_signature}`;
+                        },
+                        prefill: {
+                            name: '{{ user.get_full_name }}',
+                            email: '{{ user.email }}',
+                            contact: ''
+                        },
+                        theme: {
+                            color: '#667eea'
+                        },
+                        modal: {
+                            ondismiss: function () {
+                                console.log('Payment cancelled');
+                                window.location.href = `/company/payment/cancel/?order_id=${data.order_id}`;
+                            }
+                        }
+                    };
+
+                    console.log('Opening Razorpay with options:', options);
+                    const rzp = new Razorpay(options);
+                    rzp.open();
+                })
+                .catch(error => {
+                    console.error('Error creating order:', error);
+                    alert('Failed to create payment order. Please try again.');
+                });
+        }
+    </script>
+</body>
+
+</html>

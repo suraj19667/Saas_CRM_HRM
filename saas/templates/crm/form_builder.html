@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Form Builder - CRM System{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h1>Form Builder</h1>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Create Custom Forms</h5>
+        <p class="card-text">Build custom forms for lead capture, surveys, and data collection.</p>
+
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="bi bi-file-earmark-plus" style="font-size: 3rem; color: #6AD66A;"></i>
+                        <h5 class="card-title mt-3">Create New Form</h5>
+                        <button class="btn btn-primary mt-2">Start Building</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="bi bi-files" style="font-size: 3rem; color: #4A90E2;"></i>
+                        <h5 class="card-title mt-3">Templates</h5>
+                        <button class="btn btn-primary mt-2">Browse Templates</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="bi bi-list-check" style="font-size: 3rem; color: #F5A623;"></i>
+                        <h5 class="card-title mt-3">My Forms</h5>
+                        <button class="btn btn-primary mt-2">View All</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'standalone_base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Tenant / Company Details</h4>
+                </div>
+                <div class="card-body">
+                    {% if plan %}
+                    <div class="mb-4 p-3 border rounded bg-light">
+                        <h5 class="mb-1">Selected Plan: <span class="text-primary">{{ plan.name }}</span></h5>
+                        <div class="small text-muted">{{ plan.description }}</div>
+                        <div class="fw-bold mt-2">Price: ₹{{ plan.price_monthly }} / month or ₹{{ plan.price_yearly }} /
+                            year</div>
+                    </div>
+                    {% endif %}
+                    <form method="post" enctype="multipart/form-data" id="tenantForm" novalidate>
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_name" class="form-label">Company Name <span
+                                    class="text-danger">*</span></label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                            <div class="invalid-feedback d-block">{{ form.name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_logo" class="form-label">Logo</label>
+                            {{ form.logo }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_contact_email" class="form-label">Contact Email <span
+                                    class="text-danger">*</span></label>
+                            {{ form.contact_email }}
+                            {% if form.contact_email.errors %}
+                            <div class="invalid-feedback d-block">{{ form.contact_email.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_contact_phone" class="form-label">Contact Phone <span
+                                    class="text-danger">*</span></label>
+                            {{ form.contact_phone }}
+                            {% if form.contact_phone.errors %}
+                            <div class="invalid-feedback d-block">{{ form.contact_phone.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_address" class="form-label">Address</label>
+                            {{ form.address }}
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            {{ form.allow_email_notifications }}
+                            <label class="form-check-label" for="id_allow_email_notifications">Allow Email
+                                Notifications</label>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            {{ form.allow_sms_notifications }}
+                            <label class="form-check-label" for="id_allow_sms_notifications">Allow SMS
+                                Notifications</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100" id="submitBtn" disabled>Continue to
+                            Payment</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // Enable submit only if form is valid
+    const form = document.getElementById('tenantForm');
+    const submitBtn = document.getElementById('submitBtn');
+    form.addEventListener('input', function () {
+        let valid = form.checkValidity();
+        submitBtn.disabled = !valid;
+    });
+</script>
+{% endblock %}

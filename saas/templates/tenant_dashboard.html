@@ -1,0 +1,520 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ tenant.name }} Dashboard - CRM System{% endblock %}
+
+{% block extra_css %}
+<style>
+  .tenant-welcome-banner {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    padding: 35px 40px;
+    color: white;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tenant-welcome-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+  }
+
+  .tenant-welcome-banner h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .tenant-welcome-banner p {
+    font-size: 16px;
+    margin: 0;
+    opacity: 0.95;
+    position: relative;
+    z-index: 1;
+  }
+
+  .dashboard-widgets {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
+  }
+
+  .widget-card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f1f1f1;
+    transition: all 0.3s ease;
+  }
+
+  .widget-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .widget-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    font-size: 24px;
+  }
+
+  .widget-icon.primary { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
+  .widget-icon.success { background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; }
+  .widget-icon.warning { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; }
+  .widget-icon.info { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; }
+
+  .widget-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 5px;
+  }
+
+  .widget-label {
+    font-size: 14px;
+    color: #7f8c8d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+
+  .current-plan-section {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border-left: 5px solid #3498db;
+  }
+
+  .plan-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .plan-info h3 {
+    margin: 0 0 5px 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #2c3e50;
+  }
+
+  .plan-price {
+    font-size: 20px;
+    font-weight: 600;
+    color: #27ae60;
+  }
+
+  .plan-status {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .status-active {
+    background: #d4edda;
+    color: #155724;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
+  }
+
+  .features-section {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  }
+
+  .features-header {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: white;
+    padding: 20px 25px;
+    text-align: center;
+  }
+
+  .features-header h4 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .features-body {
+    padding: 20px 0;
+  }
+
+  .feature-item {
+    padding: 12px 25px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #f1f1f1;
+  }
+
+  .feature-item:last-child {
+    border-bottom: none;
+  }
+
+  .feature-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    font-size: 14px;
+  }
+
+  .feature-icon.included {
+    color: #27ae60;
+  }
+
+  .feature-icon.not-included {
+    color: #e74c3c;
+  }
+
+  .feature-name {
+    font-size: 14px;
+    color: #2c3e50;
+  }
+
+  .feature-item.not-included .feature-name {
+    color: #7f8c8d;
+  }
+
+  .plans-upgrade-section {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  }
+
+  .plans-upgrade-section h4 {
+    margin: 0 0 20px 0;
+    color: #2c3e50;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .plans-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .plan-card {
+    border: 2px solid #f1f1f1;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .plan-card.current {
+    border-color: #3498db;
+    background: #f8f9fa;
+  }
+
+  .plan-card:hover:not(.current) {
+    border-color: #27ae60;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  .plan-card h5 {
+    margin: 0 0 10px 0;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+
+  .plan-card .price {
+    font-size: 24px;
+    font-weight: 700;
+    color: #27ae60;
+    margin-bottom: 15px;
+  }
+
+  .plan-card .features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+    text-align: left;
+  }
+
+  .plan-card .features li {
+    padding: 5px 0;
+    font-size: 14px;
+    color: #666;
+  }
+
+  .btn-upgrade {
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+  }
+
+  .btn-upgrade:hover {
+    background: linear-gradient(135deg, #229954, #27ae60);
+    color: white;
+    text-decoration: none;
+  }
+
+  .btn-current {
+    background: #6c757d;
+    cursor: not-allowed;
+  }
+
+  .current-badge {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #3498db;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .subscription-info {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+
+  .subscription-info p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+  <!-- Welcome Banner -->
+  <div class="tenant-welcome-banner">
+    <h1>Welcome to {{ tenant.name }}!</h1>
+    <p>Your CRM command center with powerful features and insights</p>
+  </div>
+
+  <!-- Dashboard Widgets -->
+  <div class="dashboard-widgets">
+    <div class="widget-card">
+      <div class="widget-icon primary">
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="widget-value">{{ total_users }}</div>
+      <div class="widget-label">Team Members</div>
+    </div>
+
+    <div class="widget-card">
+      <div class="widget-icon success">
+        <i class="fas fa-user-tag"></i>
+      </div>
+      <div class="widget-value">{{ total_roles }}</div>
+      <div class="widget-label">User Roles</div>
+    </div>
+
+    <div class="widget-card">
+      <div class="widget-icon warning">
+        <i class="fas fa-star"></i>
+      </div>
+      <div class="widget-value">{{ plan_features|length }}</div>
+      <div class="widget-label">Available Features</div>
+    </div>
+
+    <div class="widget-card">
+      <div class="widget-icon info">
+        <i class="fas fa-calendar-alt"></i>
+      </div>
+      <div class="widget-value">
+        {% if current_subscription %}
+          {{ current_subscription.end_date|timeuntil }}
+        {% else %}
+          N/A
+        {% endif %}
+      </div>
+      <div class="widget-label">Plan Expires In</div>
+    </div>
+  </div>
+
+  <!-- Current Plan Information -->
+  {% if current_plan %}
+  <div class="current-plan-section">
+    <div class="plan-header">
+      <div class="plan-info">
+        <h3>{{ current_plan.name }} Plan</h3>
+        <div class="plan-price">₹{{ current_subscription.amount }}/{{ current_subscription.billing_cycle }}</div>
+      </div>
+      <div class="plan-status status-active">
+        {{ current_subscription.status|capfirst }}
+      </div>
+    </div>
+    
+    {% if current_subscription %}
+    <div class="subscription-info">
+      <p><strong>Subscription Period:</strong> {{ current_subscription.start_date }} to {{ current_subscription.end_date }}</p>
+      <p><strong>Billing Cycle:</strong> {{ current_subscription.billing_cycle|capfirst }}</p>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Features Section -->
+  <div class="features-grid">
+    <div class="features-section">
+      <div class="features-header">
+        <h4>✅ Your Plan Features</h4>
+      </div>
+      <div class="features-body">
+        {% if plan_features %}
+          {% for plan_feature in plan_features %}
+          <div class="feature-item">
+            <div class="feature-icon included">
+              <i class="fas fa-check"></i>
+            </div>
+            <div class="feature-name">{{ plan_feature.feature.name }}</div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="feature-item">
+            <div class="feature-name">No plan selected</div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="features-section">
+      <div class="features-header" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+        <h4>❌ Not Available</h4>
+      </div>
+      <div class="features-body">
+        {% for feature in excluded_features %}
+          <div class="feature-item not-included">
+            <div class="feature-icon not-included">
+              <i class="fas fa-times"></i>
+            </div>
+            <div class="feature-name">{{ feature.name }}</div>
+          </div>
+        {% empty %}
+          <div class="feature-item">
+            <div class="feature-name">All features included!</div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Available Plans for Upgrade -->
+  <div class="plans-upgrade-section">
+    <h4>🚀 Available Plans & Upgrades</h4>
+    <div class="plans-grid">
+      {% for plan in available_plans %}
+      <div class="plan-card {% if current_plan and plan.id == current_plan.id %}current{% endif %}">
+        {% if current_plan and plan.id == current_plan.id %}
+        <div class="current-badge">Current</div>
+        {% endif %}
+        
+        <h5>{{ plan.name }}</h5>
+        <div class="price">₹{{ plan.price_monthly }}/month</div>
+        
+        <ul class="features">
+          <li>Up to {{ plan.max_users }} users</li>
+          <li>{{ plan.max_storage_mb }}MB storage</li>
+          <li>{{ plan.max_projects }} projects</li>
+          <li>24/7 support</li>
+        </ul>
+        
+        {% if current_plan and plan.id == current_plan.id %}
+          <a href="#" class="btn-upgrade btn-current">Current Plan</a>
+        {% else %}
+          <a href="{% url 'tenant_mgmt:create' %}?plan_id={{ plan.id }}" class="btn-upgrade">
+            {% if current_plan %}
+              Upgrade to {{ plan.name }}
+            {% else %}
+              Select Plan
+            {% endif %}
+          </a>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="row">
+    <div class="col-md-3">
+      <a href="#" class="widget-card d-block text-decoration-none">
+        <div class="widget-icon primary">
+          <i class="fas fa-users-cog"></i>
+        </div>
+        <div class="widget-label">Manage Team</div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="#" class="widget-card d-block text-decoration-none">
+        <div class="widget-icon success">
+          <i class="fas fa-handshake"></i>
+        </div>
+        <div class="widget-label">CRM Leads</div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="#" class="widget-card d-block text-decoration-none">
+        <div class="widget-icon warning">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="widget-label">Analytics</div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="#" class="widget-card d-block text-decoration-none">
+        <div class="widget-icon info">
+          <i class="fas fa-cog"></i>
+        </div>
+        <div class="widget-label">Settings</div>
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Feature comparison functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Add any interactive features here
+    console.log('Tenant dashboard loaded');
+});
+</script>
+{% endblock %}

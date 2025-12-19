@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2><i class="bi bi-puzzle"></i> {{ page_title }}</h2>
+                </div>
+                <a href="{% url 'addon_list' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </a>
+            </div>
+
+            <!-- Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Form Card -->
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <!-- Name -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.name.id_for_label }}" class="form-label">
+                                    {{ form.name.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.name }}
+                                {% if form.name.help_text %}
+                                <div class="form-text">{{ form.name.help_text }}</div>
+                                {% endif %}
+                                {% if form.name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.name.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Code -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.code.id_for_label }}" class="form-label">
+                                    {{ form.code.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.code }}
+                                {% if form.code.help_text %}
+                                <div class="form-text">{{ form.code.help_text }}</div>
+                                {% endif %}
+                                {% if form.code.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.code.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">
+                                {{ form.description.label }}
+                            </label>
+                            {{ form.description }}
+                            {% if form.description.help_text %}
+                            <div class="form-text">{{ form.description.help_text }}</div>
+                            {% endif %}
+                            {% if form.description.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.description.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row">
+                            <!-- Price per Unit -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.price_per_unit.id_for_label }}" class="form-label">
+                                    {{ form.price_per_unit.label }} <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₹</span>
+                                    {{ form.price_per_unit }}
+                                </div>
+                                {% if form.price_per_unit.help_text %}
+                                <div class="form-text">{{ form.price_per_unit.help_text }}</div>
+                                {% endif %}
+                                {% if form.price_per_unit.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.price_per_unit.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Unit Name -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.unit_name.id_for_label }}" class="form-label">
+                                    {{ form.unit_name.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.unit_name }}
+                                {% if form.unit_name.help_text %}
+                                <div class="form-text">{{ form.unit_name.help_text }}</div>
+                                {% endif %}
+                                {% if form.unit_name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.unit_name.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Active Status -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                {{ form.is_active }}
+                                <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                    {{ form.is_active.label }}
+                                </label>
+                                {% if form.is_active.help_text %}
+                                <div class="form-text">{{ form.is_active.help_text }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Example Preview -->
+                        <div class="alert alert-info">
+                            <h6><i class="bi bi-info-circle"></i> Preview:</h6>
+                            <p class="mb-0">This add-on will be displayed as: <strong><span id="preview-name">Additional Users</span> - ₹<span id="preview-price">50.00</span>/<span id="preview-unit">user</span></strong></p>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'addon_list' %}" class="btn btn-secondary">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> {{ submit_text }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+</style>
+
+<script>
+    // Live preview update
+    document.getElementById('id_name').addEventListener('input', function(e) {
+        document.getElementById('preview-name').textContent = e.target.value || 'Additional Users';
+    });
+    
+    document.getElementById('id_price_per_unit').addEventListener('input', function(e) {
+        document.getElementById('preview-price').textContent = e.target.value || '50.00';
+    });
+    
+    document.getElementById('id_unit_name').addEventListener('input', function(e) {
+        document.getElementById('preview-unit').textContent = e.target.value || 'user';
+    });
+</script>
+{% endblock %}

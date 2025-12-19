@@ -1,0 +1,443 @@
+{% extends 'saas/base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }} - SaaS Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .company-setup-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        padding: 20px 0;
+    }
+    
+    .setup-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        overflow: hidden;
+        max-width: 900px;
+        width: 100%;
+        margin: 0 auto;
+    }
+    
+    .card-header {
+        background: linear-gradient(135deg, #2C3E50 0%, #3498DB 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+    }
+    
+    .card-header h2 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 600;
+    }
+    
+    .card-header p {
+        margin: 10px 0 0;
+        opacity: 0.9;
+        font-size: 16px;
+    }
+    
+    .card-body {
+        padding: 40px;
+    }
+    
+    .plan-summary {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+        border-left: 4px solid #3498DB;
+    }
+    
+    .plan-summary h4 {
+        color: #2C3E50;
+        margin: 0 0 10px;
+        font-weight: 600;
+    }
+    
+    .plan-summary .price {
+        font-size: 24px;
+        font-weight: 700;
+        color: #27AE60;
+    }
+    
+    .plan-features {
+        list-style: none;
+        padding: 0;
+        margin: 10px 0 0;
+    }
+    
+    .plan-features li {
+        padding: 5px 0;
+        color: #666;
+    }
+    
+    .plan-features li:before {
+        content: "✓";
+        color: #27AE60;
+        font-weight: bold;
+        margin-right: 8px;
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+    }
+    
+    .form-group label {
+        font-weight: 600;
+        color: #2C3E50;
+        margin-bottom: 8px;
+        display: block;
+    }
+    
+    .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 12px 15px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #3498DB;
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+    
+    .form-check {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        border: 1px solid #e9ecef;
+    }
+    
+    .form-check-input:checked {
+        background-color: #3498DB;
+        border-color: #3498DB;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%);
+        border: none;
+        border-radius: 8px;
+        padding: 15px 30px;
+        font-size: 16px;
+        font-weight: 600;
+        width: 100%;
+        margin-top: 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+    }
+    
+    .btn-secondary {
+        background: #95a5a6;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 25px;
+        font-weight: 600;
+        margin-right: 15px;
+    }
+    
+    .required-field {
+        color: #e74c3c;
+    }
+    
+    .help-text {
+        font-size: 14px;
+        color: #666;
+        margin-top: 5px;
+    }
+    
+    .error-message {
+        color: #e74c3c;
+        font-size: 14px;
+        margin-top: 5px;
+    }
+    
+    .steps-indicator {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 30px;
+    }
+    
+    .step {
+        display: flex;
+        align-items: center;
+        margin: 0 15px;
+    }
+    
+    .step-number {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: #3498DB;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        margin-right: 10px;
+    }
+    
+    .step-inactive .step-number {
+        background: #bdc3c7;
+    }
+    
+    .step-text {
+        font-weight: 500;
+        color: #2C3E50;
+    }
+    
+    .step-inactive .step-text {
+        color: #95a5a6;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="company-setup-container">
+    <div class="container">
+        <div class="setup-card">
+            <div class="card-header">
+                <h2>Complete Your Company Setup</h2>
+                <p>Almost there! Just a few more details to get you started</p>
+            </div>
+            
+            <div class="card-body">
+                <!-- Steps Indicator -->
+                <div class="steps-indicator">
+                    <div class="step step-inactive">
+                        <div class="step-number">1</div>
+                        <div class="step-text">Choose Plan</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-text">Company Details</div>
+                    </div>
+                    <div class="step step-inactive">
+                        <div class="step-number">3</div>
+                        <div class="step-text">Payment</div>
+                    </div>
+                    <div class="step step-inactive">
+                        <div class="step-number">4</div>
+                        <div class="step-text">Dashboard</div>
+                    </div>
+                </div>
+                
+                <!-- Plan Summary -->
+                <div class="plan-summary">
+                    <h4>Selected Plan: {{ plan.name }}</h4>
+                    <div class="price">₹{{ plan.price_monthly }}/month</div>
+                    <ul class="plan-features">
+                        <li>Up to {{ plan.max_users }} users</li>
+                        <li>{{ plan.max_storage_mb }}MB storage</li>
+                        <li>{{ plan.max_projects }} projects</li>
+                        <li>24/7 support</li>
+                    </ul>
+                </div>
+                
+                <!-- Company Details Form -->
+                <form method="post" enctype="multipart/form-data" id="tenantForm">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.name.id_for_label }}">
+                                    {{ form.name.label }} <span class="required-field">*</span>
+                                </label>
+                                {{ form.name }}
+                                {% if form.name.help_text %}
+                                    <div class="help-text">{{ form.name.help_text }}</div>
+                                {% endif %}
+                                {% for error in form.name.errors %}
+                                    <div class="error-message">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.contact_email.id_for_label }}">
+                                    {{ form.contact_email.label }} <span class="required-field">*</span>
+                                </label>
+                                {{ form.contact_email }}
+                                {% if form.contact_email.help_text %}
+                                    <div class="help-text">{{ form.contact_email.help_text }}</div>
+                                {% endif %}
+                                {% for error in form.contact_email.errors %}
+                                    <div class="error-message">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.contact_phone.id_for_label }}">
+                                    {{ form.contact_phone.label }} <span class="required-field">*</span>
+                                </label>
+                                {{ form.contact_phone }}
+                                {% if form.contact_phone.help_text %}
+                                    <div class="help-text">{{ form.contact_phone.help_text }}</div>
+                                {% endif %}
+                                {% for error in form.contact_phone.errors %}
+                                    <div class="error-message">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.logo.id_for_label }}">
+                                    {{ form.logo.label }}
+                                </label>
+                                {{ form.logo }}
+                                {% if form.logo.help_text %}
+                                    <div class="help-text">{{ form.logo.help_text }}</div>
+                                {% endif %}
+                                {% for error in form.logo.errors %}
+                                    <div class="error-message">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.address.id_for_label }}">
+                            {{ form.address.label }}
+                        </label>
+                        {{ form.address }}
+                        {% if form.address.help_text %}
+                            <div class="help-text">{{ form.address.help_text }}</div>
+                        {% endif %}
+                        {% for error in form.address.errors %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Notification Preferences -->
+                    <h5 style="margin: 30px 0 20px; color: #2C3E50; font-weight: 600;">Notification Preferences</h5>
+                    
+                    <div class="form-check">
+                        {{ form.allow_email_notifications }}
+                        <label class="form-check-label" for="{{ form.allow_email_notifications.id_for_label }}">
+                            {{ form.allow_email_notifications.label }}
+                        </label>
+                        {% if form.allow_email_notifications.help_text %}
+                            <div class="help-text">{{ form.allow_email_notifications.help_text }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-check">
+                        {{ form.allow_sms_notifications }}
+                        <label class="form-check-label" for="{{ form.allow_sms_notifications.id_for_label }}">
+                            {{ form.allow_sms_notifications.label }}
+                        </label>
+                        {% if form.allow_sms_notifications.help_text %}
+                            <div class="help-text">{{ form.allow_sms_notifications.help_text }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-between align-items-center" style="margin-top: 40px;">
+                        <a href="{% url 'plans:public_list' %}" class="btn btn-secondary">
+                            ← Back to Plans
+                        </a>
+                        
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            Proceed to Payment →
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('tenantForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const requiredFields = form.querySelectorAll('input[required], select[required], textarea[required]');
+    
+    // Form validation
+    function validateForm() {
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+            }
+        });
+        
+        // Email validation
+        const emailField = document.getElementById('id_contact_email');
+        if (emailField.value) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(emailField.value)) {
+                isValid = false;
+            }
+        }
+        
+        submitBtn.disabled = !isValid;
+        
+        if (isValid) {
+            submitBtn.classList.remove('btn-secondary');
+            submitBtn.classList.add('btn-primary');
+        } else {
+            submitBtn.classList.remove('btn-primary');
+            submitBtn.classList.add('btn-secondary');
+        }
+    }
+    
+    // Add event listeners for real-time validation
+    requiredFields.forEach(field => {
+        field.addEventListener('input', validateForm);
+        field.addEventListener('blur', validateForm);
+    });
+    
+    // Initial validation
+    validateForm();
+    
+    // Auto-generate domain preview (optional enhancement)
+    const companyNameField = document.getElementById('id_name');
+    if (companyNameField) {
+        companyNameField.addEventListener('input', function() {
+            const companyName = this.value.toLowerCase()
+                .replace(/[^a-zA-Z0-9\s]/g, '')
+                .replace(/\s+/g, '-');
+            
+            // You could show a preview of the generated domain here
+            // For example: console.log(companyName + '.myapp.com');
+        });
+    }
+    
+    // File upload preview
+    const logoField = document.getElementById('id_logo');
+    if (logoField) {
+        logoField.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('File size must be less than 2MB');
+                    this.value = '';
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Cancel Subscription</h3>
+                </div>
+                <div class="card-body">
+                    <p>Are you sure you want to cancel your subscription to <strong>{{ subscription.plan.name
+                            }}</strong>?</p>
+                    <p><strong>Billing Cycle:</strong> {{ subscription.billing_cycle }}</p>
+                    <p><strong>Amount:</strong> ${{ subscription.amount }}</p>
+                    <p><strong>End Date:</strong> {{ subscription.end_date }}</p>
+
+                    <div class="alert alert-warning">
+                        <strong>Warning:</strong> Cancelling your subscription will stop access to premium features.
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Yes, Cancel Subscription</button>
+                        <a href="{% url 'subscription:list_plans' %}" class="btn btn-secondary">No, Keep
+                            Subscription</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

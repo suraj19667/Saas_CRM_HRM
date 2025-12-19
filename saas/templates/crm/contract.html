@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Contracts - CRM System{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h1>Contract Management</h1>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">All Contracts</h5>
+        <p class="card-text">Manage contracts, agreements, and legal documents.</p>
+
+        <div class="table-responsive mt-4">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Contract ID</th>
+                        <th>Client</th>
+                        <th>Type</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>C001</td>
+                        <td>ABC Corporation</td>
+                        <td>Service Agreement</td>
+                        <td>Jan 1, 2025</td>
+                        <td>Dec 31, 2025</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td><button class="btn btn-sm btn-primary">View</button></td>
+                    </tr>
+                    <tr>
+                        <td>C002</td>
+                        <td>XYZ Ltd</td>
+                        <td>Maintenance Contract</td>
+                        <td>Mar 15, 2025</td>
+                        <td>Mar 14, 2026</td>
+                        <td><span class="badge bg-warning">Pending Signature</span></td>
+                        <td><button class="btn btn-sm btn-primary">View</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
