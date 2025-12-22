@@ -36,6 +36,14 @@
             min-height: 100vh;
         }
 
+        .main-content {
+            margin-left: 252px;
+            width: calc(100% - 252px);
+            padding: 24px 28px;
+            padding-top: 76px;
+            /* leave space for fixed top navbar */
+        }
+
         .sidebar {
             width: 252px;
             background: var(--Base-Color-White, #FFF);
@@ -49,6 +57,34 @@
             gap: 24px;
             overflow-y: auto;
             z-index: 1000;
+        }
+
+        /* Responsive: collapse sidebar on small screens and let main content be full width */
+        @media (max-width: 992px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                width: 220px;
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 220px;
+                width: calc(100% - 220px);
+                padding-top: 76px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding-top: 70px;
+            }
         }
 
         /* Hide scrollbar for all browsers */
@@ -390,7 +426,7 @@
 
         /* Dropdown functionality */
         .dropdown-item {
-            margin-left: 24px !important;
+
             padding-left: 12px;
             border-left: 2px solid #E5E7EB;
             transition: all 0.3s ease;
@@ -415,14 +451,6 @@
 
         .dropdown-content.expanded {
             max-height: 300px;
-        }
-
-        .chevron-icon {
-            transition: transform 0.3s ease;
-        }
-
-        .chevron-icon.rotated {
-            transform: rotate(180deg);
         }
 
         .menu-link.active .menu-bullet {
@@ -607,7 +635,6 @@
                         <a href="#" class="menu-link dropdown-toggle" onclick="toggleDropdown('plansDropdown')">
                             <i class="bi bi-grid-3x3-gap"></i>
                             <span style="margin-left: 12px;">Plans</span>
-                            <i class="bi bi-chevron-up chevron-icon" id="plansChevron" style="margin-left: auto;"></i>
                         </a>
                     </li>
                     <div class="dropdown-content expanded" id="plansDropdown">
@@ -652,6 +679,13 @@
                         <a href="#" class="menu-link">
                             <i class="bi bi-percent"></i>
                             <span style="margin-left: 12px;">Discount</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{% if request.user.is_staff %}{% url 'payment:subscription_list' %}{% else %}{% url 'subscription:list_plans' %}{% endif %}"
+                            class="menu-link {% if 'subscriptions' in request.path or 'subscription' in request.path or 'orders' in request.path %}active{% endif %}">
+                            <i class="bi bi-list-check"></i>
+                            <span style="margin-left: 12px;">Subscriptions</span>
                         </a>
                     </li>
                     <li class="menu-item">
@@ -848,16 +882,13 @@
         // Dropdown toggle functionality
         function toggleDropdown(dropdownId) {
             const dropdown = document.getElementById(dropdownId);
-            const chevron = document.getElementById(dropdownId.replace('Dropdown', 'Chevron'));
 
             if (dropdown.classList.contains('collapsed')) {
                 dropdown.classList.remove('collapsed');
                 dropdown.classList.add('expanded');
-                chevron.classList.remove('rotated');
             } else {
                 dropdown.classList.remove('expanded');
                 dropdown.classList.add('collapsed');
-                chevron.classList.add('rotated');
             }
         }
     </script>
