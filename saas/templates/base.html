@@ -622,8 +622,8 @@
                     </li>
                     <li class="menu-item">
                         <a href="#" class="menu-link">
-                            <i class="bi bi-calendar-check"></i>
-                            <span style="margin-left: 12px;">Trials & Onboarding</span>
+                            <!-- <i class="bi bi-calendar-check"></i> -->
+                            <!-- <span style="margin-left: 12px;">Trials & Onboarding</span> -->
                         </a>
                     </li>
                 </ul>
@@ -644,9 +644,9 @@
                                 <span>Manage Plans</span>
                             </a>
                         </li>
-                        <li class="menu-item dropdown-item">
+                        <!-- <li class="menu-item dropdown-item">
                             <a href="#" class="menu-link">
-                                <span>One Time</span>
+                                <span>One Time</span> -->
                             </a>
                         </li>
                         <li class="menu-item dropdown-item">
@@ -655,10 +655,10 @@
                                 <span>Subscription Plans</span>
                             </a>
                         </li>
-                        <li class="menu-item dropdown-item">
+                        <!-- <li class="menu-item dropdown-item">
                             <a href="#" class="menu-link">
                                 <span>Custom Plans</span>
-                            </a>
+                            </a> -->
                         </li>
                     </div>
                     <li class="menu-item">
@@ -675,11 +675,11 @@
                             <span style="margin-left: 12px;">Add-ons</span>
                         </a>
                     </li>
-                    <li class="menu-item">
+                    <!-- <li class="menu-item">
                         <a href="#" class="menu-link">
                             <i class="bi bi-percent"></i>
                             <span style="margin-left: 12px;">Discount</span>
-                        </a>
+                        </a> -->
                     </li>
                     <li class="menu-item">
                         <a href="{% if request.user.is_staff %}{% url 'payment:subscription_list' %}{% else %}{% url 'subscription:list_plans' %}{% endif %}"
@@ -695,10 +695,10 @@
                             <span style="margin-left: 12px;">Invoice & Billing</span>
                         </a>
                     </li>
-                    <li class="menu-item">
+                    <!-- <li class="menu-item">
                         <a href="#" class="menu-link">
                             <i class="bi bi-ticket"></i>
-                            <span style="margin-left: 12px;">Coupons</span>
+                            <span style="margin-left: 12px;">Coupons</span> -->
                         </a>
                     </li>
                 </ul>
@@ -715,7 +715,7 @@
                     </li>
                 </ul>
 
-                <!-- OPERATIONS Section -->
+                <!-- OPERATIONS Section
                 <div class="menu-section-heading">OPERATIONS</div>
                 <ul class="menu-list">
                     <li class="menu-item">
@@ -738,7 +738,6 @@
                     </li>
                 </ul>
 
-                <!-- SYSTEM Section -->
                 <div class="menu-section-heading">SYSTEM</div>
                 <ul class="menu-list">
                     <li class="menu-item">
