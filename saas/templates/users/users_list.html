@@ -1,91 +1,890 @@
-{% extends 'base.html' %}
-
-{% block title %}Users{% endblock %}
-
-{% block content %}
-<div class="main-content">
-    <div class="container-fluid p-4">
-        <div class="row">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="mb-0">Users</h2>
-                    <a href="#" class="btn btn-primary">
-                        <i class="bi bi-plus-circle"></i> Add User
-                    </a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription List - Demo</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-purple: #6366f1;
+            --primary-teal: #0f766e;
+            --primary-blue: #3b82f6;
+            --primary-pink: #ec4899;
+            --success-green: #10b981;
+            --warning-orange: #f59e0b;
+            --danger-red: #ef4444;
+            --bg-gray: #f8fafc;
+            --border-gray: #e2e8f0;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            background-color: var(--bg-gray);
+            color: var(--text-dark);
+            font-size: 15px;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+        }
+        
+        .navbar {
+            background: white;
+            border-bottom: 1px solid var(--border-gray);
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .navbar-brand {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .nav-search {
+            position: relative;
+            width: 320px;
+        }
+        
+        .nav-search input {
+            border: 1px solid var(--border-gray);
+            border-radius: 8px;
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            font-size: 14px;
+            width: 100%;
+        }
+        
+        .nav-search i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+        
+        .nav-icons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .nav-icon {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .nav-icon:hover {
+            background: var(--bg-gray);
+        }
+        
+        .nav-icon .badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            background: var(--primary-blue);
+            border-radius: 50%;
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .main-container {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .breadcrumb {
+            background: none;
+            padding: 0;
+            margin: 0.5rem 0 0 0;
+            font-size: 14px;
+        }
+        
+        .breadcrumb-item {
+            color: var(--text-muted);
+        }
+        
+        .breadcrumb-item.active {
+            color: var(--text-dark);
+        }
+        
+        .btn-custom {
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+            border: 1px solid var(--border-gray);
+            background: white;
+            cursor: pointer;
+        }
+        
+        .btn-custom:hover {
+            background: var(--bg-gray);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-gray);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            animation: fadeInUp 0.5s ease both;
+        }
+        
+        .stat-card:nth-child(2) { animation-delay: 0.1s; }
+        .stat-card:nth-child(3) { animation-delay: 0.2s; }
+        .stat-card:nth-child(4) { animation-delay: 0.3s; }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 20px;
+            color: white;
+        }
+        
+        .stat-icon.purple { background: var(--primary-purple); }
+        .stat-icon.teal { background: var(--primary-teal); }
+        .stat-icon.blue { background: var(--primary-blue); }
+        .stat-icon.pink { background: var(--primary-pink); }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .stat-change {
+            font-size: 13px;
+            color: var(--success-green);
+            font-weight: 600;
+        }
+        
+        .stat-link {
+            color: var(--primary-blue);
+            font-size: 14px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 1rem;
+            display: inline-block;
+        }
+        
+        .stat-chart {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 60%;
+            height: 80px;
+            opacity: 0.3;
+        }
+        
+        .table-section {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-gray);
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .table-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .table-filters {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-gray);
+            border-radius: 8px;
+            background: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn:hover {
+            background: var(--bg-gray);
+        }
+        
+        .table-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .entries-control {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        
+        .entries-control select {
+            padding: 0.375rem 2rem 0.375rem 0.75rem;
+            border: 1px solid var(--border-gray);
+            border-radius: 6px;
+            margin: 0 0.5rem;
+        }
+        
+        .search-box {
+            position: relative;
+        }
+        
+        .search-box input {
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            border: 1px solid var(--border-gray);
+            border-radius: 8px;
+            width: 250px;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+        
+        .custom-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        .custom-table thead th {
+            background: var(--bg-gray);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-dark);
+            border-bottom: 2px solid var(--border-gray);
+        }
+        
+        .custom-table tbody tr {
+            border-bottom: 1px solid var(--border-gray);
+            transition: background 0.2s;
+        }
+        
+        .custom-table tbody tr:hover {
+            background: #fafbfc;
+        }
+        
+        .custom-table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+        
+        .user-name {
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+        
+        .status-badge {
+            padding: 0.375rem 0.875rem;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+        
+        .status-badge::before {
+            content: '●';
+            font-size: 8px;
+        }
+        
+        .status-badge.active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-badge.trial {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .status-badge.suspended {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .status-badge.at-limit {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .employee-progress {
+            position: relative;
+            width: 60px;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .employee-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #fbbf24, #f59e0b);
+            border-radius: 4px;
+        }
+        
+        .employee-count {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+        
+        .action-btn:hover {
+            background: var(--bg-gray);
+            color: var(--text-dark);
+        }
+        
+        .action-btn.edit:hover {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .action-btn.delete:hover {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .pagination-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-gray);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .pagination-info {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        
+        .pagination-custom {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .page-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-gray);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .page-btn:hover {
+            background: var(--bg-gray);
+        }
+        
+        .page-btn.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="d-flex align-items-center gap-4 w-100">
+            <div class="navbar-brand">|+</div>
+            
+            <div class="nav-search">
+                <i class="bi bi-search"></i>
+                <input type="text" placeholder="Search in Payroll" class="form-control">
+                <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--text-muted);">CTRL+/</span>
+            </div>
+            
+            <div class="nav-icons ms-auto">
+                <div class="nav-icon">
+                    <i class="bi bi-bell"></i>
+                    <span class="badge"></span>
                 </div>
+                <div class="nav-icon">
+                    <i class="bi bi-envelope"></i>
+                </div>
+                <div class="nav-icon">
+                    <i class="bi bi-gift"></i>
+                    <span class="badge" style="background: var(--danger-red);"></span>
+                </div>
+                <div class="avatar">S</div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Admin Users</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><i class="bi bi-house-door"></i></li>
+                        <li class="breadcrumb-item"><a href="#" style="text-decoration: none;">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Admin Users</li>
+                    </ol>
+                </nav>
+            </div>
+            
+            <div class="d-flex gap-2">
+                <button class="btn-custom">
+                    <i class="bi bi-download"></i> Export
+                    <i class="bi bi-chevron-down ms-1"></i>
+                </button>
+                <button class="btn-custom">
+                    <i class="bi bi-calendar3"></i> 2025 - 2025
+                </button>
+            </div>
+        </div>
 
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">All Users</h5>
-                    </div>
-                    <div class="card-body">
-                        {% if users %}
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Username</th>
-                                        <th>Email</th>
-                                        <th>Role</th>
-                                        <th>Is Active</th>
-                                        <th>Created At</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for user in users %}
-                                    <tr>
-                                        <td>{{ user.id }}</td>
-                                        <td>{{ user.username }}</td>
-                                        <td>{{ user.email }}</td>
-                                        <td>{{ user.role.name|default:"No Role" }}</td>
-                                        <td>
-                                            {% if user.is_active %}
-                                            <span class="badge bg-success">Active</span>
-                                            {% else %}
-                                            <span class="badge bg-danger">Inactive</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>{{ user.date_joined|date:"M d, Y H:i" }}</td>
-                                        <td>
-                                            <a href="#" class="btn btn-sm btn-warning">
-                                                <i class="bi bi-pencil"></i> Edit
-                                            </a>
-                                            <a href="#" class="btn btn-sm btn-danger delete-btn">
-                                                <i class="bi bi-trash"></i> Delete
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                        {% else %}
-                        <p class="text-center text-muted">No users found.</p>
-                        {% endif %}
-                    </div>
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon purple">
+                    <i class="bi bi-building"></i>
+                </div>
+                <div class="stat-label">Total Companies</div>
+                <div class="stat-value">
+                    248
+                    <span class="stat-change">
+                        <i class="bi bi-arrow-up"></i> +2.1%
+                    </span>
+                </div>
+                <a href="#" class="stat-link">View Details</a>
+                <svg class="stat-chart" viewBox="0 0 100 50" preserveAspectRatio="none">
+                    <path d="M 0,25 Q 10,20 20,22 T 40,18 T 60,24 T 80,15 T 100,20" 
+                          fill="rgba(99, 102, 241, 0.2)" 
+                          stroke="rgba(99, 102, 241, 0.6)" 
+                          stroke-width="2"/>
+                </svg>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon teal">
+                    <i class="bi bi-credit-card"></i>
+                </div>
+                <div class="stat-label">Active Subscriptions</div>
+                <div class="stat-value">
+                    223
+                    <span class="stat-change">
+                        <i class="bi bi-arrow-up"></i> +2.1%
+                    </span>
+                </div>
+                <a href="#" class="stat-link">View Details</a>
+                <svg class="stat-chart" viewBox="0 0 100 50" preserveAspectRatio="none">
+                    <path d="M 0,30 Q 10,28 20,26 T 40,22 T 60,25 T 80,18 T 100,20" 
+                          fill="rgba(15, 118, 110, 0.2)" 
+                          stroke="rgba(15, 118, 110, 0.6)" 
+                          stroke-width="2"/>
+                </svg>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon blue">
+                    <i class="bi bi-currency-rupee"></i>
+                </div>
+                <div class="stat-label">Monthly Revenue</div>
+                <div class="stat-value">
+                    ₹72.4L
+                    <span class="stat-change">
+                        <i class="bi bi-arrow-up"></i> +2.1%
+                    </span>
+                </div>
+                <a href="#" class="stat-link">View Details</a>
+                <svg class="stat-chart" viewBox="0 0 100 50" preserveAspectRatio="none">
+                    <path d="M 0,28 Q 10,26 20,24 T 40,20 T 60,23 T 80,16 T 100,18" 
+                          fill="rgba(59, 130, 246, 0.2)" 
+                          stroke="rgba(59, 130, 246, 0.6)" 
+                          stroke-width="2"/>
+                </svg>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon pink">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div class="stat-label">Active Trials</div>
+                <div class="stat-value">
+                    25
+                    <span class="stat-change">
+                        <i class="bi bi-arrow-up"></i> +2.1%
+                    </span>
+                </div>
+                <a href="#" class="stat-link">View Details</a>
+                <svg class="stat-chart" viewBox="0 0 100 50" preserveAspectRatio="none">
+                    <path d="M 0,32 Q 10,30 20,28 T 40,25 T 60,27 T 80,20 T 100,22" 
+                          fill="rgba(236, 72, 153, 0.2)" 
+                          stroke="rgba(236, 72, 153, 0.6)" 
+                          stroke-width="2"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Company Management Table -->
+        <div class="table-section">
+            <div class="table-header">
+                <h3 class="table-title">Company Management</h3>
+                
+                <div class="table-filters">
+                    <button class="filter-btn">
+                        <i class="bi bi-calendar3"></i>
+                        dd/mm/yyyy
+                    </button>
+                    <button class="filter-btn">
+                        Plans
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                    <button class="filter-btn">
+                        Select Status
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                    <button class="filter-btn">
+                        Sort By : Last 7 Days
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="table-controls">
+                <div class="entries-control">
+                    Row Per Page
+                    <select>
+                        <option>10</option>
+                        <option>25</option>
+                        <option>50</option>
+                    </select>
+                    Entries
+                </div>
+                
+                <div class="search-box">
+                    <i class="bi bi-search"></i>
+                    <input type="text" placeholder="Search">
+                </div>
+            </div>
+            
+            <div style="overflow-x: auto;">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Plan</th>
+                            <th>Employee</th>
+                            <th>Admin Email</th>
+                            <th>Last Activity</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>14/01/2025</td>
+                            <td>
+                                <div class="user-info">
+                                    <img src="https://ui-avatars.com/api/?name=TechFlow+Solutions&background=6366f1&color=fff" alt="TechFlow Solutions" class="user-avatar">
+                                    <span class="user-name">TechFlow Solutions</span>
+                                </div>
+                            </td>
+                            <td><span class="status-badge active">Active</span></td>
+                            <td style="color: var(--text-muted);">Enterprise (Monthly)</td>
+                            <td>
+                                <div class="employee-progress">
+                                    <div class="employee-progress-bar" style="width: 88%"></div>
+                                </div>
+                                <div class="employee-count">88/100</div>
+                            </td>
+                            <td style="color: var(--text-muted);">admin@techflow.in</td>
+                            <td style="color: var(--text-muted);">2 hours ago</td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn edit"><i class="bi bi-pencil"></i></button>
+                                    <button class="action-btn delete"><i class="bi bi-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>21/01/2025</td>
+                            <td>
+                                <div class="user-info">
+                                    <img src="https://ui-avatars.com/api/?name=Brian+Villalobos&background=3b82f6&color=fff" alt="Brian Villalobos" class="user-avatar">
+                                    <span class="user-name">Brian Villalobos</span>
+                                </div>
+                            </td>
+                            <td><span class="status-badge active">Active</span></td>
+                            <td style="color: var(--text-muted);">Advanced (Monthly)</td>
+                            <td>
+                                <div class="employee-progress">
+                                    <div class="employee-progress-bar" style="width: 88%"></div>
+                                </div>
+                                <div class="employee-count">88/100</div>
+                            </td>
+                            <td style="color: var(--text-muted);">admin@techflow.in</td>
+                            <td style="color: var(--text-muted);">2 hours ago</td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn edit"><i class="bi bi-pencil"></i></button>
+                                    <button class="action-btn delete"><i class="bi bi-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>20/02/2025</td>
+                            <td>
+                                <div class="user-info">
+                                    <img src="https://ui-avatars.com/api/?name=Sophie+Headrick&background=ec4899&color=fff" alt="Sophie Headrick" class="user-avatar">
+                                    <span class="user-name">Sophie Headrick</span>
+                                </div>
+                            </td>
+                            <td><span class="status-badge active">Active</span></td>
+                            <td style="color: var(--text-muted);">Basic (Yearly)</td>
+                            <td>
+                                <div class="employee-progress">
+                                    <div class="employee-progress-bar" style="width: 88%"></div>
+                                </div>
+                                <div class="employee-count">88/100</div>
+                            </td>
+                            <td style="color: var(--text-muted);">admin@techflow.in</td>
+                            <td style="color: var(--text-muted);">2 hours ago</td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn edit"><i class="bi bi-pencil"></i></button>
+                                    <button class="action-btn delete"><i class="bi bi-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>15/03/2025</td>
+                            <td>
+                                <div class="user-info">
+                                    <img src="https://ui-avatars.com/api/?name=Stephan+Peralt&background=0f766e&color=fff" alt="Stephan Peralt" class="user-avatar">
+                                    <span class="user-name">Stephan Peralt</span>
+                                </div>
+                            </td>
+                            <td><span class="status-badge trial">Trial</span></td>
+                            <td style="color: var(--text-muted);">Enterprise (Monthly)</td>
+                            <td>
+                                <div class="employee-progress">
+                                    <div class="employee-progress-bar" style="width: 88%"></div>
+                                </div>
+                                <div class="employee-count">88/100</div>
+                            </td>
+                            <td style="color: var(--text-muted);">admin@techflow.in</td>
+                            <td style="color: var(--text-muted);">2 hours ago</td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn edit"><i class="bi bi-pencil"></i></button>
+                                    <button class="action-btn delete"><i class="bi bi-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>12/04/2025</td>
+                            <td>
+                                <div class="user-info">
+                                    <img src="https://ui-avatars.com/api/?name=Thomas+Bordelon&background=10b981&color=fff" alt="Thomas Bordelon" class="user-avatar">
+                                    <span class="user-name">Thomas Bordelon</span>
+                                </div>
+                            </td>
+                            <td><span class="status-badge active">Active</span></td>
+                            <td style="color: var(--text-muted);">Enterprise (Monthly)</td>
+                            <td>
+                                <div class="employee-progress">
+                                    <div class="employee-progress-bar" style="width: 88%"></div>
+                                </div>
+                                <div class="employee-count">88/100</div>
+                            </td>
+                            <td style="color: var(--text-muted);">admin@techflow.in</td>
+                            <td style="color: var(--text-muted);">2 hours ago</td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn edit"><i class="bi bi-pencil"></i></button>
+                                    <button class="action-btn delete"><i class="bi bi-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="pagination-wrapper">
+                <div class="pagination-info">
+                    Showing 1 to 10 of 16 entries
+                </div>
+                
+                <div class="pagination-custom">
+                    <button class="page-btn"><i class="bi bi-chevron-left"></i></button>
+                    <button class="page-btn">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">3</button>
+                    <button class="page-btn active">4</button>
+                    <button class="page-btn">...</button>
+                    <button class="page-btn">15</button>
+                    <button class="page-btn"><i class="bi bi-chevron-right"></i></button>
                 </div>
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
 
-{% block extra_js %}
-<script>
-    // Hide delete buttons if user doesn't have delete_user permission
-    fetch('/api/me')
-        .then(r => r.json())
-        .then(data => {
-            if (!data || !data.success) return;
-            const perms = data.user.permissions || [];
-            if (!perms.includes('delete_user')) {
-                document.querySelectorAll('.delete-btn').forEach(btn => {
-                    btn.style.display = 'none';
-                });
-            }
-        })
-        .catch(() => {});
-</script>
-{% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
