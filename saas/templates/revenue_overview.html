@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revenue Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            height: 100%;
+        }
+
+        .card-header-custom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .filter-btn {
+            padding: 10px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: white;
+            font-size: 14px;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-btn:hover {
+            border-color: #9ca3af;
+            background-color: #f9fafb;
+        }
+
+        .progress-container {
+            margin-bottom: 20px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .progress {
+            /* height: 20px;
+            border-radius: 10px;
+            background-color: #e5e7eb;
+            overflow: hidden;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); */
+            height: 20px;
+            border-radius: 10px;
+            background-color: #e5e7eb;
+            overflow: hidden;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+
+        }
+
+        .progress-bar {
+            background-color: #ff6b47;
+
+        }
+
+        .plan-progress .progress-bar {
+            background-color: #00D97E;
+            /* Default for Enterprise, override per bar */
+        }
+
+        .plan-progress .progress-bar:nth-child(1) {
+            background-color: #00D97E;
+        }
+
+        /* Enterprise */
+        .plan-progress .progress-bar:nth-child(2) {
+            background-color: #1F7A7A;
+        }
+
+        /* Professional */
+        .plan-progress .progress-bar:nth-child(3) {
+            background-color: #FFC107;
+
+        }
+
+        /* Starter */
+        .plan-progress .progress-bar:nth-child(4) {
+            background-color: #FF5247;
+        }
+
+        /* Trial */
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid py-4">
+        <div class="row g-4">
+
+            <!-- Revenue Overview Card -->
+            <div class="col-lg-6">
+                <div class="dashboard-card">
+                    <div class="card-header-custom">
+                        <h2 class="card-title">Revenue Overview</h2>
+                        <div class="filter-group">
+                            <button class="filter-btn">
+                                All Departments
+                                <i class="bi bi-chevron-down"></i>
+                            </button>
+                            <button class="filter-btn">
+                                <i class="bi bi-calendar3"></i>
+                                September
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="revenue-legend">
+                        <div class="legend-dot"></div>
+                        <span class="legend-text">Revenue</span>
+                    </div>
+
+                    <!-- Replace custom chart with Bootstrap progress bars -->
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Jan</span>
+                            <span>₹214K</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 55%;" aria-valuenow="55"
+                                aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Feb</span>
+                            <span>₹214K</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 45%;" aria-valuenow="45"
+                                aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Mar</span>
+                            <span>₹214K</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 60%;" aria-valuenow="60"
+                                aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Apr</span>
+                            <span>₹214K</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 40%;" aria-valuenow="40"
+                                aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>May</span>
+                            <span>₹214K</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 85%;" aria-valuenow="85"
+                                aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Jun</span>
+                            <span>₹214K</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 92%;" aria-valuenow="92"
+                                aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Jul</span>
+                            <span>₹214K</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 82%;" aria-valuenow="82"
+                                aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Aug</span>
+                            <span>₹214K</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 95%;" aria-valuenow="95"
+                                aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Sep</span>
+                            <span>₹214K</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 95%;" aria-valuenow="95"
+                                aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Oct</span>
+                            <span>₹214K</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 100%;" aria-valuenow="100"
+                                aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Nov</span>
+                            <span>₹214K</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 32%;" aria-valuenow="32"
+                                aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Dec</span>
+                            <span>₹214K</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 98%;" aria-valuenow="98"
+                                aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+
+                    <div class="last-updated">Last Updated at 11:30PM</div>
+                </div>
+            </div>
+
+            <!-- Plan Distribution Card -->
+            <div class="col-lg-6">
+                <div class="dashboard-card">
+                    <div class="card-header-custom">
+                        <h2 class="card-title">Plan Distribution</h2>
+                        <div class="filter-group">
+                            <button class="filter-btn">
+                                <i class="bi bi-calendar3"></i>
+                                Today
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Replace donut chart with Bootstrap progress bars -->
+                    <div class="plan-progress">
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>Enterprise</span>
+                                <span>59%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar"></div>
+                            </div>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>Professional</span>
+                                <span>21%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar"></div>
+                            </div>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>Starter</span>
+                                <span>2%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar"></div>
+                            </div>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>Trial</span>
+                                <span>15%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Users Section -->
+                    <div class="total-users-section">
+                        <div class="users-label">
+                            Total Users
+                            <div class="user-avatars">
+                                <div class="user-avatar" style="background-color: #3b82f6;">👤</div>
+                                <div class="user-avatar" style="background-color: #f59e0b;">👤</div>
+                                <div class="user-avatar" style="background-color: #8b5cf6;">👤</div>
+                                <div class="user-avatar" style="background-color: #ec4899;">👤</div>
+                                <div class="user-avatar" style="background-color: #6366f1; font-size: 12px;">+1</div>
+                            </div>
+                        </div>
+                        <a href="#" class="view-details-link">View Details</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

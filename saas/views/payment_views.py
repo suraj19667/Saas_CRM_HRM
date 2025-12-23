@@ -12,6 +12,7 @@ import razorpay
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.db.models import Sum
 
 @login_required(login_url='auth:login')
 @csrf_exempt
@@ -130,11 +131,116 @@ def orders_list(request):
 
     Each tenant row provides a Pay/Renew link to the razorpay payment flow.
     """
-    # List subscriptions so each row corresponds to a subscription record
-    subscriptions = Subscription.objects.select_related('tenant', 'plan').order_by('-created_at')
-    # fallback to tenants with active subscription_plan if no Subscription records exist
-    tenants = Tenant.objects.filter(subscription_plan__status=True).order_by('name')
-    return render(request, 'payment/orders_list.html', {'subscriptions': subscriptions, 'tenants': tenants})
+    # Get filter parameters
+    date_filter = request.GET.get('date')
+    plan_filter = request.GET.get('plan')
+    status_filter = request.GET.get('status')
+    sort_filter = request.GET.get('sort')
+    search_query = request.GET.get('search')
+    per_page = int(request.GET.get('per_page', 10))
+
+    # Base queryset
+    subscriptions_queryset = Subscription.objects.select_related('tenant', 'plan').order_by('-created_at')
+
+    # Apply filters
+    if date_filter:
+        subscriptions_queryset = subscriptions_queryset.filter(created_at__date=date_filter)
+    
+    if plan_filter:
+        if plan_filter == 'basic_monthly':
+            subscriptions_queryset = subscriptions_queryset.filter(plan__name__icontains='basic', billing_cycle='monthly')
+        elif plan_filter == 'basic_yearly':
+            subscriptions_queryset = subscriptions_queryset.filter(plan__name__icontains='basic', billing_cycle='yearly')
+        elif plan_filter == 'advanced_monthly':
+            subscriptions_queryset = subscriptions_queryset.filter(plan__name__icontains='advanced', billing_cycle='monthly')
+        elif plan_filter == 'advanced_yearly':
+            subscriptions_queryset = subscriptions_queryset.filter(plan__name__icontains='advanced', billing_cycle='yearly')
+        elif plan_filter == 'enterprise_monthly':
+            subscriptions_queryset = subscriptions_queryset.filter(plan__name__icontains='enterprise', billing_cycle='monthly')
+        elif plan_filter == 'enterprise_yearly':
+            subscriptions_queryset = subscriptions_queryset.filter(plan__name__icontains='enterprise', billing_cycle='yearly')
+
+    if status_filter:
+        subscriptions_queryset = subscriptions_queryset.filter(status=status_filter)
+
+    if search_query:
+        subscriptions_queryset = subscriptions_queryset.filter(
+            tenant__name__icontains=search_query
+        )
+
+    # Apply sorting
+    if sort_filter:
+        days = int(sort_filter)
+        date_threshold = timezone.now() - timedelta(days=days)
+        subscriptions_queryset = subscriptions_queryset.filter(created_at__gte=date_threshold)
+
+    # Get paginated results
+    from django.core.paginator import Paginator
+    paginator = Paginator(subscriptions_queryset, per_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # Prepare subscription data for template
+    subscriptions_data = []
+    for subscription in page_obj:
+        # Get employee count (users in this tenant)
+        employee_count = subscription.tenant.users.count()
+        max_employees = getattr(subscription.plan, 'max_users', 100) if subscription.plan else 100
+        employee_percent = min((employee_count / max_employees) * 100, 100) if max_employees > 0 else 0
+
+        # Get admin email (first user or user with admin role)
+        admin_email = ''
+        admin_user = subscription.tenant.users.filter(is_staff=True).first()
+        if not admin_user:
+            admin_user = subscription.tenant.users.first()
+        if admin_user:
+            admin_email = admin_user.email
+
+        subscription_data = {
+            'id': subscription.id,
+            'date': subscription.created_at.date(),
+            'name': subscription.tenant.name,
+            'avatar_url': subscription.tenant.logo.url if subscription.tenant.logo and subscription.tenant.logo.name else None,
+            'status': subscription.status.title(),
+            'plan': f"{subscription.plan.name} ({subscription.billing_cycle})" if subscription.plan else "No Plan",
+            'employees': employee_count,
+            'employee_percent': employee_percent,
+            'admin_email': admin_email,
+            'last_activity': subscription.updated_at.strftime('%d/%m/%Y %H:%M') if subscription.updated_at else 'N/A',
+        }
+        subscriptions_data.append(subscription_data)
+
+    # Calculate stats
+    total_subscriptions = Subscription.objects.count()
+    active_subscriptions = Subscription.objects.filter(status='active').count()
+    total_companies = Tenant.objects.count()
+    
+    # Mock growth data (you can calculate real growth)
+    companies_growth = "+2.1%"
+    subscriptions_growth = "+2.1%"
+    revenue_growth = "+2.1%"
+    trials_growth = "+2.1%"
+    
+    # Calculate revenue (sum of amounts from subscriptions)
+    monthly_revenue = Subscription.objects.filter(status='active').aggregate(
+        total=Sum('amount')
+    )['total'] or 0
+
+    context = {
+        'subscriptions': subscriptions_data,
+        'page_obj': page_obj,
+        'total_companies': total_companies,
+        'active_subscriptions': active_subscriptions,
+        'monthly_revenue': f"₹{monthly_revenue:,.0f}L" if monthly_revenue >= 100000 else f"₹{monthly_revenue:,.0f}",
+        'active_trials': 25,  # Mock data
+        'companies_growth': companies_growth,
+        'subscriptions_growth': subscriptions_growth,
+        'revenue_growth': revenue_growth,
+        'trials_growth': trials_growth,
+        'request': request,
+    }
+    
+    return render(request, 'subscription_list.html', context)
 
 
 @login_required(login_url='auth:login')

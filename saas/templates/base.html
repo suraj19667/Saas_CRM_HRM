@@ -36,6 +36,14 @@
             min-height: 100vh;
         }
 
+        .main-content {
+            margin-left: 252px;
+            width: calc(100% - 252px);
+            padding: 24px 28px;
+            padding-top: 76px;
+            /* leave space for fixed top navbar */
+        }
+
         .sidebar {
             width: 252px;
             background: var(--Base-Color-White, #FFF);
@@ -49,6 +57,34 @@
             gap: 24px;
             overflow-y: auto;
             z-index: 1000;
+        }
+
+        /* Responsive: collapse sidebar on small screens and let main content be full width */
+        @media (max-width: 992px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                width: 220px;
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 220px;
+                width: calc(100% - 220px);
+                padding-top: 76px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding-top: 70px;
+            }
         }
 
         /* Hide scrollbar for all browsers */
@@ -67,8 +103,10 @@
         }
 
         .sidebar {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
         }
 
         .crm-header {
@@ -374,8 +412,10 @@
         .menu-content {
             flex: 1;
             overflow-y: auto;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
         }
 
         .menu-content::-webkit-scrollbar {
@@ -386,7 +426,7 @@
 
         /* Dropdown functionality */
         .dropdown-item {
-            margin-left: 24px !important;
+
             padding-left: 12px;
             border-left: 2px solid #E5E7EB;
             transition: all 0.3s ease;
@@ -411,14 +451,6 @@
 
         .dropdown-content.expanded {
             max-height: 300px;
-        }
-
-        .chevron-icon {
-            transition: transform 0.3s ease;
-        }
-
-        .chevron-icon.rotated {
-            transform: rotate(180deg);
         }
 
         .menu-link.active .menu-bullet {
@@ -539,9 +571,13 @@
             <div class="brand-header">
                 <div class="brand-logo">
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
-                        <rect x="-0.257263" y="-0.257178" width="30" height="30" rx="2.05714" fill="#5C59E8"/>
-                        <path d="M14.7823 12.3714C14.9073 12.1768 15.1219 12.0582 15.3532 12.0561L21.3075 12.002C21.8555 11.997 22.1877 12.6051 21.8873 13.0635L14.5637 24.2413C14.4382 24.4328 14.2254 24.5491 13.9964 24.5511L8.19259 24.6039C7.64752 24.6088 7.31485 24.0066 7.60927 23.5478L14.7823 12.3714Z" fill="#F1F1F1"/>
-                        <path d="M12.4382 5.42558C12.5662 5.23962 12.7774 5.12853 13.0032 5.12853L18.8803 5.12863C19.4376 5.12864 19.7621 5.75821 19.4388 6.21215L15.2513 12.0915C15.1239 12.2704 14.9186 12.3774 14.699 12.3794L8.92828 12.4318C8.37324 12.4369 8.04251 11.8148 8.35712 11.3575L12.4382 5.42558Z" fill="#F1F1F1"/>
+                        <rect x="-0.257263" y="-0.257178" width="30" height="30" rx="2.05714" fill="#5C59E8" />
+                        <path
+                            d="M14.7823 12.3714C14.9073 12.1768 15.1219 12.0582 15.3532 12.0561L21.3075 12.002C21.8555 11.997 22.1877 12.6051 21.8873 13.0635L14.5637 24.2413C14.4382 24.4328 14.2254 24.5491 13.9964 24.5511L8.19259 24.6039C7.64752 24.6088 7.31485 24.0066 7.60927 23.5478L14.7823 12.3714Z"
+                            fill="#F1F1F1" />
+                        <path
+                            d="M12.4382 5.42558C12.5662 5.23962 12.7774 5.12853 13.0032 5.12853L18.8803 5.12863C19.4376 5.12864 19.7621 5.75821 19.4388 6.21215L15.2513 12.0915C15.1239 12.2704 14.9186 12.3774 14.699 12.3794L8.92828 12.4318C8.37324 12.4369 8.04251 11.8148 8.35712 11.3575L12.4382 5.42558Z"
+                            fill="#F1F1F1" />
                     </svg>
                 </div>
                 <div class="brand-name">Intellostack</div>
@@ -553,7 +589,8 @@
                 <div class="menu-section-heading">MAIN MENU</div>
                 <ul class="menu-list">
                     <li class="menu-item">
-                        <a href="{% url 'saas_dashboard' %}" class="menu-link {% if request.path == '/dashboard/' %}active{% endif %}">
+                        <a href="{% url 'saas_dashboard' %}"
+                            class="menu-link {% if request.path == '/dashboard/' %}active{% endif %}">
                             <i class="bi bi-grid"></i>
                             <span style="margin-left: 12px;">Overview</span>
                         </a>
@@ -564,13 +601,15 @@
                 <div class="menu-section-heading">TENANTS</div>
                 <ul class="menu-list">
                     <li class="menu-item">
-                        <a href="{% url 'users' %}" class="menu-link {% if request.path == '/users/' %}active{% endif %}">
+                        <a href="{% url 'users' %}"
+                            class="menu-link {% if request.path == '/users/' %}active{% endif %}">
                             <i class="bi bi-people"></i>
                             <span style="margin-left: 12px;">All Users</span>
                         </a>
                     </li>
                     <li class="menu-item">
-                        <a href="#" class="menu-link">
+                        <a href="{% url 'users' %}"
+                            class="menu-link {% if request.path == '/users/' %}active{% endif %}">
                             <i class="bi bi-person-gear"></i>
                             <span style="margin-left: 12px;">Admin User</span>
                         </a>
@@ -583,8 +622,8 @@
                     </li>
                     <li class="menu-item">
                         <a href="#" class="menu-link">
-                            <i class="bi bi-calendar-check"></i>
-                            <span style="margin-left: 12px;">Trials & Onboarding</span>
+                            <!-- <i class="bi bi-calendar-check"></i> -->
+                            <!-- <span style="margin-left: 12px;">Trials & Onboarding</span> -->
                         </a>
                     </li>
                 </ul>
@@ -596,42 +635,70 @@
                         <a href="#" class="menu-link dropdown-toggle" onclick="toggleDropdown('plansDropdown')">
                             <i class="bi bi-grid-3x3-gap"></i>
                             <span style="margin-left: 12px;">Plans</span>
-                            <i class="bi bi-chevron-up chevron-icon" id="plansChevron" style="margin-left: auto;"></i>
                         </a>
                     </li>
                     <div class="dropdown-content expanded" id="plansDropdown">
                         <li class="menu-item dropdown-item">
+                            <a href="{% url 'plans:plan_list' %}"
+                                class="menu-link {% if 'plans' in request.path and 'plan_list' in request.path %}active{% endif %}">
+                                <span>Manage Plans</span>
+                            </a>
+                        </li>
+                        <!-- <li class="menu-item dropdown-item">
                             <a href="#" class="menu-link">
-                                <span>One Time</span>
+                                <span>One Time</span> -->
                             </a>
                         </li>
                         <li class="menu-item dropdown-item">
-                            <a href="{% url 'subscription:list_plans' %}" class="menu-link {% if 'subscription' in request.path %}active{% endif %}">
+                            <a href="{% url 'subscription:list_plans' %}"
+                                class="menu-link {% if 'subscription' in request.path %}active{% endif %}">
                                 <span>Subscription Plans</span>
                             </a>
                         </li>
-                        <li class="menu-item dropdown-item">
+                        <!-- <li class="menu-item dropdown-item">
                             <a href="#" class="menu-link">
                                 <span>Custom Plans</span>
-                            </a>
+                            </a> -->
                         </li>
                     </div>
                     <li class="menu-item">
-                        <a href="#" class="menu-link">
-                            <i class="bi bi-percent"></i>
-                            <span style="margin-left: 12px;">Discount</span>
+                        <a href="{% url 'features:feature_list' %}"
+                            class="menu-link {% if 'features' in request.path %}active{% endif %}">
+                            <i class="bi bi-toggles"></i>
+                            <span style="margin-left: 12px;">Features</span>
                         </a>
                     </li>
                     <li class="menu-item">
-                        <a href="{% url 'payment:invoices_list' %}" class="menu-link {% if 'invoices' in request.path %}active{% endif %}">
+                        <a href="{% url 'addon_list' %}"
+                            class="menu-link {% if 'addons' in request.path %}active{% endif %}">
+                            <i class="bi bi-puzzle-piece"></i>
+                            <span style="margin-left: 12px;">Add-ons</span>
+                        </a>
+                    </li>
+                    <!-- <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <i class="bi bi-percent"></i>
+                            <span style="margin-left: 12px;">Discount</span>
+                        </a> -->
+                    </li>
+                    <li class="menu-item">
+                        <a href="{% if request.user.is_staff %}{% url 'payment:subscription_list' %}{% else %}{% url 'subscription:list_plans' %}{% endif %}"
+                            class="menu-link {% if 'subscriptions' in request.path or 'subscription' in request.path or 'orders' in request.path %}active{% endif %}">
+                            <i class="bi bi-list-check"></i>
+                            <span style="margin-left: 12px;">Subscriptions</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{% url 'payment:invoices_list' %}"
+                            class="menu-link {% if 'invoices' in request.path %}active{% endif %}">
                             <i class="bi bi-receipt"></i>
                             <span style="margin-left: 12px;">Invoice & Billing</span>
                         </a>
                     </li>
-                    <li class="menu-item">
+                    <!-- <li class="menu-item">
                         <a href="#" class="menu-link">
                             <i class="bi bi-ticket"></i>
-                            <span style="margin-left: 12px;">Coupons</span>
+                            <span style="margin-left: 12px;">Coupons</span> -->
                         </a>
                     </li>
                 </ul>
@@ -640,20 +707,15 @@
                 <div class="menu-section-heading">ACCESS CONTROL</div>
                 <ul class="menu-list">
                     <li class="menu-item">
-                        <a href="{% url 'access_control:dashboard' %}" class="menu-link {% if 'roles-permissions' in request.path %}active{% endif %}">
+                        <a href="{% url 'access_control:dashboard' %}"
+                            class="menu-link {% if 'roles-permissions' in request.path %}active{% endif %}">
                             <i class="bi bi-shield-check"></i>
                             <span style="margin-left: 12px;">Roles & Permission</span>
                         </a>
                     </li>
-                    <li class="menu-item">
-                        <a href="{% url 'features:feature_list' %}" class="menu-link {% if 'features' in request.path %}active{% endif %}">
-                            <i class="bi bi-toggles"></i>
-                            <span style="margin-left: 12px;">Features & Toggles</span>
-                        </a>
-                    </li>
                 </ul>
 
-                <!-- OPERATIONS Section -->
+                <!-- OPERATIONS Section
                 <div class="menu-section-heading">OPERATIONS</div>
                 <ul class="menu-list">
                     <li class="menu-item">
@@ -676,7 +738,6 @@
                     </li>
                 </ul>
 
-                <!-- SYSTEM Section -->
                 <div class="menu-section-heading">SYSTEM</div>
                 <ul class="menu-list">
                     <li class="menu-item">
@@ -713,7 +774,8 @@
                 </div>
                 <form method="POST" action="{% url 'logout' %}" style="margin: 0;">
                     {% csrf_token %}
-                    <button type="submit" style="background: none; border: none; color: var(--Grey-Grey-500); cursor: pointer;">
+                    <button type="submit"
+                        style="background: none; border: none; color: var(--Grey-Grey-500); cursor: pointer;">
                         <i class="bi bi-box-arrow-right"></i>
                     </button>
                 </form>
@@ -819,16 +881,13 @@
         // Dropdown toggle functionality
         function toggleDropdown(dropdownId) {
             const dropdown = document.getElementById(dropdownId);
-            const chevron = document.getElementById(dropdownId.replace('Dropdown', 'Chevron'));
-            
+
             if (dropdown.classList.contains('collapsed')) {
                 dropdown.classList.remove('collapsed');
                 dropdown.classList.add('expanded');
-                chevron.classList.remove('rotated');
             } else {
                 dropdown.classList.remove('expanded');
                 dropdown.classList.add('collapsed');
-                chevron.classList.add('rotated');
             }
         }
     </script>
