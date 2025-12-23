@@ -61,7 +61,7 @@ def admin_dashboard_view(request):
     # Get all plans with their features
     all_plans = Plan.objects.prefetch_related('plan_features__feature').order_by('price_monthly')
     
-    response = render(request, 'admin_dashboard.html', {
+    response = render(request, 'overview.html', {
         'total_users': total_users,
         'total_tenants': total_tenants, 
         'total_subscriptions': total_subscriptions,
