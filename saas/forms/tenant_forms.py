@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from saas.models import Tenant
+from saas.models import Tenant, Plan
 
 
 class TenantForm(forms.ModelForm):
@@ -10,6 +10,8 @@ class TenantForm(forms.ModelForm):
         model = Tenant
         fields = [
             'name',
+            'status',
+            'subscription_plan',
             'logo',
             'contact_email',
             'contact_phone', 
@@ -22,6 +24,12 @@ class TenantForm(forms.ModelForm):
             'name': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Enter your company name'
+            }),
+            'status': forms.Select(attrs={
+                'class': 'form-select'
+            }, choices=[('active', 'Active'), ('inactive', 'Inactive')]),
+            'subscription_plan': forms.Select(attrs={
+                'class': 'form-select'
             }),
             'contact_email': forms.EmailInput(attrs={
                 'class': 'form-control',
@@ -47,6 +55,12 @@ class TenantForm(forms.ModelForm):
                 'class': 'form-check-input'
             })
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Populate subscription plan choices
+        self.fields['subscription_plan'].queryset = Plan.objects.filter(status=True)
+        self.fields['subscription_plan'].empty_label = "Select a plan"
 
 
 class TenantCreationForm(forms.ModelForm):

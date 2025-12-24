@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.urls import reverse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -231,3 +232,50 @@ def payment_failed_view(request):
     return render(request, 'saas/payment/failed.html', {
         'page_title': 'Payment Failed'
     })
+
+
+@login_required(login_url='auth:login')
+@user_passes_test(lambda u: u.is_staff)
+def company_update(request, tenant_id):
+    """Update company/tenant details"""
+    tenant = get_object_or_404(Tenant, id=tenant_id)
+    
+    if request.method == 'POST':
+        form = TenantForm(request.POST, request.FILES, instance=tenant)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Company "{tenant.name}" has been updated successfully.')
+            return redirect('saas:users')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = TenantForm(instance=tenant)
+    
+    context = {
+        'form': form,
+        'tenant': tenant,
+        'page_title': f'Edit Company - {tenant.name}'
+    }
+    
+    return render(request, 'saas/tenant/edit.html', context)
+
+
+@login_required(login_url='auth:login')
+@user_passes_test(lambda u: u.is_staff)
+def company_delete(request, tenant_id):
+    """Delete company/tenant"""
+    tenant = get_object_or_404(Tenant, id=tenant_id)
+    
+    if request.method == 'POST':
+        tenant_name = tenant.name
+        tenant.delete()
+        messages.success(request, f'Company "{tenant_name}" has been deleted successfully.')
+        return redirect('saas:users')
+    
+    # For GET request, show confirmation page
+    context = {
+        'tenant': tenant,
+        'page_title': f'Delete Company - {tenant.name}'
+    }
+    
+    return render(request, 'saas/tenant/delete.html', context)
