@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.db.models import Q, Count
 import random
 import string
 from ..models import CustomUser, Role, Permission, RolePermission, Tenant, Subscription
@@ -904,8 +905,139 @@ def users_list(request):
     if not request.user.is_authenticated:
         return redirect('auth:login')
     
-    users = CustomUser.objects.select_related('role').all()
-    return render(request, 'users/users_list.html', {'users': users, 'roles': Role.objects.prefetch_related('users').all()})
+    # Check if this is admin users page
+    is_admin_page = 'admin' in request.path
+    
+    if is_admin_page:
+        # Filter for admin users (superusers or users with Admin role)
+        users_queryset = CustomUser.objects.select_related('role').filter(
+            Q(is_superuser=True) | Q(role__name='Admin')
+        )
+        page_title = 'Admin Users'
+        template = 'saas/admin_user.html'
+    else:
+        # For "All Users" page, show tenants/companies
+        tenants_queryset = Tenant.objects.select_related('subscription_plan').prefetch_related('users').all()
+        page_title = 'All Users'
+        template = 'saas/tenant/all_users.html'
+        
+        # Prepare tenant data for template
+        tenants = []
+        for tenant in tenants_queryset:
+            # Get admin user (first user or superuser)
+            admin_user = tenant.users.filter(is_superuser=True).first() or tenant.users.first()
+            admin_email = admin_user.email if admin_user else 'N/A'
+            
+            # Employee count (total users in tenant)
+            employee_count = tenant.users.count()
+            # Assuming plan has employee limit
+            plan_limit = tenant.subscription_plan.max_users if tenant.subscription_plan else 100
+            employee_percentage = (employee_count / plan_limit * 100) if plan_limit > 0 else 0
+            
+            tenants.append({
+                'id': tenant.id,
+                'created': tenant.created_at,
+                'name': tenant.name,
+                'status': 'Active' if tenant.status == 'active' else ('Trial' if tenant.status == 'inactive' else tenant.status.title()),
+                'plan': tenant.subscription_plan.name if tenant.subscription_plan else 'No Plan',
+                'employee_count': employee_count,
+                'employee_limit': plan_limit,
+                'employee_percentage': employee_percentage,
+                'admin_email': admin_email,
+                'last_activity': tenant.updated_at,
+                'domain': tenant.domain,
+            })
+        
+        # Stats for cards
+        total_companies = tenants_queryset.count()
+        active_subscriptions = tenants_queryset.filter(status='active').count()
+        # Monthly revenue calculation (simplified)
+        monthly_revenue = sum(
+            tenant.subscription_plan.price_monthly if tenant.subscription_plan and tenant.status == 'active' else 0
+            for tenant in tenants_queryset
+        )
+        active_trials = tenants_queryset.filter(status='inactive').count()
+        
+        return render(request, template, {
+            'tenants': tenants,
+            'total_companies': total_companies,
+            'active_subscriptions': active_subscriptions,
+            'monthly_revenue': monthly_revenue,
+            'active_trials': active_trials,
+            'page_title': page_title
+        })
+    
+    # Prepare users data for template (for admin page)
+    users = []
+    for user in users_queryset:
+        permissions_count = user.role.role_permissions.count() if user.role else 0
+        users.append({
+            'id': user.id,
+            'created': user.created_at,
+            'name': user.get_full_name() or user.username,
+            'email': user.email,
+            'role': user.role.name if user.role else 'No Role',
+            'permissions': permissions_count,
+            'last_login': user.last_login,
+        })
+    
+    # Prepare roles data with counts
+    roles_queryset = Role.objects.prefetch_related('users').all()
+    roles = []
+    for role in roles_queryset:
+        # Assuming a default limit of 10 for now, or you can get from plan
+        limit = 10  # You can make this dynamic based on subscription
+        roles.append({
+            'name': role.name,
+            'count': role.user_count,
+            'limit': limit,
+        })
+    
+    return render(request, template, {
+        'users': users, 
+        'roles': roles,
+        'is_admin_page': is_admin_page,
+        'page_title': page_title
+    })
+
+
+@login_required
+def user_edit(request, user_id):
+    """
+    View to edit a user
+    """
+    user_obj = get_object_or_404(CustomUser, id=user_id)
+    
+    if request.method == 'POST':
+        form = CustomUserChangeForm(request.POST, request.FILES, instance=user_obj)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'User updated successfully.')
+            return redirect('admin_users')
+    else:
+        form = CustomUserChangeForm(instance=user_obj)
+    
+    return render(request, 'saas/user_edit.html', {
+        'form': form,
+        'user_obj': user_obj
+    })
+
+
+@login_required
+def user_delete(request, user_id):
+    """
+    View to delete a user
+    """
+    user_obj = get_object_or_404(CustomUser, id=user_id)
+    
+    if request.method == 'POST':
+        user_obj.delete()
+        messages.success(request, 'User deleted successfully.')
+        return redirect('admin_users')
+    
+    return render(request, 'saas/user_delete.html', {
+        'user_obj': user_obj
+    })
 
 
 def roles_list(request):

@@ -9,4 +9,6 @@ urlpatterns = [
     path('payment/callback/', tenant_views.razorpay_callback, name='razorpay_callback'),
     path('payment/success/', tenant_views.payment_success_view, name='payment_success'),
     path('payment/failed/', tenant_views.payment_failed_view, name='payment_failed'),
+    path('<int:tenant_id>/update/', tenant_views.company_update, name='update'),
+    path('<int:tenant_id>/delete/', tenant_views.company_delete, name='delete'),
 ]

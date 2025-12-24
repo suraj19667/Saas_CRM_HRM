@@ -140,3 +140,21 @@ class CompanyLoginForm(forms.Form):
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'})
     )
+
+
+class CustomUserChangeForm(forms.ModelForm):
+    """Form for editing user details"""
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'email', 'first_name', 'last_name', 'role', 'phone', 'address', 'profile_picture', 'is_active']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'role': forms.Select(attrs={'class': 'form-control'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'profile_picture': forms.FileInput(attrs={'class': 'form-control'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }

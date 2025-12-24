@@ -1,5 +1,5 @@
 from django.urls import path, include
-from ..views import login_view, register_view, verify_otp_view, resend_otp_view, logout_view, deshboard_view, leads_view, deals_view, form_builder_view, contract_view, crm_setup_view, users_list, admin_dashboard_view
+from ..views import login_view, register_view, verify_otp_view, resend_otp_view, logout_view, deshboard_view, leads_view, deals_view, form_builder_view, contract_view, crm_setup_view, users_list, user_edit, user_delete, admin_dashboard_view
 from ..views.hrm_views import hrm_home
 from ..views.access_management_views import access_management
 from ..api_views import (
@@ -31,6 +31,9 @@ urlpatterns = [
     path('contract/', contract_view, name='contract'),
     path('crm-setup/', crm_setup_view, name='crm_setup'),
     path('users/', users_list, name='users'),
+    path('users/admin/', users_list, name='admin_users'),
+    path('users/<int:user_id>/edit/', user_edit, name='user_edit'),
+    path('users/<int:user_id>/delete/', user_delete, name='user_delete'),
     path('access-management/', access_management, name='access_management'),
     path('roles-permissions/', include('saas.urls.access_control_urls')),
     path('roles/', include('saas.urls.role_urls')),

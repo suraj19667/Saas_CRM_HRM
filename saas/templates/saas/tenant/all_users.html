@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Subscription List{% endblock %}
+
+{% block content %}
+
+<style>
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+    }
+</style>
+
+<!-- Page Header -->
+<div class="mb-4">
+    <h3 class="fw-bold mb-1">All Users</h3>
+    <p class="text-muted mb-0">Dashboard / All Users</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Total Companies</p>
+                        <h4 class="fw-bold">{{ total_companies }} <span class="text-success fs-6">+2.1%</span></h4>
+                    </div>
+                    <div class="stat-icon bg-primary">
+                        <i class="bi bi-buildings"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Active Subscriptions</p>
+                        <h4 class="fw-bold">{{ active_subscriptions }} <span class="text-success fs-6">+2.1%</span></h4>
+                    </div>
+                    <div class="stat-icon bg-dark">
+                        <i class="bi bi-credit-card"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Monthly Revenue</p>
+                        <h4 class="fw-bold">₹{{ monthly_revenue }} <span class="text-success fs-6">+2.1%</span></h4>
+                    </div>
+                    <div class="stat-icon bg-info">
+                        <i class="bi bi-graph-up"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Active Trials</p>
+                        <h4 class="fw-bold">{{ active_trials }} <span class="text-success fs-6">+2.1%</span></h4>
+                    </div>
+                    <div class="stat-icon bg-danger">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Company Management Table -->
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0">Company Management</h5>
+            <input type="text" class="form-control w-25" placeholder="Search">
+        </div>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Plan</th>
+                    <th>Employee</th>
+                    <th>Admin Email</th>
+                    <th>Last Activity</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tenant in tenants %}
+                <tr>
+                    <td>{{ tenant.created|date:"d/m/Y" }}</td>
+                    <td>{{ tenant.name }}</td>
+                    <td>
+                        {% if tenant.status == 'Active' %}
+                        <span class="badge bg-success">Active</span>
+                        {% elif tenant.status == 'Trial' %}
+                        <span class="badge bg-primary">Trial</span>
+                        {% else %}
+                        <span class="badge bg-danger">{{ tenant.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ tenant.plan }}</td>
+                    <td>
+                        {{ tenant.employee_count }}/{{ tenant.employee_limit }}
+                        <div class="progress">
+                            <div class="progress-bar bg-warning" style="width: {{ tenant.employee_percentage }}%"></div>
+                        </div>
+                    </td>
+                    <td>{{ tenant.admin_email }}</td>
+                    <td>{{ tenant.last_activity|timesince }}</td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a href="{% url 'tenant:update' tenant.id %}" class="btn btn-sm btn-outline-primary"
+                                title="Edit">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                onclick="confirmDelete({{ tenant.id }}, '{{ tenant.name|escapejs }}')" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8">No companies found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Delete Company
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong id="deleteCompanyName"></strong>?</p>
+                <div class="alert alert-danger">
+                    <small>This action cannot be undone. All company data, users, and associated records will be
+                        permanently deleted.</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a id="deleteConfirmBtn" href="#" class="btn btn-danger">
+                    <i class="bi bi-trash me-2"></i>Delete Company
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmDelete(tenantId, companyName) {
+        document.getElementById('deleteCompanyName').textContent = companyName;
+        document.getElementById('deleteConfirmBtn').href = `/tenant/${tenantId}/delete/`;
+
+        const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        modal.show();
+    }
+</script>
+
+{% endblock %}
