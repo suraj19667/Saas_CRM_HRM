@@ -69,16 +69,25 @@
             position: relative;
         }
 
+        /* Ensure input reserves space for browser password icon + our toggle */
+        .password-wrapper .form-control {
+            padding-right: 60px;
+        }
+
         .toggle-password {
             position: absolute;
             top: 50%;
-            right: 12px;
+            /* move toggle left a bit to avoid browser key icon */
+            right: 44px;
             transform: translateY(-50%);
-            background: none;
-            border: none;
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.06);
             color: #667eea;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 16px;
+            padding: 6px 8px;
+            border-radius: 6px;
+            z-index: 3;
         }
 
         .text-error {
@@ -160,6 +169,9 @@
                 {% if form.confirm_password.errors %}
                 <div class="text-error">{{ form.confirm_password.errors.0 }}</div>
                 {% endif %}
+
+                <!-- Password match indicator -->
+                <div id="pw-match" class="form-text mt-1"></div>
             </div>
 
             <!-- Submit -->
@@ -195,8 +207,49 @@
                     input.type = "password";
                     icon.classList.replace("bi-eye-slash", "bi-eye");
                 }
+                // Re-check match when visibility toggles
+                checkPasswordMatch();
             });
         });
+
+        // Password match checker
+        function checkPasswordMatch() {
+            const pw = document.getElementById('id_password');
+            const cpw = document.getElementById('id_confirm_password');
+            const msgEl = document.getElementById('pw-match');
+
+            if (!pw || !cpw || !msgEl) return;
+
+            const v1 = pw.value || '';
+            const v2 = cpw.value || '';
+
+            if (v1 === '' && v2 === '') {
+                msgEl.textContent = '';
+                pw.classList.remove('is-valid', 'is-invalid');
+                cpw.classList.remove('is-valid', 'is-invalid');
+                return;
+            }
+
+            if (v1 === v2) {
+                msgEl.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>Passwords match';
+                msgEl.classList.remove('text-danger');
+                msgEl.classList.add('text-success');
+                pw.classList.add('is-valid'); pw.classList.remove('is-invalid');
+                cpw.classList.add('is-valid'); cpw.classList.remove('is-invalid');
+            } else {
+                msgEl.innerHTML = '<i class="bi bi-x-circle-fill me-1"></i>Passwords do not match';
+                msgEl.classList.remove('text-success');
+                msgEl.classList.add('text-danger');
+                pw.classList.add('is-invalid'); pw.classList.remove('is-valid');
+                cpw.classList.add('is-invalid'); cpw.classList.remove('is-valid');
+            }
+        }
+
+        // Attach input listeners
+        const pwInput = document.getElementById('id_password');
+        const cpwInput = document.getElementById('id_confirm_password');
+        if (pwInput) pwInput.addEventListener('input', checkPasswordMatch);
+        if (cpwInput) cpwInput.addEventListener('input', checkPasswordMatch);
     </script>
 
 </body>

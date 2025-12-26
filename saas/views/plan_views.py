@@ -151,8 +151,15 @@ def plan_create(request):
             
             return redirect('plans:plan_list')
         else:
-            # Form has errors - they will be displayed in template
-            pass
+            # Surface form validation errors to the user via messages
+            for field, errs in form.errors.items():
+                # non_field_errors come as '__all__' in some cases
+                if field == '__all__':
+                    for e in errs:
+                        messages.error(request, e)
+                else:
+                    for e in errs:
+                        messages.error(request, f"{field}: {e}")
     else:
         form = PlanForm()
     
@@ -199,6 +206,15 @@ def plan_edit(request, plan_id):
                 return JsonResponse({'success': True, 'message': f'Plan {plan.name} updated!', 'plan_id': plan.id})
             
             return redirect('plans:plan_list')
+        else:
+            # Surface form validation errors to the user via messages
+            for field, errs in form.errors.items():
+                if field == '__all__':
+                    for e in errs:
+                        messages.error(request, e)
+                else:
+                    for e in errs:
+                        messages.error(request, f"{field}: {e}")
     else:
         form = PlanForm(instance=plan)
     
