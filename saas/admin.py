@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Tenant, Plan, TenantSetting, Feature, Module, PlanFeature, Addon
+from .models import Tenant, Plan, TenantSetting, Feature, Module, PlanFeature, Addon, OneTimePlan, SubscriptionBillingPlan, CustomEnterprisePlan
 
 @admin.register(Tenant)
 class TenantAdmin(admin.ModelAdmin):
@@ -108,6 +108,90 @@ class AddonAdmin(admin.ModelAdmin):
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+
+# ==================== NEW PLAN MODELS ====================
+
+@admin.register(OneTimePlan)
+class OneTimePlanAdmin(admin.ModelAdmin):
+    list_display = ('license_name', 'one_time_price', 'employee_limit', 'customers', 'status', 'created_date')
+    list_filter = ('status', 'upgrade_eligible', 'created_date')
+    search_fields = ('license_name',)
+    readonly_fields = ('created_date', 'updated_at')
+    
+    fieldsets = (
+        ('License Information', {
+            'fields': ('license_name', 'one_time_price')
+        }),
+        ('Limits', {
+            'fields': ('employee_limit', 'admin_limit', 'support_duration')
+        }),
+        ('Engagement', {
+            'fields': ('upgrade_eligible', 'customers')
+        }),
+        ('Status', {
+            'fields': ('status',)
+        }),
+        ('Timestamps', {
+            'fields': ('created_date', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+
+@admin.register(SubscriptionBillingPlan)
+class SubscriptionBillingPlanAdmin(admin.ModelAdmin):
+    list_display = ('company_name', 'billing_type', 'monthly_price', 'subscription_status', 'auto_renew', 'created_date')
+    list_filter = ('billing_type', 'subscription_status', 'auto_renew', 'created_date')
+    search_fields = ('company_name', 'company_email')
+    readonly_fields = ('created_date', 'updated_at')
+    list_editable = ('auto_renew',)
+    
+    fieldsets = (
+        ('Company Information', {
+            'fields': ('company_name', 'company_email')
+        }),
+        ('Billing Details', {
+            'fields': ('billing_type', 'add_on_category', 'monthly_price')
+        }),
+        ('Limits', {
+            'fields': ('quantity', 'max_quantity')
+        }),
+        ('Subscription Settings', {
+            'fields': ('subscription_status', 'auto_renew')
+        }),
+        ('Timestamps', {
+            'fields': ('created_date', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+
+@admin.register(CustomEnterprisePlan)
+class CustomEnterprisePlanAdmin(admin.ModelAdmin):
+    list_display = ('plan_name', 'company_name', 'monthly_price', 'employee_limit', 'status', 'created_date')
+    list_filter = ('status', 'created_date')
+    search_fields = ('plan_name', 'company_name', 'company_email')
+    readonly_fields = ('created_date', 'updated_at')
+    
+    fieldsets = (
+        ('Company Information', {
+            'fields': ('company_name', 'company_email')
+        }),
+        ('Plan Information', {
+            'fields': ('plan_name', 'monthly_price')
+        }),
+        ('Contract Terms', {
+            'fields': ('employee_limit', 'contract_duration')
+        }),
+        ('Status', {
+            'fields': ('status',)
+        }),
+        ('Timestamps', {
+            'fields': ('created_date', 'updated_at'),
             'classes': ('collapse',)
         }),
     )

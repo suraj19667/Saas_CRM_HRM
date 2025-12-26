@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">One Time Plans</h2>
+            <p class="text-muted mb-0">Single purchase licenses – no recurring charges</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary">
+                <i class="bi bi-download"></i> Export
+            </button>
+            <a href="{% url 'plans:plan_create' %}" class="btn btn-primary"
+                style="background-color: #FF6B35; border-color: #FF6B35;">
+                <i class="bi bi-plus-circle"></i> Add Plan
+            </a>
+        </div>
+    </div>
+
+    {% if messages %}
+    <div class="messages mb-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Filters and View Section -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0 fw-semibold">View Plans</h5>
+                <div class="d-flex gap-2 align-items-center">
+                    <div class="input-group" style="width: 180px;">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="bi bi-calendar"></i>
+                        </span>
+                        <input type="text" class="form-control border-start-0" placeholder="dd/mm/yyyy">
+                    </div>
+                    <select class="form-select" style="width: 160px;">
+                        <option>Sort By: Last 7 Days</option>
+                        <option>Last 30 Days</option>
+                        <option>Last 90 Days</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Table Controls -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex gap-2 align-items-center">
+                    <span class="text-muted small">Row Per Page</span>
+                    <select class="form-select form-select-sm" style="width: 80px;">
+                        <option>10</option>
+                        <option>25</option>
+                        <option>50</option>
+                        <option>100</option>
+                    </select>
+                    <span class="text-muted small">Entries</span>
+                </div>
+                <div class="input-group" style="max-width: 250px;">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" class="form-control border-start-0" placeholder="Search">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plans Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="mb-1 fw-semibold">One Time Plan Listing</h5>
+                    <p class="text-muted small mb-0">All one-time purchase plans in your system</p>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="border-0 text-muted fw-normal small">Created Date</th>
+                            <th class="border-0 text-muted fw-normal small">Plan Name</th>
+                            <th class="border-0 text-muted fw-normal small">One-Time Price</th>
+                            <th class="border-0 text-muted fw-normal small">Employee Limit</th>
+                            <th class="border-0 text-muted fw-normal small">Status</th>
+                            <th class="border-0 text-muted fw-normal small">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if one_time_plans %}
+                        {% for plan in one_time_plans %}
+                        <tr>
+                            <td class="small text-muted">{{ plan.created_at|date:"d/m/Y" }}</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <img src="{% static 'images/plan-avatar.png' %}" alt="{{ plan.name }}"
+                                        class="rounded-circle" width="32" height="32">
+                                    <span class="fw-medium">{{ plan.name }}</span>
+                                </div>
+                            </td>
+                            <td class="fw-medium">₹{{ plan.price|floatformat:0 }}</td>
+                            <td class="text-center">{{ plan.max_users }}</td>
+                            <td>
+                                {% if plan.is_active %}
+                                <span class="badge rounded-pill"
+                                    style="background-color: #10B981; color: white; padding: 4px 12px;">
+                                    ● Active
+                                </span>
+                                {% else %}
+                                <span class="badge rounded-pill"
+                                    style="background-color: #EF4444; color: white; padding: 4px 12px;">
+                                    ● Inactive
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'plans:plan_edit' plan.id %}" class="btn btn-sm btn-outline-primary"
+                                        title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">
+                                No one-time plans found. <a href="{% url 'plans:plan_create' %}">Create one</a>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <nav aria-label="Page navigation" class="mt-3">
+                <ul class="pagination justify-content-end">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">Previous</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,119 +1,672 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block content %}
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h3>{{ page_title }}</h3>
-                </div>
-                <div class="card-body">
-                    {% if messages %}
-                    <div class="messages">
-                        {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                        {% endfor %}
-                    </div>
+<style>
+    /* Modal Overlay */
+    .plan-form-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        z-index: 1050;
+        overflow-y: auto;
+    }
+
+    /* Form Card */
+    .plan-form-card {
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        max-width: 800px;
+        width: 100%;
+        padding: 40px;
+        margin: auto;
+    }
+
+    .plan-form-card h2 {
+        font-size: 28px;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 32px;
+    }
+
+    /* Form Sections */
+    .form-section {
+        margin-bottom: 32px;
+    }
+
+    .form-section h3 {
+        font-size: 14px;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 16px;
+    }
+
+    /* Form Fields */
+    .form-group {
+        margin-bottom: 16px;
+    }
+
+    .form-group label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="number"],
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        font-size: 14px;
+        font-family: inherit;
+        transition: all 0.2s ease;
+    }
+
+    .form-group input[type="text"]:focus,
+    .form-group input[type="number"]:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 120px;
+        font-family: inherit;
+    }
+
+    /* Two Column Layout */
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    @media (max-width: 640px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Status Checkbox */
+    .checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .checkbox-wrapper input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+
+    .checkbox-wrapper label {
+        margin: 0;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+    /* Support Level Dropdown */
+    .form-group select {
+        cursor: pointer;
+    }
+
+    /* Toggle Switches */
+    .module-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        padding: 16px;
+        background: #f9fafb;
+        border-radius: 12px;
+    }
+
+    @media (max-width: 640px) {
+        .module-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .module-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: white;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .module-card:hover {
+        background: #f3f4f6;
+    }
+
+    .toggle-switch {
+        position: relative;
+        display: inline-flex;
+        width: 44px;
+        height: 24px;
+        background: #d1d5db;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .toggle-switch input {
+        display: none;
+    }
+
+    .toggle-switch input:checked+.toggle-slider {
+        background: #6366f1;
+    }
+
+    .toggle-switch input:checked+.toggle-slider::before {
+        transform: translateX(20px);
+    }
+
+    .toggle-slider {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #d1d5db;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .toggle-slider::before {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 20px;
+        height: 20px;
+        background: white;
+        border-radius: 50%;
+        transition: transform 0.3s ease;
+    }
+
+    .module-label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #374151;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    /* Terms Checkbox */
+    .terms-checkbox {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 16px;
+        background: #f9fafb;
+        border-radius: 8px;
+        margin-bottom: 24px;
+    }
+
+    .terms-checkbox input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        margin-top: 2px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .terms-checkbox label {
+        margin: 0;
+        font-size: 13px;
+        color: #6b7280;
+        cursor: pointer;
+        line-height: 1.5;
+    }
+
+    .terms-checkbox label a {
+        color: #6366f1;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .terms-checkbox label a:hover {
+        text-decoration: underline;
+    }
+
+    /* Buttons */
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 32px;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-cancel {
+        background: #f3f4f6;
+        color: #374151;
+    }
+
+    .btn-cancel:hover {
+        background: #e5e7eb;
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        min-width: 150px;
+    }
+
+    .btn-submit:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    /* Error Messages */
+    .error-message {
+        font-size: 13px;
+        color: #dc2626;
+        margin-top: 4px;
+    }
+
+    .form-group.error input,
+    .form-group.error textarea,
+    .form-group.error select {
+        border-color: #dc2626 !important;
+    }
+
+    /* Messages */
+    .alert {
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .alert-error {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+
+    .alert-success {
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+    }
+
+    /* Close Button */
+    .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #9ca3af;
+        transition: color 0.2s ease;
+    }
+
+    .close-btn:hover {
+        color: #374151;
+    }
+</style>
+
+<div class="plan-form-container">
+    <div class="plan-form-card">
+        <a href="{% url 'plans:plan_list' %}" class="close-btn">&times;</a>
+
+        <h2>{{ page_title }}</h2>
+
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-success{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% if form.non_field_errors %}
+        <div class="alert alert-error">
+            <strong>Form Errors:</strong>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+            {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="post" id="planForm">
+            {% csrf_token %}
+
+            <!-- Basic Information Section -->
+            <div class="form-section">
+                <h3>Basic Information</h3>
+
+                <div class="form-group">
+                    <label for="{{ form.name.id_for_label }}">Plan Name</label>
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                    <div class="error-message">{{ form.name.errors.0 }}</div>
                     {% endif %}
+                </div>
 
-                    <form method="post">
-                        {% csrf_token %}
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="{{ form.name.id_for_label }}" class="form-label">Plan Name</label>
-                                    {{ form.name }}
-                                    {% if form.name.errors %}
-                                    <div class="text-danger">{{ form.name.errors }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
-                                    {{ form.status }}
-                                    {% if form.status.errors %}
-                                    <div class="text-danger">{{ form.status.errors }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
+                <div class="form-group">
+                    <label for="{{ form.description.id_for_label }}">Description</label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                    <div class="error-message">{{ form.description.errors.0 }}</div>
+                    {% endif %}
+                </div>
 
-                        <div class="mb-3">
-                            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
-                            {{ form.description }}
-                            {% if form.description.errors %}
-                            <div class="text-danger">{{ form.description.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="{{ form.price_monthly.id_for_label }}" class="form-label">Monthly
-                                        Price</label>
-                                    {{ form.price_monthly }}
-                                    {% if form.price_monthly.errors %}
-                                    <div class="text-danger">{{ form.price_monthly.errors }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="{{ form.price_yearly.id_for_label }}" class="form-label">Yearly
-                                        Price</label>
-                                    {{ form.price_yearly }}
-                                    {% if form.price_yearly.errors %}
-                                    <div class="text-danger">{{ form.price_yearly.errors }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="{{ form.max_users.id_for_label }}" class="form-label">Max Users</label>
-                                    {{ form.max_users }}
-                                    {% if form.max_users.errors %}
-                                    <div class="text-danger">{{ form.max_users.errors }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="{{ form.max_storage_mb.id_for_label }}" class="form-label">Max Storage
-                                        (MB)</label>
-                                    {{ form.max_storage_mb }}
-                                    {% if form.max_storage_mb.errors %}
-                                    <div class="text-danger">{{ form.max_storage_mb.errors }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="{{ form.max_projects.id_for_label }}" class="form-label">Max
-                                        Projects</label>
-                                    {{ form.max_projects }}
-                                    {% if form.max_projects.errors %}
-                                    <div class="text-danger">{{ form.max_projects.errors }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-between">
-                            <a href="{% url 'plans:plan_list' %}" class="btn btn-secondary">Cancel</a>
-                            <button type="submit" class="btn btn-primary">{{ page_title }}</button>
-                        </div>
-                    </form>
+                <div class="checkbox-wrapper">
+                    {{ form.status }}
+                    <label for="{{ form.status.id_for_label }}">Status: Active</label>
+                    {% if form.status.errors %}
+                    <div class="error-message">{{ form.status.errors.0 }}</div>
+                    {% endif %}
                 </div>
             </div>
-        </div>
+
+            <!-- Custom Pricing Section -->
+            <div class="form-section">
+                <h3>Custom Pricing</h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.price_monthly.id_for_label }}">Monthly Price (₹)</label>
+                        {{ form.price_monthly }}
+                        {% if form.price_monthly.errors %}
+                        <div class="error-message">{{ form.price_monthly.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.price_yearly.id_for_label }}">Yearly Price (₹)</label>
+                        {{ form.price_yearly }}
+                        {% if form.price_yearly.errors %}
+                        <div class="error-message">{{ form.price_yearly.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Limits & Resources Section -->
+            <div class="form-section">
+                <h3>Limits & Resources</h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.max_users.id_for_label }}">Employee Limit</label>
+                        {{ form.max_users }}
+                        {% if form.max_users.errors %}
+                        <div class="error-message">{{ form.max_users.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label>Admin User Limit</label>
+                        <input type="number" name="admin_limit" id="admin_limit" placeholder="10"
+                            value="{{ request.POST.admin_limit|default:'' }}">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="storage_gb">Storage (GB)</label>
+                        <input type="number" id="storage_gb" name="storage_gb" placeholder="100" step="0.01"
+                            value="{{ storage_gb_display|default:'' }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="support_level">Support Level</label>
+                        <select name="support_level" id="support_level">
+                            <option value="basic" {% if request.POST.support_level == 'basic' %}selected{% endif %}>Basic</option>
+                            <option value="standard" {% if request.POST.support_level == 'standard' %}selected{% endif %}>Standard</option>
+                            <option value="premium" {% if request.POST.support_level == 'premium' %}selected{% endif %}>Premium</option>
+                            <option value="enterprise" {% if request.POST.support_level == 'enterprise' %}selected{% endif %}>Enterprise 24/7</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.max_projects.id_for_label }}">Max Projects</label>
+                        {{ form.max_projects }}
+                        {% if form.max_projects.errors %}
+                        <div class="error-message">{{ form.max_projects.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module Access Section -->
+            <div class="form-section">
+                <h3>Module Access</h3>
+
+                <div class="module-grid">
+                    <!-- Employee Management -->
+                    <div class="module-card">
+                        <label class="toggle-switch">
+                            <input type="checkbox" name="module_employee" value="1" {% if 'employee_management' in active_modules or request.POST.module_employee %}checked{% endif %}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="module-label">Employee Management</span>
+                    </div>
+
+                    <!-- Attendance -->
+                    <div class="module-card">
+                        <label class="toggle-switch">
+                            <input type="checkbox" name="module_attendance" value="1" {% if 'attendance_management' in active_modules or request.POST.module_attendance %}checked{% endif %}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="module-label">Attendance</span>
+                    </div>
+
+                    <!-- Leave Management -->
+                    <div class="module-card">
+                        <label class="toggle-switch">
+                            <input type="checkbox" name="module_leave" value="1" {% if 'leave_management' in active_modules or request.POST.module_leave %}checked{% endif %}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="module-label">Leave Management</span>
+                    </div>
+
+                    <!-- Payroll -->
+                    <div class="module-card">
+                        <label class="toggle-switch">
+                            <input type="checkbox" name="module_payroll" value="1" {% if 'payroll_management' in active_modules or request.POST.module_payroll %}checked{% endif %}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="module-label">Payroll</span>
+                    </div>
+
+                    <!-- Expense -->
+                    <div class="module-card">
+                        <label class="toggle-switch">
+                            <input type="checkbox" name="module_expense" value="1" {% if 'expense_management' in active_modules or request.POST.module_expense %}checked{% endif %}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="module-label">Expense</span>
+                    </div>
+
+                    <!-- Broadcast Messages -->
+                    <div class="module-card">
+                        <label class="toggle-switch">
+                            <input type="checkbox" name="module_broadcast" value="1" {% if 'broadcast_messages' in active_modules or request.POST.module_broadcast %}checked{% endif %}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="module-label">Broadcast Messages</span>
+                    </div>
+
+                    <!-- Analytics -->
+                    <div class="module-card">
+                        <label class="toggle-switch">
+                            <input type="checkbox" name="module_analytics" value="1" {% if 'analytics_module' in active_modules or request.POST.module_analytics %}checked{% endif %}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="module-label">Analytics</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hidden field for max_storage_mb -->
+            <input type="hidden" name="{{ form.max_storage_mb.name }}" id="{{ form.max_storage_mb.id }}"
+                value="{{ form.max_storage_mb.value|default:'' }}">
+
+            <!-- Terms & Conditions -->
+            <div class="terms-checkbox">
+                <input type="checkbox" id="terms_privacy" name="terms_privacy" required>
+                <label for="terms_privacy">
+                    I agree to the <a href="#" target="_blank">Terms & Conditions</a> and <a href="#"
+                        target="_blank">Privacy Policy</a>
+                </label>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a href="{% url 'plans:plan_list' %}" class="btn btn-cancel">Cancel</a>
+                <button type="submit" class="btn btn-submit">
+                    {% if plan %}Update Plan{% else %}Create Plan{% endif %}
+                </button>
+            </div>
+        </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const storageGbInput = document.getElementById('storage_gb');
+        const storageMbHidden = document.getElementById('id_max_storage_mb');
+        const planForm = document.getElementById('planForm');
+
+        // Convert MB to GB on page load
+        if (storageMbHidden && storageMbHidden.value) {
+            const gbValue = storageMbHidden.value / 1024;
+            storageGbInput.value = gbValue.toFixed(2);
+        }
+
+        // Convert GB to MB on form submission
+        planForm.addEventListener('submit', function (e) {
+            const termsCheckbox = document.getElementById('terms_privacy');
+
+            if (!termsCheckbox.checked) {
+                e.preventDefault();
+                alert('Please accept the Terms & Conditions and Privacy Policy to continue.');
+                return false;
+            }
+
+            if (storageGbInput.value) {
+                const mbValue = Math.round(storageGbInput.value * 1024);
+                storageMbHidden.value = mbValue;
+            }
+
+            // Show loading message
+            const submitBtn = planForm.querySelector('.btn-submit');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Saving...';
+            submitBtn.disabled = true;
+        });
+
+        // Validate yearly price
+        const monthlyPriceInput = document.getElementById('id_price_monthly');
+        const yearlyPriceInput = document.getElementById('id_price_yearly');
+
+        if (yearlyPriceInput) {
+            yearlyPriceInput.addEventListener('change', function () {
+                const monthlyPrice = parseFloat(monthlyPriceInput.value) || 0;
+                const yearlyPrice = parseFloat(yearlyPriceInput.value) || 0;
+                const maxYearlyPrice = monthlyPrice * 12;
+
+                if (yearlyPrice > maxYearlyPrice && monthlyPrice > 0) {
+                    alert(`Yearly price should not exceed 12 times the monthly price (Max: ₹${maxYearlyPrice.toFixed(2)})`);
+                    yearlyPriceInput.value = maxYearlyPrice.toFixed(2);
+                }
+            });
+        }
+
+        // Reset form on successful page load after creation
+        if (window.location.search.includes('success')) {
+            // Page was redirected after successful creation
+            setTimeout(() => {
+                planForm.reset();
+                storageGbInput.value = '';
+            }, 1000);
+        }
+
+        // Close modal button
+        const closeBtn = document.querySelector('.close-btn');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (planForm.querySelector('input[name="name"]').value && 
+                    confirm('Are you sure you want to close? Any unsaved changes will be lost.')) {
+                    window.location.href = this.href;
+                } else {
+                    window.location.href = this.href;
+                }
+            });
+        }
+
+        // Auto-close modal on successful form submission
+        planForm.addEventListener('submit', function () {
+            // Delay to allow form to process
+            setTimeout(() => {
+                // If form was valid and saved, redirect will happen automatically
+                // If form has errors, it will reload with errors shown
+            }, 500);
+        });
+
+        // Format currency inputs
+        if (monthlyPriceInput) {
+            monthlyPriceInput.addEventListener('blur', function () {
+                if (this.value) {
+                    const num = parseFloat(this.value);
+                    this.value = num.toFixed(2);
+                }
+            });
+        }
+
+        if (yearlyPriceInput) {
+            yearlyPriceInput.addEventListener('blur', function () {
+                if (this.value) {
+                    const num = parseFloat(this.value);
+                    this.value = num.toFixed(2);
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

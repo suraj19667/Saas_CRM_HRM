@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
@@ -12,7 +12,7 @@ from django.db.models import Q, Count
 import random
 import string
 from ..models import CustomUser, Role, Permission, RolePermission, Tenant, Subscription
-from ..forms import CustomUserRegistrationForm, CustomLoginForm, OTPVerificationForm
+from ..forms import CustomUserRegistrationForm, CustomLoginForm, OTPVerificationForm, CustomUserChangeForm
 from ..decorators import permission_required
 
 # Helper function for user_passes_test decorator
@@ -93,7 +93,12 @@ def tenant_dashboard_view(request):
     
     if not tenant:
         messages.error(request, 'No tenant found. Please contact administrator.')
-        return redirect('auth:login')
+        # Render an informational page instead of redirecting to the login
+        # This avoids a redirect loop where the authenticated user is sent
+        # to the login page which then redirects back to the dashboard.
+        return render(request, 'no_tenant.html', {
+            'message': 'Your account is not associated with any company. Please contact the administrator.'
+        })
     
     # Tenant specific data
     users = CustomUser.objects.filter(tenant=tenant).select_related('role')
@@ -351,7 +356,7 @@ def login_view(request):
                     return redirect(settings.LOGIN_URL)
                 
                 # Login user
-                login(request, user)
+                login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                 messages.success(request, f'Welcome back, {user.get_full_name()}!')
                 next_url = request.GET.get('next') or settings.LOGIN_REDIRECT_URL
                 return redirect(next_url)
@@ -392,10 +397,15 @@ def register_view(request):
             user.is_verified = True  # Auto-verify
             user.save()
             
-            # Login the user
-            login(request, user)
-            messages.success(request, f'Welcome {user.get_full_name()}! Your account has been created.')
-            return redirect('dashboard')
+            # Auto-login only if the user is associated with a tenant (tenant users go to dashboard)
+            if getattr(user, 'tenant', None):
+                login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+                messages.success(request, f'Welcome {user.get_full_name()}! Your account has been created.')
+                return redirect('dashboard')
+            else:
+                # For users without a tenant, do not auto-login. Redirect to login page.
+                messages.success(request, 'Account created successfully. Please login to continue.')
+                return redirect('auth:login')
     else:
         form = CustomUserRegistrationForm()
     
