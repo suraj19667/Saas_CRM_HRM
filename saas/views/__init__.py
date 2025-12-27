@@ -929,7 +929,7 @@ def users_list(request):
         # For "All Users" page, show tenants/companies
         tenants_queryset = Tenant.objects.select_related('subscription_plan').prefetch_related('users').all()
         page_title = 'All Users'
-        template = 'saas/tenant/all_users.html'
+        template = 'users/users_list.html'
         
         # Prepare tenant data for template
         tenants = []
