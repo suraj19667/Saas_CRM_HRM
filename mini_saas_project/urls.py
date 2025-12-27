@@ -21,4 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('saas.urls')),
     path('company/', include('saas.urls.company_auth_urls', namespace='company')),
+    path('plans/', include('saas.urls.plan_urls', namespace='plans')),
 ]
+

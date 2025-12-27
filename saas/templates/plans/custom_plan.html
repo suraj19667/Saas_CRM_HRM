@@ -6,8 +6,8 @@
     <!-- Header Section -->
     <div class="d-flex justify-content-between align-items-start mb-4">
         <div>
-            <h2 class="fw-bold mb-1">One Time Plans</h2>
-            <p class="text-muted mb-0">Single purchase licenses – no recurring charges</p>
+            <h2 class="fw-bold mb-1">Custom Enterprise Plans</h2>
+            <p class="text-muted mb-0">Negotiated plans for enterprise clients with special requirements</p>
         </div>
         <div class="d-flex gap-2">
             <button class="btn btn-outline-secondary">
@@ -15,7 +15,7 @@
             </button>
             <a href="{% url 'plans:plan_create' %}" class="btn btn-primary"
                 style="background-color: #FF6B35; border-color: #FF6B35;">
-                <i class="bi bi-plus-circle"></i> Add Plan
+                <i class="bi bi-plus-circle"></i> Create Custom Plan
             </a>
         </div>
     </div>
@@ -78,8 +78,8 @@
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
-                    <h5 class="mb-1 fw-semibold">One Time Plan Listing</h5>
-                    <p class="text-muted small mb-0">All one-time purchase plans in your system</p>
+                    <h5 class="mb-1 fw-semibold">Custom Plan Listing</h5>
+                    <p class="text-muted small mb-0">All custom enterprise plans in your system</p>
                 </div>
             </div>
 
@@ -89,11 +89,12 @@
                     <thead class="bg-light">
                         <tr>
                             <th class="border-0 text-muted fw-normal small">Created Date</th>
+                            <th class="border-0 text-muted fw-normal small">Company</th>
                             <th class="border-0 text-muted fw-normal small">Plan Name</th>
-                            <th class="border-0 text-muted fw-normal small">One-Time Price</th>
                             <th class="border-0 text-muted fw-normal small">Employee Limit</th>
+                            <th class="border-0 text-muted fw-normal small">Contract Duration</th>
+                            <th class="border-0 text-muted fw-normal small">Monthly Price</th>
                             <th class="border-0 text-muted fw-normal small">Status</th>
-                            <th class="border-0 text-muted fw-normal small">Actions</th>
                         </tr>
                     </thead>
                     <tbody>

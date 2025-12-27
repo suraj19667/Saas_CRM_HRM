@@ -9,7 +9,7 @@ from .media import Media
 from .notification import Notification
 from .subscription import Subscription, SubscriptionPlan
 from .tenant import Tenant, TenantSetting
-from .plan import Plan
+from .plan import Plan, OneTimePlan, SubscriptionBillingPlan, CustomEnterprisePlan
 from .company_subscription import CompanySubscription
 from .payment_transaction import PaymentTransaction
 from .module import Module

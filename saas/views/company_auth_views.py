@@ -61,7 +61,7 @@ def company_login_view(request, tenant_domain=None):
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
 
-            user = authenticate(request, username=email, password=password)
+            user = authenticate(request, username=email, password=password, backend='django.contrib.auth.backends.ModelBackend')
             if user:
                 if not user.is_verified:
                     messages.error(request, 'Please verify your email before logging in.')
@@ -70,7 +70,7 @@ def company_login_view(request, tenant_domain=None):
                 # Check if user belongs to the tenant
                 # For company login, allow login if user has a tenant
                 if user.tenant:
-                    login(request, user)
+                    login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                     messages.success(request, 'Logged in successfully!')
                     # Redirect based on tenant status
                     if user.tenant.status == 'inactive':

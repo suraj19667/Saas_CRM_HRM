@@ -601,27 +601,20 @@
                 <div class="menu-section-heading">TENANTS</div>
                 <ul class="menu-list">
                     <li class="menu-item">
-                        <a href="{% url 'users' %}"
-                            class="menu-link {% if request.path == '/users/' %}active{% endif %}"
-                            data-perm="view_users">
+                        <a href="{% url 'users_list' %}"
+                            class="menu-link {% if request.path == '/users/' %}active{% endif %}">
                             <i class="bi bi-people"></i>
                             <span style="margin-left: 12px;">All Users</span>
                         </a>
                     </li>
                     <li class="menu-item">
                         <a href="{% url 'admin_users' %}"
-                            class="menu-link {% if 'admin' in request.path %}active{% endif %}" data-perm="view_users">
+                            class="menu-link {% if request.path == '/users/' %}active{% endif %}">
                             <i class="bi bi-person-gear"></i>
                             <span style="margin-left: 12px;">Admin User</span>
                         </a>
                     </li>
-                    <!-- <li class="menu-item">
-                        <a href="{% url 'admin_users' %}"
-                            class="menu-link {% if 'admin' in request.path %}active{% endif %}" data-perm="view_users">
-                            <i class="bi bi-person-badge"></i>
-                            <span style="margin-left: 12px;">Admin Users</span>
-                        </a>
-                    </li> -->
+
                     <li class="menu-item">
                         <a href="#" class="menu-link">
                             <i class="bi bi-calendar-check"></i>
@@ -630,24 +623,21 @@
                     </li>
                 </ul>
 
-                <!-- Plan Management Section  -->
+                <!-- Plan Management Section -->
                 <div class="menu-section-heading">Plan management</div>
                 <ul class="menu-list">
                     <li class="menu-item">
-                        <a href="#" class="menu-link dropdown-toggle" onclick="toggleDropdown('plansDropdown')">
+                        <a href="{% url 'plans:plan_list' %}" class="menu-link dropdown-toggle"
+                            onclick="toggleDropdown('plansDropdown')">
                             <i class="bi bi-grid-3x3-gap"></i>
                             <span style="margin-left: 12px;">Plans</span>
                         </a>
                     </li>
                     <div class="dropdown-content expanded" id="plansDropdown">
+
                         <li class="menu-item dropdown-item">
-                            <a href="{% url 'plans:plan_list' %}"
-                                class="menu-link {% if 'plans' in request.path and 'plan_list' in request.path %}active{% endif %}">
-                                <span>Manage Plans</span>
-                            </a>
-                        </li>
-                        <li class="menu-item dropdown-item">
-                            <a href="#" class="menu-link">
+                            <a href="{% url 'plans:one_time_plans' %}"
+                                class="menu-link {% if 'one-time' in request.path %}active{% endif %}">
                                 <span>One Time</span>
                             </a>
                         </li>
@@ -658,7 +648,8 @@
                             </a>
                         </li>
                         <li class="menu-item dropdown-item">
-                            <a href="#" class="menu-link">
+                            <a href="{% url 'plans:custom_plans' %}"
+                                class="menu-link {% if 'custom' in request.path %}active{% endif %}">
                                 <span>Custom Plans</span>
                             </a>
                         </li>
@@ -683,7 +674,13 @@
                             <span style="margin-left: 12px;">Discount</span>
                         </a>
                     </li>
-
+                    <!-- <li class="menu-item">
+                        <a href="{% if request.user.is_staff %}{% url 'payment:subscription_list' %}{% else %}{% url 'subscription:list_plans' %}{% endif %}"
+                            class="menu-link {% if 'subscriptions' in request.path or 'subscription' in request.path or 'orders' in request.path %}active{% endif %}">
+                            <i class="bi bi-list-check"></i>
+                            <span style="margin-left: 12px;">Subscriptions</span>
+                        </a>
+                    </li> -->
                     <li class="menu-item">
                         <a href="{% url 'payment:invoices_list' %}"
                             class="menu-link {% if 'invoices' in request.path %}active{% endif %}">
@@ -691,11 +688,11 @@
                             <span style="margin-left: 12px;">Invoice & Billing</span>
                         </a>
                     </li>
-                    <!-- <li class="menu-item">
+                    <li class="menu-item">
                         <a href="#" class="menu-link">
                             <i class="bi bi-ticket"></i>
-                            <span style="margin-left: 12px;">Coupons</span> -->
-                    </a>
+                            <span style="margin-left: 12px;">Coupons</span>
+                        </a>
                     </li>
                 </ul>
 
@@ -758,7 +755,7 @@
                 </ul>
             </div>
 
-            <!-- User Profile Bottom  -->
+            <!-- User Profile Bottom -->
             {% if user.is_authenticated %}
             <div class="user-profile-bottom">
                 <div class="user-avatar-small">
@@ -854,19 +851,9 @@
                     if (!data || !data.success) return;
                     const perms = data.user.permissions || [];
 
-                    // First: hide any elements that declare a required permission via `data-perm`
-                    document.querySelectorAll('[data-perm]').forEach(el => {
-                        const required = el.getAttribute('data-perm') || '';
-                        // allow comma-separated list of required perms; element shown if user has ANY of them
-                        const requiredList = required.split(',').map(s => s.trim()).filter(Boolean);
-                        if (requiredList.length === 0) return;
-                        const hasAny = requiredList.some(r => perms.includes(r));
-                        if (!hasAny) el.style.display = 'none';
-                    });
-
-                    // Backwards-compatibility fallback: hide by text if no `data-perm` exists for that item
+                    // Helper to hide menu by text match
                     function hideMenu(text) {
-                        const items = document.querySelectorAll('.menu-link:not([data-perm])');
+                        const items = document.querySelectorAll('.menu-link');
                         items.forEach(a => {
                             if (a.textContent.trim().toLowerCase().includes(text.toLowerCase())) {
                                 a.style.display = 'none';
@@ -878,6 +865,7 @@
                     if (!perms.includes('view_deals')) hideMenu('Deals');
                     if (!perms.includes('view_forms') && !perms.includes('view_form')) hideMenu('Form Builder');
                     if (!perms.includes('view_contracts')) hideMenu('Contract');
+                    if (!perms.includes('view_users')) hideMenu('Users');
                     if (!perms.includes('view_dashboard')) hideMenu('CRM System Setup');
                 })
                 .catch(() => { });

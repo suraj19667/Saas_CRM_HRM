@@ -115,6 +115,31 @@
       font-size: 0.875rem;
       margin-top: 0.25rem;
     }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    /* Reserve space for browser password/key icon and our toggle */
+    .password-wrapper .form-control {
+      padding-right: 72px;
+    }
+
+    .toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 44px;
+      /* place left of native browser icon */
+      transform: translateY(-50%);
+      background: white;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      color: #667eea;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      z-index: 3;
+    }
   </style>
 </head>
 
@@ -206,8 +231,13 @@
                 <label for="password1" class="form-label">
                   <i class="bi bi-lock-fill"></i> Password
                 </label>
-                <input type="password" class="form-control" id="password1" name="password1" required
-                  placeholder="Enter Password">
+                <div class="password-wrapper">
+                  <input type="password" class="form-control" id="password1" name="password1" required
+                    placeholder="Enter Password">
+                  <button type="button" class="toggle-password" data-target="password1" aria-label="Show password">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
                 {% if form.password1.errors %}
                 <div class="text-error">
                   {% for error in form.password1.errors %}{{ error }}{% endfor %}
@@ -218,13 +248,20 @@
                 <label for="password2" class="form-label">
                   <i class="bi bi-lock-fill"></i> Confirm Password
                 </label>
-                <input type="password" class="form-control" id="password2" name="password2" required
-                  placeholder="Confirm Password">
+                <div class="password-wrapper">
+                  <input type="password" class="form-control" id="password2" name="password2" required
+                    placeholder="Confirm Password">
+                  <button type="button" class="toggle-password" data-target="password2"
+                    aria-label="Show confirm password">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
                 {% if form.password2.errors %}
                 <div class="text-error">
                   {% for error in form.password2.errors %}{{ error }}{% endfor %}
                 </div>
                 {% endif %}
+                <div id="pw-match" class="form-text mt-1"></div>
               </div>
             </div>
 
@@ -256,6 +293,64 @@
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Toggle eye buttons
+    document.querySelectorAll('.toggle-password').forEach(btn => {
+      btn.addEventListener('click', function () {
+        const targetId = this.dataset.target;
+        const input = document.getElementById(targetId);
+        const icon = this.querySelector('i');
+        if (!input) return;
+
+        if (input.type === 'password') {
+          input.type = 'text';
+          icon.classList.replace('bi-eye', 'bi-eye-slash');
+        } else {
+          input.type = 'password';
+          icon.classList.replace('bi-eye-slash', 'bi-eye');
+        }
+        checkPasswordMatch();
+      });
+    });
+
+    // Password match checker
+    function checkPasswordMatch() {
+      const pw = document.getElementById('password1');
+      const cpw = document.getElementById('password2');
+      const msgEl = document.getElementById('pw-match');
+      if (!pw || !cpw || !msgEl) return;
+
+      const v1 = pw.value || '';
+      const v2 = cpw.value || '';
+
+      if (v1 === '' && v2 === '') {
+        msgEl.textContent = '';
+        pw.classList.remove('is-valid', 'is-invalid');
+        cpw.classList.remove('is-valid', 'is-invalid');
+        return;
+      }
+
+      if (v1 === v2) {
+        msgEl.textContent = 'Passwords match';
+        msgEl.classList.remove('text-danger');
+        msgEl.classList.add('text-success');
+        pw.classList.add('is-valid'); pw.classList.remove('is-invalid');
+        cpw.classList.add('is-valid'); cpw.classList.remove('is-invalid');
+      } else {
+        msgEl.textContent = 'Passwords do not match';
+        msgEl.classList.remove('text-success');
+        msgEl.classList.add('text-danger');
+        pw.classList.add('is-invalid'); pw.classList.remove('is-valid');
+        cpw.classList.add('is-invalid'); cpw.classList.remove('is-valid');
+      }
+    }
+
+    // Attach input listeners
+    const p1 = document.getElementById('password1');
+    const p2 = document.getElementById('password2');
+    if (p1) p1.addEventListener('input', checkPasswordMatch);
+    if (p2) p2.addEventListener('input', checkPasswordMatch);
+  </script>
 </body>
 
 </html>
