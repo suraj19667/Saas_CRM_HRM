@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-from saas.models.plan import Plan
+from saas.models.plan import Plan, OneTimePlan, CustomEnterprisePlan
 from saas.models.feature import Feature
 from saas.models.planfeature import PlanFeature
 from ..forms.plan_forms import PlanForm
@@ -53,7 +53,7 @@ def one_time_plans(request):
         messages.error(request, 'You do not have permission to access plans.')
         return redirect('dashboard')
     
-    plans = Plan.objects.filter(plan_type='one_time').order_by('-created_at')
+    plans = OneTimePlan.objects.all().order_by('-created_date')
     
     # Pagination
     from django.core.paginator import Paginator
@@ -103,7 +103,7 @@ def custom_plans(request):
         messages.error(request, 'You do not have permission to access plans.')
         return redirect('dashboard')
     
-    plans = Plan.objects.filter(plan_type='custom').order_by('-created_at')
+    plans = CustomEnterprisePlan.objects.all().order_by('-created_date')
     
     # Pagination
     from django.core.paginator import Paginator

@@ -34,15 +34,21 @@
             <!-- Tab Navigation -->
             <ul class="nav nav-pills mb-3">
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="{% url 'plans:one_time_plans' %}">One Time</a>
+                    <a class="nav-link {% if plan_type == 'one_time' %}active{% else %}text-dark{% endif %}"
+                        href="{% url 'plans:one_time_plans' %}" {% if plan_type=='one_time'
+                        %}style="background-color: #6366F1; border-radius: 8px;" {% endif %}>One Time</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="{% url 'plans:subscription_plans' %}"
-                        style="background-color: #6366F1; border-radius: 8px;">Subscription</a>
+                    <a class="nav-link {% if plan_type == 'subscription' %}active{% else %}text-dark{% endif %}"
+                        href="{% url 'plans:subscription_plans' %}" {% if plan_type=='subscription'
+                        %}style="background-color: #6366F1; border-radius: 8px;" {% endif %}>Subscription</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="{% url 'plans:custom_plans' %}">Custom</a>
+                    <a class="nav-link {% if plan_type == 'custom' %}active{% else %}text-dark{% endif %}"
+                        href="{% url 'plans:custom_plans' %}" {% if plan_type=='custom'
+                        %}style="background-color: #6366F1; border-radius: 8px;" {% endif %}>Custom</a>
                 </li>
+            </ul>
             </ul>
         </div>
     </div>
