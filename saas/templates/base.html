@@ -608,10 +608,10 @@
                         </a>
                     </li>
                     <li class="menu-item">
-                        <a href="{% url 'admin_users' %}"
-                            class="menu-link {% if request.path == '/users/' %}active{% endif %}">
+                        <a href="{% url 'saas_admin:admin_users' %}"
+                            class="menu-link {% if 'admin-users' in request.path %}active{% endif %}">
                             <i class="bi bi-person-gear"></i>
-                            <span style="margin-left: 12px;">Admin User</span>
+                            <span style="margin-left: 12px;">Admin Users</span>
                         </a>
                     </li>
 
@@ -669,7 +669,8 @@
                         </a>
                     </li>
                     <li class="menu-item">
-                        <a href="#" class="menu-link">
+                        <a href="{% url 'saas_admin:discount_list' %}"
+                            class="menu-link {% if 'discount' in request.path %}active{% endif %}">
                             <i class="bi bi-percent"></i>
                             <span style="margin-left: 12px;">Discount</span>
                         </a>
@@ -682,8 +683,8 @@
                         </a>
                     </li> -->
                     <li class="menu-item">
-                        <a href="{% url 'payment:invoices_list' %}"
-                            class="menu-link {% if 'invoices' in request.path %}active{% endif %}">
+                        <a href="{% url 'saas_admin:invoice_billing' %}"
+                            class="menu-link {% if 'invoice' in request.path or 'billing' in request.path %}active{% endif %}">
                             <i class="bi bi-receipt"></i>
                             <span style="margin-left: 12px;">Invoice & Billing</span>
                         </a>
@@ -701,9 +702,16 @@
                 <ul class="menu-list">
                     <li class="menu-item">
                         <a href="{% url 'access_control:dashboard' %}"
-                            class="menu-link {% if 'roles-permissions' in request.path %}active{% endif %}">
+                            class="menu-link {% if 'roles-permissions' in request.path or 'roles' in request.path %}active{% endif %}">
                             <i class="bi bi-shield-check"></i>
                             <span style="margin-left: 12px;">Roles & Permission</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{% url 'features:feature_list' %}"
+                            class="menu-link {% if 'features' in request.path %}active{% endif %}">
+                            <i class="bi bi-toggle-on"></i>
+                            <span style="margin-left: 12px;">Features & Toggles</span>
                         </a>
                     </li>
                 </ul>
@@ -755,7 +763,7 @@
                 </ul>
             </div>
 
-            <!-- User Profile Bottom -->
+            <!-- user profile bottom section -->
             {% if user.is_authenticated %}
             <div class="user-profile-bottom">
                 <div class="user-avatar-small">
@@ -778,8 +786,31 @@
             <!-- Payments Quick Peek removed from sidebar -->
         </aside>
 
+        <!-- Top Navbar -->
+        <nav class="top-navbar"
+            style="position: fixed; top: 0; left: 252px; right: 0; height: 60px; background: #fff; border-bottom: 1px solid #E5E7EB; z-index: 999; display: flex; align-items: center; padding: 0 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <div style="flex: 1; display: flex; align-items: center; gap: 16px;">
+                <div style="position: relative; flex: 1; max-width: 400px;">
+                    <input type="text" placeholder="Search in Payroll"
+                        style="width: 100%; padding: 8px 12px 8px 36px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 14px;">
+                    <i class="bi bi-search"
+                        style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #6B7280;"></i>
+                    <span
+                        style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 11px; color: #9CA3AF; background: #F3F4F6; padding: 2px 6px; border-radius: 4px;">CTRL+/</span>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <i class="bi bi-bell" style="font-size: 20px; color: #6B7280; cursor: pointer;"></i>
+                <i class="bi bi-envelope" style="font-size: 20px; color: #6B7280; cursor: pointer;"></i>
+                <div
+                    style="width: 36px; height: 36px; border-radius: 50%; background: #6AD66A; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; cursor: pointer;">
+                    {{ user.first_name.0|upper|default:user.username.0|upper }}
+                </div>
+            </div>
+        </nav>
+
         <!-- Main Content -->
-        <main class="main-content">
+        <main class="main-content" style="margin-top: 60px;">
             {% block content %}
             <div class="content-header">
                 <h1>Users and Roles</h1>

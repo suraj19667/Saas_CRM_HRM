@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Custom Enterprise Plans{% endblock %}
+
+{% block extra_css %}
+<style>
+    .table-container {
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        border: 1px solid #E5E7EB;
+    }
+    .badge-status {
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .badge-active { background: #D1FAE5; color: #065F46; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+    <h1 style="font-size: 28px; font-weight: 700; margin: 0 0 8px 0;">Custom Enterprise Plans</h1>
+    <p style="color: #6B7280; margin: 0;">Negotiated plans for enterprise clients with special requirements</p>
+</div>
+
+<!-- Filters and Actions -->
+<div class="table-container mb-4">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+            <select class="form-select form-select-sm" style="width: auto;">
+                <option>Row Per Page 10 Entries</option>
+            </select>
+            <input type="text" class="form-control form-control-sm" placeholder="Search" style="width: 200px;" value="{{ search_query }}">
+            <select class="form-select form-select-sm" style="width: auto;">
+                <option>Sort By: Last 7 Days</option>
+            </select>
+        </div>
+        <div>
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle">Export</button>
+            <a href="{% url 'plans:custom_plans' %}" class="btn btn-sm btn-primary" style="margin-left: 8px;">+ Create Custom Plans</a>
+        </div>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="table-container">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Created Date</th>
+                <th>Company</th>
+                <th>Plan Name</th>
+                <th>Employee Limit</th>
+                <th>Contract Duration</th>
+                <th>Monthly Price</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for plan in plans %}
+            <tr>
+                <td>{{ plan.created_date|date:"d/m/Y" }}</td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #6AD66A; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 12px;">
+                            {{ plan.company_name.0|upper }}
+                        </div>
+                        <div>
+                            <div style="font-weight: 600;">{{ plan.company_name }}</div>
+                            <div style="font-size: 12px; color: #6B7280;">{{ plan.company_email }}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>{{ plan.plan_name }}</td>
+                <td>{{ plan.employee_limit|default:"—" }}</td>
+                <td>{{ plan.contract_duration }} months</td>
+                <td>₹{{ plan.monthly_price|floatformat:0|intcomma }}</td>
+                <td>
+                    <span class="badge-status badge-active">{{ plan.get_status_display }}</span>
+                </td>
+                <td>
+                    <div style="display: flex; gap: 8px;">
+                        <a href="#" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
+                        <a href="#" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+                        <a href="#" class="btn btn-sm btn-outline-info"><i class="bi bi-eye"></i></a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" style="text-align: center; padding: 40px; color: #6B7280;">No custom plans found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <!-- Pagination -->
+    {% if plans.has_other_pages %}
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+        <div style="font-size: 14px; color: #6B7280;">
+            Showing {{ plans.start_index }} to {{ plans.end_index }} of {{ plans.paginator.count }} entries
+        </div>
+        <nav>
+            <ul class="pagination pagination-sm mb-0">
+                {% if plans.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ plans.previous_page_number }}">&lt;</a></li>
+                {% endif %}
+                {% for num in plans.paginator.page_range %}
+                {% if num == plans.number %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% elif num > plans.number|add:'-3' and num < plans.number|add:'3' %}
+                <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                {% endif %}
+                {% endfor %}
+                {% if plans.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ plans.next_page_number }}">&gt;</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+
+
+
+

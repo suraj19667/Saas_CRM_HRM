@@ -1,3 +1,4 @@
+{% extends 'base.html' %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -401,6 +402,14 @@
             background: #fafbfc;
         }
 
+        .custom-table tbody tr.clickable-row {
+            cursor: pointer;
+        }
+
+        .custom-table tbody tr.clickable-row:hover {
+            background: #f0f4f8;
+        }
+
         .custom-table tbody td {
             padding: 1rem;
             vertical-align: middle;
@@ -759,7 +768,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                        <tr class="clickable-row" data-user-id="1">
                             <td>14/01/2025</td>
                             <td>
                                 <div class="user-info">
@@ -779,13 +788,13 @@
                             <td style="color: var(--text-muted);">admin@techflow.in</td>
                             <td style="color: var(--text-muted);">2 hours ago</td>
                             <td>
-                                <div class="action-btns">
+                                <div class="action-btns" onclick="event.stopPropagation();">
                                     <button class="action-btn edit"><i class="bi bi-pencil"></i></button>
                                     <button class="action-btn delete"><i class="bi bi-trash"></i></button>
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr class="clickable-row" data-user-id="2">
                             <td>21/01/2025</td>
                             <td>
                                 <div class="user-info">
@@ -805,13 +814,13 @@
                             <td style="color: var(--text-muted);">admin@techflow.in</td>
                             <td style="color: var(--text-muted);">2 hours ago</td>
                             <td>
-                                <div class="action-btns">
+                                <div class="action-btns" onclick="event.stopPropagation();">
                                     <button class="action-btn edit"><i class="bi bi-pencil"></i></button>
                                     <button class="action-btn delete"><i class="bi bi-trash"></i></button>
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr class="clickable-row" data-user-id="3">
                             <td>20/02/2025</td>
                             <td>
                                 <div class="user-info">
@@ -831,13 +840,13 @@
                             <td style="color: var(--text-muted);">admin@techflow.in</td>
                             <td style="color: var(--text-muted);">2 hours ago</td>
                             <td>
-                                <div class="action-btns">
+                                <div class="action-btns" onclick="event.stopPropagation();">
                                     <button class="action-btn edit"><i class="bi bi-pencil"></i></button>
                                     <button class="action-btn delete"><i class="bi bi-trash"></i></button>
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr class="clickable-row" data-user-id="4">
                             <td>15/03/2025</td>
                             <td>
                                 <div class="user-info">
@@ -857,13 +866,13 @@
                             <td style="color: var(--text-muted);">admin@techflow.in</td>
                             <td style="color: var(--text-muted);">2 hours ago</td>
                             <td>
-                                <div class="action-btns">
+                                <div class="action-btns" onclick="event.stopPropagation();">
                                     <button class="action-btn edit"><i class="bi bi-pencil"></i></button>
                                     <button class="action-btn delete"><i class="bi bi-trash"></i></button>
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr class="clickable-row" data-user-id="5">
                             <td>12/04/2025</td>
                             <td>
                                 <div class="user-info">
@@ -883,7 +892,7 @@
                             <td style="color: var(--text-muted);">admin@techflow.in</td>
                             <td style="color: var(--text-muted);">2 hours ago</td>
                             <td>
-                                <div class="action-btns">
+                                <div class="action-btns" onclick="event.stopPropagation();">
                                     <button class="action-btn edit"><i class="bi bi-pencil"></i></button>
                                     <button class="action-btn delete"><i class="bi bi-trash"></i></button>
                                 </div>
@@ -913,6 +922,37 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Make table rows clickable to view user details
+        document.addEventListener('DOMContentLoaded', function () {
+            const clickableRows = document.querySelectorAll('.custom-table tbody tr.clickable-row');
+
+            clickableRows.forEach(row => {
+                row.addEventListener('click', function (e) {
+                    // Don't navigate if clicking on action buttons
+                    if (e.target.closest('.action-btns')) {
+                        return;
+                    }
+
+                    const userId = this.getAttribute('data-user-id');
+                    if (userId) {
+                        // Navigate to user detail page
+                        window.location.href = `/users/${userId}/`;
+                    }
+                });
+
+                // Add visual feedback on hover
+                row.addEventListener('mouseenter', function () {
+                    this.style.transform = 'scale(1.00)';
+                });
+
+                row.addEventListener('mouseleave', function () {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>

@@ -107,7 +107,8 @@ class LoginRequiredMiddleware:
         # If user is authenticated and trying to access login/register pages
         # Redirect them to dashboard (prevent back button to login after login)
         if request.user.is_authenticated and request.path in self._get_public_paths():
-            response = redirect(settings.LOGIN_REDIRECT_URL)
+            from django.urls import reverse
+            response = redirect(reverse(settings.LOGIN_REDIRECT_URL))
             # Add no-cache headers to redirect response
             response['Cache-Control'] = 'no-cache, no-store, must-revalidate, private, max-age=0'
             response['Pragma'] = 'no-cache'

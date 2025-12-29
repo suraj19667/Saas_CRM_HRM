@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Discounts{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stat-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        border: 1px solid #E5E7EB;
+    }
+    .stat-card h3 {
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+        color: #111827;
+    }
+    .stat-card p {
+        font-size: 14px;
+        color: #6B7280;
+        margin: 0;
+    }
+    .table-container {
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        border: 1px solid #E5E7EB;
+    }
+    .badge-status {
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .badge-active { background: #D1FAE5; color: #065F46; }
+    .badge-scope { background: #DBEAFE; color: #1E40AF; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+    <h1 style="font-size: 28px; font-weight: 700; margin: 0 0 8px 0;">Discounts</h1>
+</div>
+
+<!-- Metrics Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <h3>{{ active_discounts|intcomma }}</h3>
+            <p>Active Discounts</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <h3>{{ total_usage|intcomma }}</h3>
+            <p>Total Usage (30 days)</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <h3>₹{{ total_savings|floatformat:0|intcomma }}</h3>
+            <p>Total Savings Given</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <h3>{{ expiring_this_month|intcomma }}</h3>
+            <p>Expiring This Month</p>
+        </div>
+    </div>
+</div>
+
+<!-- Filters and Actions -->
+<div class="table-container mb-4">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+            <select class="form-select form-select-sm" style="width: auto;">
+                <option>Row Per Page 10 Entries</option>
+            </select>
+            <select class="form-select form-select-sm" style="width: auto;">
+                <option>All Scope</option>
+                <option value="global" {% if scope_filter == 'global' %}selected{% endif %}>Global</option>
+                <option value="company_specific" {% if scope_filter == 'company_specific' %}selected{% endif %}>Company Specific</option>
+            </select>
+            <select class="form-select form-select-sm" style="width: auto;">
+                <option>Select Status</option>
+                <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+                <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+            </select>
+            <select class="form-select form-select-sm" style="width: auto;">
+                <option>All Type</option>
+                <option value="percentage" {% if type_filter == 'percentage' %}selected{% endif %}>Percentage</option>
+                <option value="flat" {% if type_filter == 'flat' %}selected{% endif %}>Flat</option>
+            </select>
+            <input type="text" class="form-control form-control-sm" placeholder="Search" style="width: 200px;" value="{{ search_query }}">
+        </div>
+        <div>
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle">Export</button>
+            <input type="text" class="form-control form-control-sm d-inline-block" value="2025-2025" style="width: 120px; margin-left: 8px;">
+            <a href="{% url 'saas_admin:discount_create' %}" class="btn btn-sm btn-primary" style="margin-left: 8px;">+ Create Discount</a>
+        </div>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="table-container">
+    <h5 style="margin-bottom: 20px;">View Discount</h5>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Discount Name</th>
+                <th>Type</th>
+                <th>Value</th>
+                <th>Applicable Model</th>
+                <th>Scope</th>
+                <th>Status</th>
+                <th>Validity</th>
+                <th>Usage</th>
+                <th>Created By</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for discount in discounts %}
+            <tr>
+                <td>{{ discount.discount_name }}</td>
+                <td>{{ discount.get_discount_type_display }}</td>
+                <td>
+                    {% if discount.discount_type == 'percentage' %}
+                    {{ discount.discount_value }}%
+                    {% else %}
+                    ₹{{ discount.discount_value|floatformat:0|intcomma }}
+                    {% endif %}
+                </td>
+                <td>{{ discount.get_applicable_model_display }}</td>
+                <td>
+                    <span class="badge-scope">{{ discount.get_scope_display }}</span>
+                </td>
+                <td>
+                    <span class="badge-status badge-active">{{ discount.get_status_display }}</span>
+                </td>
+                <td>{{ discount.start_date|date:"M d, Y" }} to {{ discount.end_date|date:"M d, Y" }}</td>
+                <td>
+                    {% if discount.usage_limit %}
+                    {{ discount.current_usage }}/{{ discount.usage_limit }}
+                    {% else %}
+                    {{ discount.current_usage }}/-
+                    {% endif %}
+                </td>
+                <td>{{ discount.created_by.email|default:"N/A" }}</td>
+                <td>
+                    <div style="display: flex; gap: 8px;">
+                        <a href="#" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
+                        <a href="#" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="10" style="text-align: center; padding: 40px; color: #6B7280;">No discounts found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <!-- Pagination -->
+    {% if discounts.has_other_pages %}
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+        <div style="font-size: 14px; color: #6B7280;">
+            Showing {{ discounts.start_index }} to {{ discounts.end_index }} of {{ discounts.paginator.count }} entries
+        </div>
+        <nav>
+            <ul class="pagination pagination-sm mb-0">
+                {% if discounts.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ discounts.previous_page_number }}">&lt;</a></li>
+                {% endif %}
+                {% for num in discounts.paginator.page_range %}
+                {% if num == discounts.number %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% elif num > discounts.number|add:'-3' and num < discounts.number|add:'3' %}
+                <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                {% endif %}
+                {% endfor %}
+                {% if discounts.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ discounts.next_page_number }}">&gt;</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+
+

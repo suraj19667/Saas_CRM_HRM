@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Admin Users{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stat-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid #E5E7EB;
+    }
+    .stat-card h3 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+    .stat-card p {
+        font-size: 14px;
+        color: #6B7280;
+        margin: 0;
+    }
+    .table-container {
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        border: 1px solid #E5E7EB;
+    }
+    .badge-status {
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .badge-active {
+        background: #D1FAE5;
+        color: #065F46;
+    }
+    .badge-role {
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- PAGE HEADER -->
+<div class="mb-4">
+    <h1 class="fw-bold mb-1">Admin Users</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'saas_admin:dashboard' %}">Dashboard</a>
+            </li>
+            <li class="breadcrumb-item active">Admin Users</li>
+        </ol>
+    </nav>
+</div>
+
+<!-- ROLE SUMMARY -->
+<div class="row g-3 mb-4">
+    {% for role_name, counts in role_counts.items %}
+    <div class="col-md-4">
+        <div class="stat-card">
+            <h3>{{ counts.current }}/{{ counts.total }}</h3>
+            <p>{{ role_name }} Users</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- FILTERS -->
+<div class="table-container mb-4">
+    <form method="get" class="d-flex flex-wrap gap-2 align-items-center">
+
+        <!-- ROLE FILTER -->
+        <select class="form-select form-select-sm w-auto" name="role"
+                onchange="this.form.submit()">
+            <option value="">All Roles</option>
+            {% for role in roles %}
+                <option value="{{ role.id }}"
+                    {% if role_filter|stringformat:"s" == role.id|stringformat:"s" %}
+                        selected
+                    {% endif %}
+                >
+                    {{ role.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <!-- STATUS FILTER -->
+        <select class="form-select form-select-sm w-auto" name="status"
+                onchange="this.form.submit()">
+            <option value="">Select Status</option>
+            <option value="active" {% if status_filter == "active" %}selected{% endif %}>
+                Active
+            </option>
+            <option value="inactive" {% if status_filter == "inactive" %}selected{% endif %}>
+                Inactive
+            </option>
+        </select>
+
+        <!-- SEARCH -->
+        <input type="text"
+               class="form-control form-control-sm"
+               name="search"
+               placeholder="Search user"
+               value="{{ search_query }}"
+               style="width: 200px;"
+               onkeypress="if(event.key==='Enter'){this.form.submit();}">
+    </form>
+</div>
+
+<!-- USERS TABLE -->
+<div class="table-container">
+    <h5 class="mb-3">View Users</h5>
+
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Created</th>
+                <th>User</th>
+                <th>Role</th>
+                <th>Permissions</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.date_joined|date:"d/m/Y" }}</td>
+
+                <td>
+                    <strong>{{ user.get_full_name|default:user.username }}</strong><br>
+                    <small class="text-muted">{{ user.email }}</small>
+                </td>
+
+                <td>
+                    {% if user.role %}
+                        <span class="badge-role">{{ user.role.name }}</span>
+                    {% else %}
+                        <span class="badge-role">Admin</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if user.role %}
+                        {{ user.role.get_permission_codenames|join:", "|truncatewords:6 }}
+                    {% else %}
+                        Full Access
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if user.is_active %}
+                        <span class="badge-status badge-active">Active</span>
+                    {% else %}
+                        <span class="badge-status bg-light text-muted">Inactive</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    <a href="#" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <a href="#" class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center text-muted py-4">
+                    No users found
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- PAGINATION -->
+    {% if users.has_other_pages %}
+    <nav class="d-flex justify-content-between align-items-center mt-3">
+        <small class="text-muted">
+            Showing {{ users.start_index }} – {{ users.end_index }} of {{ users.paginator.count }}
+        </small>
+
+        <ul class="pagination pagination-sm mb-0">
+            {% if users.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ users.previous_page_number }}">‹</a>
+            </li>
+            {% endif %}
+
+            {% for num in users.paginator.page_range %}
+                {% if num == users.number %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                {% elif num > users.number|add:'-3' and num < users.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if users.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ users.next_page_number }}">›</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+{% endblock %}

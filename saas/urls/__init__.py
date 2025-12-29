@@ -1,5 +1,6 @@
 from django.urls import path, include
 from ..views import login_view, register_view, verify_otp_view, resend_otp_view, logout_view, deshboard_view, leads_view, deals_view, form_builder_view, contract_view, crm_setup_view, users_list, user_edit, user_delete, admin_dashboard_view
+from ..views.dashboard_views import user_detail
 from ..views.hrm_views import hrm_home
 from ..views.access_management_views import access_management
 from ..api_views import (
@@ -14,6 +15,7 @@ from ..api_feature_views import (
 
 urlpatterns = [
     path('', login_view, name='home'),
+    path('home/', login_view, name='home_redirect'),
     path('auth/', include('saas.urls.auth_urls', namespace='auth')),
     path('verify-otp/', verify_otp_view, name='verify_otp'),
     path('resend-otp/', resend_otp_view, name='resend_otp'),
@@ -24,14 +26,15 @@ urlpatterns = [
     path('dashboard/', deshboard_view, name='dashboard'),
     # SaaS admin dashboard (also available under /saas/)
     path('saas/dashboard/', deshboard_view, name='saas_dashboard'),
-    path('admin-dashboard/', admin_dashboard_view, name='admin_dashboard'),
+    # Note: admin/dashboard/ URLs are now in main urls.py to avoid Django admin catch-all conflicts
     path('leads/', leads_view, name='leads'),
     path('deals/', deals_view, name='deals'),
     path('form-builder/', form_builder_view, name='form_builder'),
     path('contract/', contract_view, name='contract'),
     path('crm-setup/', crm_setup_view, name='crm_setup'),
-    path('users/', users_list, name='users'),
-    path('users/admin/', users_list, name='admin_users'),
+    path('users/', users_list, name='users_list'),
+    path('users/admin/', users_list, name='admin_user'),
+    path('users/<int:user_id>/', user_detail, name='user_detail'),
     path('users/<int:user_id>/edit/', user_edit, name='user_edit'),
     path('users/<int:user_id>/delete/', user_delete, name='user_delete'),
     path('access-management/', access_management, name='access_management'),
@@ -57,6 +60,8 @@ urlpatterns = [
     path('api/features/<int:feature_id>/delete/', delete_feature, name='api_feature_delete'),
     # path('api/subscriptions/', include('saas.urls.subscription_api_urls')),
     path('payment/', include('saas.urls.payment_urls')),
+    # SaaS admin URLs (namespaced as 'saas_admin')
+    path('saas-admin/', include('saas.urls.admin_urls', namespace='saas_admin')),
     # path('dashboard/', include('saas.urls.dashboard_urls')),
     path('plans/', include('saas.urls.plan_urls', namespace='plans')),
     path('features/', include('saas.urls.feature_urls', namespace='features')),

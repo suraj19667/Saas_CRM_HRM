@@ -17,6 +17,7 @@ from .feature import Feature
 from .planfeature import PlanFeature
 from .addon import Addon
 from .invoice import Invoice
+from .discount import Discount
 
 # OTP Verification model
 from django.db import models
@@ -76,4 +77,5 @@ __all__ = [
     'PlanFeature',
     'Addon',
     'Invoice',
+    'Discount',
 ]

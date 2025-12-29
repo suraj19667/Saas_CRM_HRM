@@ -170,7 +170,7 @@ AUTH_USER_MODEL = 'saas.CustomUser'
 
 # Authentication URLs
 LOGIN_URL = 'auth:login'
-LOGIN_REDIRECT_URL = 'admin_dashboard'
+LOGIN_REDIRECT_URL = 'dashboard'  # Changed from 'admin:dashboard' to 'dashboard' - uses deshboard_view which routes based on user type
 LOGOUT_REDIRECT_URL = 'auth:login'
 
 # Session Configuration

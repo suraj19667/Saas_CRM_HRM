@@ -212,7 +212,7 @@ def razorpay_callback(request):
         return JsonResponse({
             'status': 'success',
             'message': 'Payment successful! Your account has been activated.',
-            'redirect_url': reverse('saas:dashboard')
+            'redirect_url': reverse('saas_dashboard')
         })
         
     except Exception as e:

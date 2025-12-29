@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Invoices & Billing{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stat-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        border: 1px solid #E5E7EB;
+    }
+    .stat-card h3 {
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+        color: #111827;
+    }
+    .stat-card p {
+        font-size: 14px;
+        color: #6B7280;
+        margin: 0;
+    }
+    .table-container {
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        border: 1px solid #E5E7EB;
+    }
+    .badge-status {
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .badge-status::before {
+        content: '';
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+    .badge-paid { background: #D1FAE5; color: #065F46; }
+    .badge-paid::before { background: #10B981; }
+    .badge-pending { background: #FEF3C7; color: #92400E; }
+    .badge-pending::before { background: #F59E0B; }
+    .badge-overdue { background: #FEE2E2; color: #991B1B; }
+    .badge-overdue::before { background: #EF4444; }
+    .badge-cancelled { background: #F3F4F6; color: #374151; }
+    .badge-cancelled::before { background: #6B7280; }
+    .badge-refunded { background: #DBEAFE; color: #1E40AF; }
+    .badge-refunded::before { background: #3B82F6; }
+    .badge-type {
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .badge-subscription { background: #D1FAE5; color: #065F46; }
+    .badge-addon { background: #DBEAFE; color: #1E40AF; }
+    .badge-credit { background: #FEF3C7; color: #92400E; }
+    .badge-onetime { background: #E0E7FF; color: #4338CA; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+    <h1 style="font-size: 28px; font-weight: 700; margin: 0 0 8px 0;">Feature & Toggles</h1>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb" style="margin: 0; padding: 0; background: none;">
+            <li class="breadcrumb-item"><a href="{% url 'saas_admin:dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item active">Feature & Toggles</li>
+        </ol>
+    </nav>
+</div>
+
+<!-- Metrics Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <h3>₹{{ total_revenue|floatformat:0|intcomma }}</h3>
+            <p>Total Revenue</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <h3>₹{{ pending_amount|floatformat:0|intcomma }}</h3>
+            <p>Pending</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <h3>₹{{ overdue_amount|floatformat:0|intcomma }}</h3>
+            <p>Overdue</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <h3>{{ total_invoices|intcomma }}</h3>
+            <p>Total Invoices</p>
+        </div>
+    </div>
+</div>
+
+<!-- Filters and Actions -->
+<div class="table-container mb-4">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+            <button class="btn btn-sm btn-outline-primary">View All Add on's</button>
+            <select class="form-select form-select-sm" style="width: auto;">
+                <option>Row Per Page 10 Entries</option>
+            </select>
+            <input type="date" class="form-control form-control-sm" style="width: auto;" placeholder="dd/mm/yyyy">
+            <select class="form-select form-select-sm" style="width: auto;">
+                <option>Plans</option>
+            </select>
+            <select class="form-select form-select-sm" style="width: auto;">
+                <option>Select Status</option>
+                <option value="paid" {% if status_filter == 'paid' %}selected{% endif %}>Paid</option>
+                <option value="unpaid" {% if status_filter == 'unpaid' %}selected{% endif %}>Pending</option>
+                <option value="overdue" {% if status_filter == 'overdue' %}selected{% endif %}>Overdue</option>
+                <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+            </select>
+            <select class="form-select form-select-sm" style="width: auto;">
+                <option>Sort By: Last 7 Days</option>
+            </select>
+            <input type="text" class="form-control form-control-sm" placeholder="Search" style="width: 200px;" value="{{ search_query }}">
+        </div>
+        <div>
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle">Export</button>
+        </div>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="table-container">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Invoice</th>
+                <th>Company</th>
+                <th>Type</th>
+                <th>Period</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Due Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for invoice in invoices %}
+            <tr>
+                <td>{{ invoice.invoice_number }}</td>
+                <td>{{ invoice.tenant.name }}</td>
+                <td>
+                    {% if invoice.subscription %}
+                    <span class="badge-type badge-subscription">Subscription</span>
+                    {% else %}
+                    <span class="badge-type badge-onetime">One-Time</span>
+                    {% endif %}
+                </td>
+                <td>{{ invoice.invoice_date|date:"M Y" }}</td>
+                <td>
+                    <div>₹{{ invoice.total_amount|floatformat:2|intcomma }}</div>
+                    {% if invoice.discount > 0 %}
+                    <small class="text-danger">-₹{{ invoice.discount|floatformat:2|intcomma }} discount</small>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if invoice.status == 'paid' %}
+                    <span class="badge-status badge-paid">Paid</span>
+                    {% elif invoice.status == 'unpaid' %}
+                    <span class="badge-status badge-pending">Pending</span>
+                    {% elif invoice.status == 'overdue' %}
+                    <span class="badge-status badge-overdue">Overdue</span>
+                    {% elif invoice.status == 'cancelled' %}
+                    <span class="badge-status badge-cancelled">Cancelled</span>
+                    {% else %}
+                    <span class="badge-status badge-paid">{{ invoice.get_status_display }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div>{{ invoice.due_date|date:"Y-m-d"|default:"N/A" }}</div>
+                    {% if invoice.status == 'paid' %}
+                    <small class="text-muted">Paid: {{ invoice.invoice_date|date:"Y-m-d" }}</small>
+                    {% endif %}
+                </td>
+                <td>
+                    <div style="display: flex; gap: 8px;">
+                        <a href="#" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
+                        <a href="#" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" style="text-align: center; padding: 40px; color: #6B7280;">No invoices found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <!-- Pagination -->
+    {% if invoices.has_other_pages %}
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+        <div style="font-size: 14px; color: #6B7280;">
+            Showing {{ invoices.start_index }} to {{ invoices.end_index }} of {{ invoices.paginator.count }} entries
+        </div>
+        <nav>
+            <ul class="pagination pagination-sm mb-0">
+                {% if invoices.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ invoices.previous_page_number }}">&lt;</a></li>
+                {% endif %}
+                {% for num in invoices.paginator.page_range %}
+                {% if num == invoices.number %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% elif num > invoices.number|add:'-3' and num < invoices.number|add:'3' %}
+                <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                {% endif %}
+                {% endfor %}
+                {% if invoices.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ invoices.next_page_number }}">&gt;</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+
+
