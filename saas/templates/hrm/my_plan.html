@@ -1,0 +1,184 @@
+{% extends 'hrm/hrm_base.html' %}
+
+{% block title %}My Plan{% endblock %}
+{% block page_title %}My Plan{% endblock %}
+
+{% block content %}
+<style>
+    .current-plan-card {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        color: white;
+        border-radius: 12px;
+        padding: 32px;
+        margin-bottom: 32px;
+    }
+
+    .plan-card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        border: 2px solid var(--border-color);
+        transition: all 0.3s;
+        height: 100%;
+    }
+
+    .plan-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        border-color: var(--primary-color);
+    }
+
+    .plan-card.recommended {
+        border-color: var(--primary-color);
+        position: relative;
+    }
+
+    .recommended-badge {
+        position: absolute;
+        top: -12px;
+        right: 24px;
+        background: var(--primary-color);
+        color: white;
+        padding: 4px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+</style>
+
+<!-- Current Plan -->
+{% if subscription and plan %}
+<div class="current-plan-card">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h2 class="mb-2"><i class="bi bi-award-fill"></i> {{ plan.name }} Plan</h2>
+            <p class="mb-3 opacity-90">{{ plan.description }}</p>
+            <div class="row">
+                <div class="col-md-4 mb-2">
+                    <strong>Billing Cycle:</strong><br>
+                    {{ subscription.billing_cycle|title }}
+                </div>
+                <div class="col-md-4 mb-2">
+                    <strong>Started:</strong><br>
+                    {{ subscription.start_date|date:"M d, Y" }}
+                </div>
+                <div class="col-md-4 mb-2">
+                    <strong>Renews:</strong><br>
+                    {{ subscription.end_date|date:"M d, Y" }}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <div style="font-size: 42px; font-weight: 700;">
+                ₹{% if subscription.billing_cycle == 'yearly' %}{{ plan.price_yearly }}{% else %}{{ plan.price_monthly
+                }}{% endif %}
+            </div>
+            <div style="opacity: 0.9; font-size: 18px;">per {{ subscription.billing_cycle|slice:":7" }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Plan Features -->
+<div class="stat-card mb-4">
+    <h5 class="mb-3">Your Plan Includes</h5>
+    <div class="row">
+        <div class="col-md-3 mb-3">
+            <i class="bi bi-people-fill text-primary" style="font-size: 24px;"></i>
+            <div class="mt-2">
+                <strong>{{ plan.max_users }}</strong> Users
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <i class="bi bi-hdd-fill text-success" style="font-size: 24px;"></i>
+            <div class="mt-2">
+                <strong>{{ plan.max_storage_mb|floatformat:0 }} MB</strong> Storage
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <i class="bi bi-folder-fill text-warning" style="font-size: 24px;"></i>
+            <div class="mt-2">
+                <strong>{{ plan.max_projects }}</strong> Projects
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <i class="bi bi-shield-check text-info" style="font-size: 24px;"></i>
+            <div class="mt-2">
+                <strong>24/7</strong> Support
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle"></i>
+    You don't have an active subscription. Choose a plan below to get started.
+</div>
+{% endif %}
+
+<!-- Available Plans for Upgrade -->
+<h4 class="mb-4" style="font-weight: 600;">{% if subscription %}Upgrade Options{% else %}Choose Your Plan{% endif %}
+</h4>
+
+<div class="row">
+    {% for available_plan in available_plans %}
+    <div class="col-md-4 mb-4">
+        <div class="plan-card {% if forloop.counter == 2 %}recommended{% endif %}">
+            {% if forloop.counter == 2 %}
+            <div class="recommended-badge">RECOMMENDED</div>
+            {% endif %}
+
+            <h4 class="mb-2">{{ available_plan.name }}</h4>
+            <p class="text-muted mb-3">{{ available_plan.description|default:"Perfect for growing teams" }}</p>
+
+            <div class="mb-3">
+                <span style="font-size: 36px; font-weight: 700; color: var(--primary-color);">
+                    ₹{{ available_plan.price_monthly }}
+                </span>
+                <span class="text-muted">/month</span>
+            </div>
+
+            <div class="mb-4">
+                <small class="text-muted">or ₹{{ available_plan.price_yearly }}/year (save 2 months)</small>
+            </div>
+
+            <ul class="list-unstyled mb-4">
+                <li class="mb-2">
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                    <strong>{{ available_plan.max_users }}</strong> Users
+                </li>
+                <li class="mb-2">
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                    <strong>{{ available_plan.max_storage_mb|floatformat:0 }} MB</strong> Storage
+                </li>
+                <li class="mb-2">
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                    <strong>{{ available_plan.max_projects }}</strong> Projects
+                </li>
+                <li class="mb-2">
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                    Priority Support
+                </li>
+            </ul>
+
+            {% if subscription and subscription.plan.id == available_plan.id %}
+            <button class="btn btn-secondary w-100" disabled>Current Plan</button>
+            {% else %}
+            <a href="{% url 'hrm_plans' %}?plan={{ available_plan.id }}" class="btn btn-primary-custom w-100">
+                {% if subscription %}Upgrade Now{% else %}Choose Plan{% endif %}
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if subscription %}
+<div class="text-center mt-4">
+    <button class="btn btn-outline-danger"
+        onclick="if(confirm('Are you sure you want to cancel your subscription?')) { alert('Cancellation feature coming soon'); }">
+        <i class="bi bi-x-circle"></i> Cancel Subscription
+    </button>
+</div>
+{% endif %}
+
+{% endblock %}

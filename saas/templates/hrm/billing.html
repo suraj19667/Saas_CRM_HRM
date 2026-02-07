@@ -1,0 +1,123 @@
+{% extends 'hrm/hrm_base.html' %}
+
+{% block title %}Billing & Invoices{% endblock %}
+{% block page_title %}Billing & Invoices{% endblock %}
+
+{% block content %}
+<style>
+    .billing-summary-card {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 24px;
+    }
+
+    .invoice-table {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .invoice-row {
+        padding: 16px;
+        border-bottom: 1px solid var(--border-color);
+        transition: background-color 0.2s;
+    }
+
+    .invoice-row:hover {
+        background-color: #f8faff;
+    }
+</style>
+
+<!-- Billing Summary -->
+<div class="billing-summary-card">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h3 class="mb-2"><i class="bi bi-wallet2"></i> Total Spent</h3>
+            <p class="mb-0 opacity-90">Lifetime payment summary</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <div style="font-size: 42px; font-weight: 700;">₹{{ total_spent }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Transactions -->
+<div class="stat-card mb-4">
+    <h5 class="mb-3">Recent Transactions</h5>
+    {% if transactions %}
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Order ID</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                <tr>
+                    <td>{{ transaction.created_at|date:"M d, Y" }}</td>
+                    <td>{{ transaction.plan.name }} - {{ transaction.billing_cycle|title }}</td>
+                    <td><code>{{ transaction.razorpay_order_id }}</code></td>
+                    <td><strong>₹{{ transaction.amount }}</strong></td>
+                    <td>
+                        {% if transaction.status == 'paid' %}
+                        <span class="badge bg-success">Paid</span>
+                        {% elif transaction.status == 'failed' %}
+                        <span class="badge bg-danger">Failed</span>
+                        {% else %}
+                        <span class="badge bg-warning">{{ transaction.status|title }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-4">
+        <i class="bi bi-receipt" style="font-size: 48px; color: var(--gray-text);"></i>
+        <p class="mt-3 text-muted">No transactions yet</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Invoices -->
+<div class="stat-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Invoices</h5>
+        <button class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-download"></i> Download All
+        </button>
+    </div>
+
+    {% if invoices %}
+    {% for invoice in invoices %}
+    <div class="invoice-row d-flex justify-content-between align-items-center">
+        <div>
+            <strong>Invoice #{{ invoice.invoice_number }}</strong>
+            <br>
+            <small class="text-muted">{{ invoice.created_at|date:"F d, Y" }}</small>
+        </div>
+        <div class="text-end">
+            <div style="font-size: 18px; font-weight: 600;">₹{{ invoice.amount }}</div>
+            <button class="btn btn-sm btn-link">
+                <i class="bi bi-download"></i> Download
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="text-center py-4">
+        <i class="bi bi-file-earmark-text" style="font-size: 48px; color: var(--gray-text);"></i>
+        <p class="mt-3 text-muted">No invoices available</p>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

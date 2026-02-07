@@ -1,0 +1,258 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Overview{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Dashboard Overview</h1>
+    <div class="page-breadcrumb">
+        <span class="breadcrumb-item"><i class="bi bi-house-fill"></i> Home</span>
+        <span class="breadcrumb-item active">Dashboard</span>
+    </div>
+</div>
+
+<!-- Stats Grid -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon primary">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <div class="stat-trend up">
+                <i class="bi bi-arrow-up"></i> 12%
+            </div>
+        </div>
+        <div class="stat-body">
+            <div class="stat-value">{{ total_users|default:"156" }}</div>
+            <div class="stat-label">Total Users</div>
+        </div>
+        <div class="stat-footer">
+            +24 new users this month
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon success">
+                <i class="bi bi-person-lines-fill"></i>
+            </div>
+            <div class="stat-trend up">
+                <i class="bi bi-arrow-up"></i> 8%
+            </div>
+        </div>
+        <div class="stat-body">
+            <div class="stat-value">342</div>
+            <div class="stat-label">Active Leads</div>
+        </div>
+        <div class="stat-footer">
+            52 converted this month
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon warning">
+                <i class="bi bi-kanban-fill"></i>
+            </div>
+            <div class="stat-trend up">
+                <i class="bi bi-arrow-up"></i> 15%
+            </div>
+        </div>
+        <div class="stat-body">
+            <div class="stat-value">28</div>
+            <div class="stat-label">Active Projects</div>
+        </div>
+        <div class="stat-footer">
+            5 projects completed
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon danger">
+                <i class="bi bi-currency-dollar"></i>
+            </div>
+            <div class="stat-trend up">
+                <i class="bi bi-arrow-up"></i> 22%
+            </div>
+        </div>
+        <div class="stat-body">
+            <div class="stat-value">$48.5K</div>
+            <div class="stat-label">Monthly Revenue</div>
+        </div>
+        <div class="stat-footer">
+            $12K increase from last month
+        </div>
+    </div>
+</div>
+
+<!-- Charts and Tables Row -->
+<div class="row g-4 mb-4">
+    <!-- Recent Activity -->
+    <div class="col-lg-8">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3 class="card-title">Recent Activity</h3>
+                <div class="card-actions">
+                    <button class="btn-icon" data-tooltip="Refresh">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                    <button class="btn-icon" data-tooltip="Filter">
+                        <i class="bi bi-funnel"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Activity</th>
+                            <th>Status</th>
+                            <th>Time</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if recent_users %}
+                        {% for user in recent_users|slice:":10" %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="user-avatar" style="width: 32px; height: 32px; font-size: 0.75rem;">
+                                        {{ user.first_name.0|upper }}{{ user.last_name.0|upper }}
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 600;">{{ user.get_full_name|default:user.username }}
+                                        </div>
+                                        <div style="font-size: 0.85rem; color: var(--text-secondary);">{{ user.email }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>User Registration</td>
+                            <td>
+                                <span class="badge badge-{% if user.is_active %}success{% else %}warning{% endif %}">
+                                    {% if user.is_active %}Active{% else %}Pending{% endif %}
+                                </span>
+                            </td>
+                            <td>{{ user.created_at|timesince }} ago</td>
+                            <td>
+                                <a href="{% url 'user_detail' user.id %}" class="btn-icon">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center">No recent activity</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="col-lg-4">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3 class="card-title">Quick Stats</h3>
+            </div>
+            <div class="d-flex flex-column gap-3">
+                <div class="d-flex justify-content-between align-items-center p-3"
+                    style="background: var(--light-bg); border-radius: 0.5rem;">
+                    <div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">Active Tenants</div>
+                        <div style="font-size: 1.5rem; font-weight: 700;">{{ total_tenants|default:"42" }}</div>
+                    </div>
+                    <div
+                        style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white;">
+                        <i class="bi bi-building"></i>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center p-3"
+                    style="background: var(--light-bg); border-radius: 0.5rem;">
+                    <div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">Subscriptions</div>
+                        <div style="font-size: 1.5rem; font-weight: 700;">{{ total_subscriptions|default:"38" }}</div>
+                    </div>
+                    <div
+                        style="width: 48px; height: 48px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white;">
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center p-3"
+                    style="background: var(--light-bg); border-radius: 0.5rem;">
+                    <div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">Total Plans</div>
+                        <div style="font-size: 1.5rem; font-weight: 700;">{{ total_plans|default:"5" }}</div>
+                    </div>
+                    <div
+                        style="width: 48px; height: 48px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white;">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center p-3"
+                    style="background: var(--light-bg); border-radius: 0.5rem;">
+                    <div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">Revenue This Month</div>
+                        <div style="font-size: 1.5rem; font-weight: 700;">$12.8K</div>
+                    </div>
+                    <div
+                        style="width: 48px; height: 48px; background: linear-gradient(135deg, #ef4444, #dc2626); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white;">
+                        <i class="bi bi-cash-stack"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3 class="card-title">Revenue Overview</h3>
+                <div class="card-actions">
+                    <select class="form-select form-select-sm" style="width: auto;">
+                        <option>Last 7 days</option>
+                        <option>Last 30 days</option>
+                        <option>Last 90 days</option>
+                    </select>
+                </div>
+            </div>
+            <div style="padding: 2rem; text-align: center; color: var(--text-secondary);">
+                <i class="bi bi-bar-chart-fill" style="font-size: 4rem; opacity: 0.3;"></i>
+                <p>Chart placeholder - Integrate Chart.js or similar library</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3 class="card-title">User Distribution</h3>
+            </div>
+            <div style="padding: 2rem; text-align: center; color: var(--text-secondary);">
+                <i class="bi bi-pie-chart-fill" style="font-size: 4rem; opacity: 0.3;"></i>
+                <p>Pie chart placeholder</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add any dashboard-specific JavaScript here
+    console.log('Dashboard loaded');
+</script>
+{% endblock %}

@@ -3,12 +3,14 @@ API Serializers for model data validation and response formatting.
 
 Provides:
 - SubscriptionPlanSerializer: Serialize/deserialize SubscriptionPlan model
+- Dashboard serializers for analytics and reporting
 - Input validation for JSON fields
 - Custom validation methods
 """
 
 import json
 from saas.models.subscription import SubscriptionPlan
+from saas.models import Revenue, Tenant, Subscription, CustomUser, Plan
 
 
 class SubscriptionPlanSerializer:
@@ -115,4 +117,142 @@ class SubscriptionPlanSerializer:
         plan.price = data['price']
         plan.duration_days = data['duration_days']
         plan.features = data['features']
+
+
+class DashboardStatsSerializer:
+    """Serializer for dashboard statistics"""
+    
+    @staticmethod
+    def serialize(stats_data):
+        """
+        Serialize dashboard stats data
+        
+        Args:
+            stats_data (dict): Dictionary containing dashboard statistics
+            
+        Returns:
+            dict: Formatted statistics for API response
+        """
+        return {
+            'total_users': stats_data.get('total_users', 0),
+            'active_users': stats_data.get('active_users', 0),
+            'total_revenue': float(stats_data.get('total_revenue', 0)),
+            'companies_flagged': stats_data.get('companies_flagged', 0),
+        }
+
+
+class RevenueSerializer:
+    """Serializer for Revenue model"""
+    
+    @staticmethod
+    def serialize(revenue):
+        """
+        Convert a Revenue instance to a dictionary
+        
+        Args:
+            revenue (Revenue): Revenue model instance
+            
+        Returns:
+            dict: Serialized revenue data
+        """
+        return {
+            'id': revenue.id,
+            'amount': float(revenue.amount),
+            'month': revenue.month,
+            'year': revenue.year,
+            'month_name': revenue.get_month_display(),
+            'description': revenue.description,
+            'created_at': revenue.created_at.isoformat() if revenue.created_at else None,
+        }
+    
+    @staticmethod
+    def serialize_list(revenues):
+        """Convert a queryset or list of Revenue objects to list of dicts"""
+        return [RevenueSerializer.serialize(revenue) for revenue in revenues]
+    
+    @staticmethod
+    def serialize_chart_data(revenues):
+        """
+        Format revenue data specifically for Chart.js consumption
+        
+        Args:
+            revenues: QuerySet or list of Revenue objects
+            
+        Returns:
+            dict: Chart.js formatted data with labels and values
+        """
+        labels = []
+        values = []
+        
+        for revenue in revenues:
+            labels.append(f"{revenue.get_month_display()} {revenue.year}")
+            values.append(float(revenue.amount))
+        
+        return {
+            'labels': labels,
+            'values': values,
+        }
+
+
+class TenantSerializer:
+    """Serializer for Tenant/Company model"""
+    
+    @staticmethod
+    def serialize(tenant):
+        """
+        Convert a Tenant instance to a dictionary
+        
+        Args:
+            tenant (Tenant): Tenant model instance
+            
+        Returns:
+            dict: Serialized tenant data
+        """
+        return {
+            'id': tenant.id,
+            'name': tenant.name,
+            'domain': tenant.domain,
+            'contact_email': tenant.contact_email,
+            'contact_phone': tenant.contact_phone,
+            'status': tenant.status,
+            'is_flagged': tenant.is_flagged,
+            'subscription_plan': tenant.subscription_plan.name if tenant.subscription_plan else None,
+            'subscription_start_date': tenant.subscription_start_date.isoformat() if tenant.subscription_start_date else None,
+            'subscription_end_date': tenant.subscription_end_date.isoformat() if tenant.subscription_end_date else None,
+            'is_subscription_active': tenant.is_subscription_active,
+            'created_at': tenant.created_at.isoformat() if tenant.created_at else None,
+        }
+    
+    @staticmethod
+    def serialize_list(tenants):
+        """Convert a queryset or list of Tenant objects to list of dicts"""
+        return [TenantSerializer.serialize(tenant) for tenant in tenants]
+
+
+class PlanDistributionSerializer:
+    """Serializer for plan distribution analytics"""
+    
+    @staticmethod
+    def serialize_chart_data(plan_data):
+        """
+        Format plan distribution data for Chart.js donut/pie charts
+        
+        Args:
+            plan_data: List of dicts with 'plan_name' and 'count' keys
+            
+        Returns:
+            dict: Chart.js formatted data
+        """
+        labels = []
+        values = []
+        
+        for item in plan_data:
+            labels.append(item['plan_name'])
+            values.append(item['count'])
+        
+        return {
+            'labels': labels,
+            'values': values,
+        }
+
 

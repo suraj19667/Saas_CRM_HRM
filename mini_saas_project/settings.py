@@ -11,6 +11,15 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+# import pymysql
+
+# PyMySQL को mysqldb की तरह use करने के लिए (SQLite use karne par zaroorat nahi)
+# pymysql.install_as_MySQLdb()
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -62,8 +71,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'saas.middleware.NoCacheMiddleware',
-    'saas.middleware.SubscriptionMiddleware',
     'saas.middleware.TenantMiddleware',
+    'saas.middleware.dashboard_protection_middleware.DashboardProtectionMiddleware',  # Dashboard access control
+    # 'saas.middleware.SubscriptionMiddleware',  # Commented out - replaced by DashboardProtectionMiddleware
+    # 'saas.middleware.hrm_middleware.HRMRoutingMiddleware',  # Commented out - replaced by DashboardProtectionMiddleware
+    # 'saas.middleware.subscription_middleware.SubscriptionValidationMiddleware',  # Commented out - replaced by DashboardProtectionMiddleware
 ]
 
 ROOT_URLCONF = 'mini_saas_project.urls'
@@ -90,13 +102,43 @@ WSGI_APPLICATION = 'mini_saas_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'saas_core.sqlite3',
+    },
+    'hrm': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'hrm_db.sqlite3',
     }
 }
 
+# MySQL Configuration (commented out - uncomment when MySQL is set up)
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'saas_core',
+#         'USER': 'root',
+#         'PASSWORD': 'root',
+#         'HOST': '127.0.0.1',
+#         'PORT': '3306',
+#     },
+#     'hrm': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'hrm_db',
+#         'USER': 'root',
+#         'PASSWORD': 'root',
+#         'HOST': '127.0.0.1',
+#         'PORT': '3306',
+#     }
+# }
+
+# Database Router
+DATABASE_ROUTERS = ['saas.db_router.SaasHrmRouter']
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -133,6 +175,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Media files (User uploads)
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -170,8 +217,8 @@ AUTH_USER_MODEL = 'saas.CustomUser'
 
 # Authentication URLs
 LOGIN_URL = 'auth:login'
-LOGIN_REDIRECT_URL = 'dashboard'  # Changed from 'admin:dashboard' to 'dashboard' - uses deshboard_view which routes based on user type
-LOGOUT_REDIRECT_URL = 'auth:login'
+LOGIN_REDIRECT_URL = '/'  # Fallback - actual redirect handled by login view
+LOGOUT_REDIRECT_URL = '/'  # After logout, redirect to landing page
 
 # Session Configuration
 SESSION_COOKIE_AGE = 86400  # 24 hours
@@ -188,6 +235,6 @@ EMAIL_HOST_PASSWORD = 'cztbttkmvvrtgknq'  # App Password (spaces hatake)
 # Console Backend (testing ke liye):
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# Razorpay Configuration
-RAZORPAY_KEY_ID = 'rzp_test_RbmfywjDuhx73p'
-RAZORPAY_KEY_SECRET = 'J6k8EnR7L5bQX8hrBFc4DKV5'
+# Razorpay Configuration (from environment variables - SECURE)
+RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID', '')
+RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET', '')

@@ -1,0 +1,173 @@
+{% extends 'base_billing.html' %}
+
+{% block title %}Pricing Plans{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold">Choose Your Plan</h1>
+        <p class="lead text-muted">Select the perfect plan for your business needs</p>
+    </div>
+
+    <!-- Pricing Cards -->
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for plan in plans %}
+        <div class="col">
+            <div class="card pricing-card h-100 {% if plan.is_featured %}featured{% endif %}">
+                {% if plan.is_featured %}
+                <div class="card-header bg-primary text-white text-center">
+                    <small>MOST POPULAR</small>
+                </div>
+                {% endif %}
+
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ plan.name }}</h3>
+                    <p class="text-muted">{{ plan.description }}</p>
+
+                    <div class="price text-primary mb-3">
+                        ${{ plan.price_monthly }}
+                        <small class="fs-6 text-muted">/month</small>
+                    </div>
+
+                    {% if plan.price_yearly %}
+                    <p class="text-success mb-4">
+                        <small>Save ${{
+                            plan.price_monthly|add:plan.price_monthly|add:plan.price_monthly|add:plan.price_monthly|add:plan.price_monthly|add:plan.price_monthly|add:plan.price_monthly|add:plan.price_monthly|add:plan.price_monthly|add:plan.price_monthly|add:plan.price_monthly|add:plan.price_monthly|floatformat:0|add:"-"|add:plan.price_yearly
+                            }} with annual billing</small>
+                    </p>
+                    {% endif %}
+
+                    <hr>
+
+                    <!-- Features -->
+                    <ul class="feature-list text-start">
+                        {% if plan.employee_limit %}
+                        <li>
+                            <i class="bi bi-check-circle-fill"></i>
+                            Up to {{ plan.employee_limit }} employees
+                        </li>
+                        {% else %}
+                        <li>
+                            <i class="bi bi-check-circle-fill"></i>
+                            Unlimited employees
+                        </li>
+                        {% endif %}
+
+                        {% if plan.storage_gb %}
+                        <li>
+                            <i class="bi bi-check-circle-fill"></i>
+                            {{ plan.storage_gb }}GB storage
+                        </li>
+                        {% endif %}
+
+                        <li>
+                            <i class="bi bi-check-circle-fill"></i>
+                            Core HRM features
+                        </li>
+
+                        {% if plan.has_advanced_reporting %}
+                        <li>
+                            <i class="bi bi-check-circle-fill"></i>
+                            Advanced reporting
+                        </li>
+                        {% endif %}
+
+                        {% if plan.has_api_access %}
+                        <li>
+                            <i class="bi bi-check-circle-fill"></i>
+                            API access
+                        </li>
+                        {% endif %}
+
+                        <li>
+                            <i class="bi bi-check-circle-fill"></i>
+                            Email support
+                        </li>
+
+                        {% if plan.has_priority_support %}
+                        <li>
+                            <i class="bi bi-check-circle-fill"></i>
+                            Priority support
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div class="card-footer bg-white border-0 pb-4">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'billing:select_plan' plan.id %}"
+                        class="btn btn-{% if plan.is_featured %}primary{% else %}outline-primary{% endif %} w-100">
+                        Choose {{ plan.name }}
+                    </a>
+                    {% else %}
+                    <a href="{% url 'auth:register' %}?plan={{ plan.id }}"
+                        class="btn btn-{% if plan.is_featured %}primary{% else %}outline-primary{% endif %} w-100">
+                        Get Started
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <h4>No plans available at the moment</h4>
+                <p>Please check back later or contact support for more information.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="row mt-5">
+        <div class="col-md-8 mx-auto">
+            <h2 class="text-center mb-4">Frequently Asked Questions</h2>
+
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                            Can I change my plan later?
+                        </button>
+                    </h2>
+                    <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Yes! You can upgrade or downgrade your plan at any time. Changes will be reflected in your
+                            next billing cycle.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#faq2">
+                            What payment methods do you accept?
+                        </button>
+                    </h2>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            We accept all major credit cards, debit cards, and bank transfers.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#faq3">
+                            Is there a free trial?
+                        </button>
+                    </h2>
+                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Yes! We offer a 14-day free trial for all plans. No credit card required.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

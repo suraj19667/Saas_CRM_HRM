@@ -26,16 +26,17 @@ def is_staff_user(user):
 @ensure_csrf_cookie
 def deshboard_view(request):
     """
-    Main dashboard view - redirects to admin or tenant dashboard based on user type
+    Main dashboard view - redirects to appropriate dashboard based on user role
+    Uses role-based logic to determine correct destination
     """
+    from ..utils import get_user_dashboard_url
+    
     if not request.user.is_authenticated:
         return redirect('auth:login')
     
-    # Check if user is admin/staff
-    if request.user.is_superuser or request.user.is_staff:
-        return admin_dashboard_view(request)
-    else:
-        return tenant_dashboard_view(request)
+    # Get appropriate dashboard URL based on user role
+    redirect_url = get_user_dashboard_url(request.user)
+    return redirect(redirect_url)
 
 
 @login_required(login_url='auth:login')
@@ -329,9 +330,14 @@ Authentication Team
 def login_view(request):
     """
     User login with email and password
+    Implements role-based redirection after successful authentication
     """
+    from ..utils import get_user_dashboard_url
+    
     if request.user.is_authenticated:
-        return redirect(settings.LOGIN_REDIRECT_URL)
+        # User already logged in - redirect to appropriate dashboard
+        redirect_url = get_user_dashboard_url(request.user)
+        return redirect(redirect_url)
     
     if request.method == 'POST':
         form = CustomLoginForm(request.POST)
@@ -358,7 +364,12 @@ def login_view(request):
                 # Login user
                 login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                 messages.success(request, f'Welcome back, {user.get_full_name()}!')
-                next_url = request.GET.get('next') or settings.LOGIN_REDIRECT_URL
+                
+                # Role-based redirect
+                next_url = request.GET.get('next')
+                if not next_url:
+                    next_url = get_user_dashboard_url(user)
+                
                 return redirect(next_url)
             else:
                 messages.error(request, 'Invalid username/email or password. Please try again.')

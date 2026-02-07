@@ -154,5 +154,8 @@ def payment_success_handler(request, razorpay_payment_id):
     tenant.subscription_end_date = timezone.now() + transaction.plan.duration
     tenant.save()
 
-    # Redirect to tenant dashboard
-    return redirect(reverse("tenant_dashboard", kwargs={"tenant_slug": tenant.slug}))
+    # Success message
+    messages.success(request, 'Payment successful! Your subscription is now active. Please login to access your dashboard.')
+    
+    # Redirect to company login (NOT directly to HRM dashboard)
+    return redirect('auth:login')

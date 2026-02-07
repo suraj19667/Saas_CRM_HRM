@@ -15,6 +15,7 @@ from ..views.access_control_views import (
     create_permission,
     edit_permission,
     delete_permission,
+    user_role_permissions,
 )
 
 app_name = 'access_control'
@@ -22,6 +23,9 @@ app_name = 'access_control'
 urlpatterns = [
     # Dashboard
     path('', access_control_dashboard, name='dashboard'),
+    
+    # User role and permissions management
+    path('users-roles-permissions/', user_role_permissions, name='user_role_permissions'),
     
     # Unified list view
     path('roles-and-permissions/', roles_and_permissions_list, name='roles_and_permissions_list'),

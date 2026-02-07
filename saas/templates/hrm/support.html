@@ -1,0 +1,75 @@
+{% extends 'hrm/hrm_base.html' %}
+
+{% block title %}Support{% endblock %}
+{% block page_title %}Support{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="stat-card mb-4">
+            <h5 class="mb-3">Submit a Support Ticket</h5>
+            <form method="post" onsubmit="alert('Support ticket system coming soon!'); return false;">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Subject</label>
+                    <input type="text" class="form-control" name="subject" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" name="category" required>
+                        <option value="">Select category...</option>
+                        <option value="billing">Billing & Payments</option>
+                        <option value="technical">Technical Issue</option>
+                        <option value="feature">Feature Request</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" rows="5" name="description" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary-custom">
+                    <i class="bi bi-send"></i> Submit Ticket
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="stat-card mb-4">
+            <h5 class="mb-3">Contact Information</h5>
+            <div class="mb-3">
+                <i class="bi bi-envelope-fill text-primary me-2"></i>
+                <strong>Email:</strong><br>
+                <a href="mailto:support@hrm.com">support@hrm.com</a>
+            </div>
+            <div class="mb-3">
+                <i class="bi bi-telephone-fill text-primary me-2"></i>
+                <strong>Phone:</strong><br>
+                +91 1800-123-4567
+            </div>
+            <div class="mb-3">
+                <i class="bi bi-clock-fill text-primary me-2"></i>
+                <strong>Hours:</strong><br>
+                Mon-Fri: 9 AM - 6 PM IST
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <h5 class="mb-3">Quick Links</h5>
+            <div class="d-grid gap-2">
+                <a href="#" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-book"></i> Documentation
+                </a>
+                <a href="#" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-question-circle"></i> FAQ
+                </a>
+                <a href="#" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-play-circle"></i> Video Tutorials
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

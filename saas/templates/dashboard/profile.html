@@ -1,0 +1,166 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">My Profile</h1>
+    <div class="page-breadcrumb">
+        <span class="breadcrumb-item"><i class="bi bi-house-fill"></i> Home</span>
+        <span class="breadcrumb-item active">Profile</span>
+    </div>
+</div>
+
+<!-- Display Messages -->
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" data-auto-hide>
+    <i
+        class="bi bi-{% if message.tags == 'success' %}check-circle-fill{% elif message.tags == 'error' %}exclamation-circle-fill{% else %}info-circle-fill{% endif %}"></i>
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="row g-4">
+    <!-- Profile Info Card -->
+    <div class="col-lg-4">
+        <div class="dashboard-card text-center">
+            <div style="padding: 2rem;">
+                <div class="user-avatar" style="width: 120px; height: 120px; font-size: 3rem; margin: 0 auto 1.5rem;">
+                    {% if request.user.profile_picture %}
+                    <img src="{{ request.user.profile_picture.url }}" alt="{{ request.user.get_full_name }}">
+                    {% else %}
+                    {{ request.user.first_name.0|upper }}{{ request.user.last_name.0|upper }}
+                    {% endif %}
+                </div>
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">
+                    {{ request.user.get_full_name|default:request.user.username }}
+                </h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    {% if request.user.is_superuser %}
+                    System Administrator
+                    {% elif request.user.is_staff %}
+                    Staff Member
+                    {% else %}
+                    User
+                    {% endif %}
+                </p>
+                <button class="btn btn-outline-primary">
+                    <i class="bi bi-camera"></i> Change Avatar
+                </button>
+            </div>
+            <div style="padding: 1.5rem; border-top: 1px solid var(--border-color);">
+                <div class="d-flex justify-content-around text-center">
+                    <div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color);">142</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">Tasks</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--success-color);">28</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">Projects</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--warning-color);">86</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">Hours</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Details Card -->
+    <div class="col-lg-8">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3 class="card-title">Profile Information</h3>
+            </div>
+            <form method="post" action="{% url 'profile' %}">
+                {% csrf_token %}
+                <div style="padding: 2rem;">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="first_name">First Name</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name"
+                                value="{{ request.user.first_name }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="last_name">Last Name</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name"
+                                value="{{ request.user.last_name }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="email">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                value="{{ request.user.email }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="username">Username</label>
+                            <input type="text" class="form-control" id="username" name="username"
+                                value="{{ request.user.username }}" readonly style="background-color: var(--light-bg);">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="phone">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone"
+                                value="{{ request.user.phone_number|default:'' }}" placeholder="+1 (555) 123-4567">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="job_title">Job Title</label>
+                            <input type="text" class="form-control" id="job_title" name="job_title"
+                                placeholder="e.g., Product Manager">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="bio">Bio</label>
+                            <textarea class="form-control" id="bio" name="bio" rows="4"
+                                placeholder="Tell us about yourself..."></textarea>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Save Changes
+                        </button>
+                        <button type="reset" class="btn btn-outline-primary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Change Password Card -->
+        <div class="dashboard-card mt-4">
+            <div class="card-header">
+                <h3 class="card-title">Change Password</h3>
+            </div>
+            <form method="post" action="{% url 'change_password' %}">
+                {% csrf_token %}
+                <div style="padding: 2rem;">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label" for="current_password">Current Password</label>
+                            <input type="password" class="form-control" id="current_password" name="current_password"
+                                required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="new_password">New Password</label>
+                            <input type="password" class="form-control" id="new_password" name="new_password" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="confirm_password">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password"
+                                required>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-shield-check"></i> Update Password
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

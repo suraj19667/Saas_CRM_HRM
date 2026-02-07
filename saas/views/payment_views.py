@@ -9,6 +9,9 @@ from saas.models.subscription import Subscription
 from saas.models.invoice import Invoice
 from decimal import Decimal
 import razorpay
+import hmac
+import hashlib
+import json
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -288,3 +291,154 @@ def payments_list(request):
     """Admin view: show all PaymentTransaction records."""
     transactions = PaymentTransaction.objects.select_related('tenant', 'plan').order_by('-created_at')
     return render(request, 'payment/payments_list.html', {'transactions': transactions})
+
+
+@login_required(login_url='auth:login')
+@csrf_exempt
+def create_razorpay_order(request):
+    """Create Razorpay order for HRM customer subscription"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Invalid request method'})
+    
+    try:
+        data = json.loads(request.body)
+        plan_id = data.get('plan_id')
+        billing_cycle = data.get('billing_cycle', 'monthly')
+        
+        # Get plan
+        plan = get_object_or_404(Plan, id=plan_id, status=True)
+        
+        # Get or create tenant for user
+        user = request.user
+        tenant = None
+        if hasattr(user, 'tenant') and user.tenant:
+            tenant = user.tenant
+        elif hasattr(user, 'company_profile') and user.company_profile:
+            tenant = user.company_profile
+        
+        if not tenant:
+            return JsonResponse({'success': False, 'error': 'No tenant associated with user'})
+        
+        # Calculate amount based on billing cycle
+        if billing_cycle == 'yearly':
+            amount = int(plan.price_yearly * 100)  # Convert to paisa
+        else:
+            amount = int(plan.price_monthly * 100)
+        
+        # Initialize Razorpay client securely
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+        
+        # Create order
+        order_data = {
+            'amount': amount,
+            'currency': 'INR',
+            'receipt': f'order_rcptid_{tenant.id}_{timezone.now().timestamp()}',
+            'payment_capture': 1
+        }
+        
+        order = client.order.create(data=order_data)
+        
+        # Create payment transaction record
+        transaction = PaymentTransaction.objects.create(
+            tenant=tenant,
+            plan=plan,
+            razorpay_order_id=order['id'],
+            amount=Decimal(amount) / Decimal(100),  # Convert back to rupees
+            currency='INR',
+            billing_cycle=billing_cycle,
+            status='created'
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'order_id': order['id'],
+            'amount': amount,
+            'key_id': settings.RAZORPAY_KEY_ID
+        })
+        
+    except Plan.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Plan not found'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@login_required(login_url='auth:login')
+@csrf_exempt
+def verify_razorpay_payment(request):
+    """Verify Razorpay payment signature and activate subscription"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Invalid request method'})
+    
+    try:
+        data = json.loads(request.body)
+        razorpay_order_id = data.get('razorpay_order_id')
+        razorpay_payment_id = data.get('razorpay_payment_id')
+        razorpay_signature = data.get('razorpay_signature')
+        
+        # Verify signature
+        key_secret = settings.RAZORPAY_KEY_SECRET
+        msg = f"{razorpay_order_id}|{razorpay_payment_id}".encode()
+        generated_signature = hmac.new(key_secret.encode(), msg, hashlib.sha256).hexdigest()
+        
+        if generated_signature != razorpay_signature:
+            return JsonResponse({'success': False, 'error': 'Invalid signature'})
+        
+        # Get transaction
+        transaction = PaymentTransaction.objects.get(razorpay_order_id=razorpay_order_id)
+        
+        # Update transaction
+        transaction.razorpay_payment_id = razorpay_payment_id
+        transaction.razorpay_signature = razorpay_signature
+        transaction.status = 'paid'
+        transaction.save()
+        
+        # Get tenant
+        tenant = transaction.tenant
+        
+        # Calculate subscription dates
+        start_date = timezone.now().date()
+        if transaction.billing_cycle == 'yearly':
+            end_date = start_date + timedelta(days=365)
+        else:
+            end_date = start_date + timedelta(days=30)
+        
+        # Create or update subscription
+        Subscription.objects.filter(tenant=tenant, status='active').update(status='expired')
+        
+        subscription = Subscription.objects.create(
+            tenant=tenant,
+            plan=transaction.plan,
+            start_date=start_date,
+            end_date=end_date,
+            billing_cycle=transaction.billing_cycle,
+            amount=transaction.amount,
+            status='active'
+        )
+        
+        # Update tenant subscription info
+        tenant.subscription_plan = transaction.plan
+        tenant.subscription_start_date = timezone.now()
+        tenant.subscription_end_date = timezone.datetime.combine(end_date, timezone.datetime.min.time())
+        tenant.status = 'active'
+        tenant.save()
+        
+        # Create invoice
+        invoice_number = f"INV-{timezone.now().strftime('%Y%m%d')}-{tenant.id}"
+        Invoice.objects.create(
+            tenant=tenant,
+            subscription=subscription,
+            invoice_number=invoice_number,
+            amount=transaction.amount,
+            due_date=end_date,
+            status='paid'
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Payment verified and subscription activated'
+        })
+        
+    except PaymentTransaction.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Transaction not found'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})

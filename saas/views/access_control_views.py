@@ -7,9 +7,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib.auth import get_user_model
 
 from ..models import Role, Permission, RolePermission
 from ..forms import RoleForm, PermissionForm
+
+User = get_user_model()
 
 
 @login_required(login_url='auth:login')
@@ -335,3 +338,56 @@ def delete_permission(request, permission_id):
     }
     
     return render(request, 'access_control/confirm_delete_permission.html', context)
+
+
+@login_required(login_url='auth:login')
+def user_role_permissions(request):
+    """
+    View and manage users with their assigned roles and permissions.
+    Displays all users with pagination, search, and filtering capabilities.
+    """
+    # Get all users
+    users_queryset = User.objects.all().order_by('-date_joined')
+    
+    # Search functionality
+    search_query = request.GET.get('search', '')
+    if search_query:
+        users_queryset = users_queryset.filter(
+            first_name__icontains=search_query
+        ) | users_queryset.filter(
+            last_name__icontains=search_query
+        ) | users_queryset.filter(
+            email__icontains=search_query
+        )
+    
+    # Pagination
+    page_num = request.GET.get('page', 1)
+    rows_per_page = request.GET.get('rows_per_page', 10)
+    
+    paginator = Paginator(users_queryset, rows_per_page)
+    try:
+        page = paginator.page(page_num)
+    except (EmptyPage, PageNotAnInteger):
+        page = paginator.page(1)
+    
+    # Get statistics
+    total_users = User.objects.count()
+    active_users = User.objects.filter(is_active=True).count()
+    roles_count = Role.objects.count()
+    permissions_count = Permission.objects.count()
+    
+    context = {
+        'users': page.object_list,
+        'page_obj': page,
+        'paginator': paginator,
+        'total_users': total_users,
+        'active_users': active_users,
+        'roles_count': roles_count,
+        'permissions_count': permissions_count,
+        'expiring_count': 18,  # Placeholder for subscription expiring count
+        'search_query': search_query,
+        'rows_per_page': rows_per_page,
+        'current_section': 'roles_permissions',
+    }
+    
+    return render(request, 'access_control/roles_permissions.html', context)

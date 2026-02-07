@@ -1,0 +1,170 @@
+{% extends 'hrm/hrm_base.html' %}
+
+{% block title %}Usage & Limits{% endblock %}
+{% block page_title %}Usage & Limits{% endblock %}
+
+{% block content %}
+<style>
+    .usage-card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 20px;
+        border: 1px solid var(--border-color);
+    }
+
+    .usage-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+    .usage-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+
+    .progress-lg {
+        height: 12px;
+        border-radius: 6px;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="usage-card">
+            <div class="usage-header">
+                <div>
+                    <h5 class="mb-1">Employees</h5>
+                    <p class="text-muted mb-0">Active team members</p>
+                </div>
+                <div class="usage-icon bg-primary bg-opacity-10 text-primary">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mb-2">
+                <span style="font-size: 28px; font-weight: 700;">{{ usage_details.employees.current }}</span>
+                <span class="text-muted">of {{ usage_details.employees.limit }}</span>
+            </div>
+
+            <div class="progress progress-lg mb-2">
+                <div class="progress-bar bg-primary" style="width: {{ usage_details.employees.percentage }}%"></div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <small class="text-muted">{{ usage_details.employees.percentage }}% used</small>
+                {% if usage_details.employees.percentage > 80 %}
+                <small class="text-warning"><i class="bi bi-exclamation-triangle"></i> Running low</small>
+                {% else %}
+                <small class="text-success"><i class="bi bi-check-circle"></i> Good</small>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="usage-card">
+            <div class="usage-header">
+                <div>
+                    <h5 class="mb-1">Administrators</h5>
+                    <p class="text-muted mb-0">System admins</p>
+                </div>
+                <div class="usage-icon bg-success bg-opacity-10 text-success">
+                    <i class="bi bi-person-badge-fill"></i>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mb-2">
+                <span style="font-size: 28px; font-weight: 700;">{{ usage_details.admins.current }}</span>
+                <span class="text-muted">of {{ usage_details.admins.limit }}</span>
+            </div>
+
+            <div class="progress progress-lg mb-2">
+                <div class="progress-bar bg-success" style="width: {{ usage_details.admins.percentage }}%"></div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <small class="text-muted">{{ usage_details.admins.percentage }}% used</small>
+                <small class="text-success"><i class="bi bi-check-circle"></i> Good</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="usage-card">
+            <div class="usage-header">
+                <div>
+                    <h5 class="mb-1">Storage</h5>
+                    <p class="text-muted mb-0">Files and documents</p>
+                </div>
+                <div class="usage-icon bg-warning bg-opacity-10 text-warning">
+                    <i class="bi bi-hdd-fill"></i>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mb-2">
+                <span style="font-size: 28px; font-weight: 700;">{{ usage_details.storage.current }} GB</span>
+                <span class="text-muted">of {{ usage_details.storage.limit }} GB</span>
+            </div>
+
+            <div class="progress progress-lg mb-2">
+                <div class="progress-bar bg-warning" style="width: {{ usage_details.storage.percentage }}%"></div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <small class="text-muted">{{ usage_details.storage.percentage }}% used</small>
+                <small class="text-success"><i class="bi bi-check-circle"></i> Good</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="usage-card">
+            <div class="usage-header">
+                <div>
+                    <h5 class="mb-1">Projects</h5>
+                    <p class="text-muted mb-0">Active projects</p>
+                </div>
+                <div class="usage-icon bg-info bg-opacity-10 text-info">
+                    <i class="bi bi-folder-fill"></i>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mb-2">
+                <span style="font-size: 28px; font-weight: 700;">{{ usage_details.projects.current }}</span>
+                <span class="text-muted">of {{ usage_details.projects.limit }}</span>
+            </div>
+
+            <div class="progress progress-lg mb-2">
+                <div class="progress-bar bg-info" style="width: {{ usage_details.projects.percentage }}%"></div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <small class="text-muted">{{ usage_details.projects.percentage }}% used</small>
+                <small class="text-success"><i class="bi bi-check-circle"></i> Good</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="stat-card">
+    <h5 class="mb-3">Need More Resources?</h5>
+    <p class="text-muted mb-3">Upgrade your plan or add extensions to increase your limits.</p>
+    <div class="d-flex gap-2">
+        <a href="{% url 'hrm_my_plan' %}" class="btn btn-primary-custom">
+            <i class="bi bi-arrow-up-circle"></i> Upgrade Plan
+        </a>
+        <a href="{% url 'hrm_addons' %}" class="btn btn-outline-primary">
+            <i class="bi bi-puzzle"></i> Browse Add-ons
+        </a>
+    </div>
+</div>
+
+{% endblock %}

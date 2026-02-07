@@ -74,10 +74,25 @@
     font-size: 24px;
   }
 
-  .widget-icon.primary { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
-  .widget-icon.success { background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; }
-  .widget-icon.warning { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; }
-  .widget-icon.info { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; }
+  .widget-icon.primary {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+  }
+
+  .widget-icon.success {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: white;
+  }
+
+  .widget-icon.warning {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: white;
+  }
+
+  .widget-icon.info {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    color: white;
+  }
 
   .widget-value {
     font-size: 32px;
@@ -359,9 +374,9 @@
       </div>
       <div class="widget-value">
         {% if current_subscription %}
-          {{ current_subscription.end_date|timeuntil }}
+        {{ current_subscription.end_date|timeuntil }}
         {% else %}
-          N/A
+        N/A
         {% endif %}
       </div>
       <div class="widget-label">Plan Expires In</div>
@@ -380,10 +395,11 @@
         {{ current_subscription.status|capfirst }}
       </div>
     </div>
-    
+
     {% if current_subscription %}
     <div class="subscription-info">
-      <p><strong>Subscription Period:</strong> {{ current_subscription.start_date }} to {{ current_subscription.end_date }}</p>
+      <p><strong>Subscription Period:</strong> {{ current_subscription.start_date }} to {{ current_subscription.end_date
+        }}</p>
       <p><strong>Billing Cycle:</strong> {{ current_subscription.billing_cycle|capfirst }}</p>
     </div>
     {% endif %}
@@ -398,18 +414,18 @@
       </div>
       <div class="features-body">
         {% if plan_features %}
-          {% for plan_feature in plan_features %}
-          <div class="feature-item">
-            <div class="feature-icon included">
-              <i class="fas fa-check"></i>
-            </div>
-            <div class="feature-name">{{ plan_feature.feature.name }}</div>
+        {% for plan_feature in plan_features %}
+        <div class="feature-item">
+          <div class="feature-icon included">
+            <i class="fas fa-check"></i>
           </div>
-          {% endfor %}
+          <div class="feature-name">{{ plan_feature.feature.name }}</div>
+        </div>
+        {% endfor %}
         {% else %}
-          <div class="feature-item">
-            <div class="feature-name">No plan selected</div>
-          </div>
+        <div class="feature-item">
+          <div class="feature-name">No plan selected</div>
+        </div>
         {% endif %}
       </div>
     </div>
@@ -420,16 +436,16 @@
       </div>
       <div class="features-body">
         {% for feature in excluded_features %}
-          <div class="feature-item not-included">
-            <div class="feature-icon not-included">
-              <i class="fas fa-times"></i>
-            </div>
-            <div class="feature-name">{{ feature.name }}</div>
+        <div class="feature-item not-included">
+          <div class="feature-icon not-included">
+            <i class="fas fa-times"></i>
           </div>
+          <div class="feature-name">{{ feature.name }}</div>
+        </div>
         {% empty %}
-          <div class="feature-item">
-            <div class="feature-name">All features included!</div>
-          </div>
+        <div class="feature-item">
+          <div class="feature-name">All features included!</div>
+        </div>
         {% endfor %}
       </div>
     </div>
@@ -444,27 +460,27 @@
         {% if current_plan and plan.id == current_plan.id %}
         <div class="current-badge">Current</div>
         {% endif %}
-        
+
         <h5>{{ plan.name }}</h5>
         <div class="price">₹{{ plan.price_monthly }}/month</div>
-        
+
         <ul class="features">
           <li>Up to {{ plan.max_users }} users</li>
           <li>{{ plan.max_storage_mb }}MB storage</li>
           <li>{{ plan.max_projects }} projects</li>
           <li>24/7 support</li>
         </ul>
-        
+
         {% if current_plan and plan.id == current_plan.id %}
-          <a href="#" class="btn-upgrade btn-current">Current Plan</a>
+        <a href="#" class="btn-upgrade btn-current">Current Plan</a>
         {% else %}
-          <a href="{% url 'tenant_mgmt:create' %}?plan_id={{ plan.id }}" class="btn-upgrade">
-            {% if current_plan %}
-              Upgrade to {{ plan.name }}
-            {% else %}
-              Select Plan
-            {% endif %}
-          </a>
+        <a href="{% url 'tenant_mgmt:create' %}?plan_id={{ plan.id }}" class="btn-upgrade">
+          {% if current_plan %}
+          Upgrade to {{ plan.name }}
+          {% else %}
+          Select Plan
+          {% endif %}
+        </a>
         {% endif %}
       </div>
       {% endfor %}
@@ -511,10 +527,10 @@
 
 {% block extra_js %}
 <script>
-// Feature comparison functionality
-document.addEventListener('DOMContentLoaded', function() {
+  // Feature comparison functionality
+  document.addEventListener('DOMContentLoaded', function () {
     // Add any interactive features here
     console.log('Tenant dashboard loaded');
-});
+  });
 </script>
 {% endblock %}

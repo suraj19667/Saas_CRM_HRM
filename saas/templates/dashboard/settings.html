@@ -1,0 +1,325 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Settings</h1>
+    <div class="page-breadcrumb">
+        <span class="breadcrumb-item"><i class="bi bi-house-fill"></i> Home</span>
+        <span class="breadcrumb-item active">Settings</span>
+    </div>
+</div>
+
+<!-- Display Messages -->
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" data-auto-hide>
+    <i
+        class="bi bi-{% if message.tags == 'success' %}check-circle-fill{% elif message.tags == 'error' %}exclamation-circle-fill{% else %}info-circle-fill{% endif %}"></i>
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="row g-4">
+    <!-- Settings Navigation -->
+    <div class="col-lg-3">
+        <div class="dashboard-card">
+            <div class="list-group list-group-flush">
+                <a href="#general" class="list-group-item list-group-item-action active" data-bs-toggle="list">
+                    <i class="bi bi-gear me-2"></i> General
+                </a>
+                <a href="#notifications" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                    <i class="bi bi-bell me-2"></i> Notifications
+                </a>
+                <a href="#security" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                    <i class="bi bi-shield-lock me-2"></i> Security
+                </a>
+                <a href="#billing" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                    <i class="bi bi-credit-card me-2"></i> Billing
+                </a>
+                <a href="#integrations" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                    <i class="bi bi-link-45deg me-2"></i> Integrations
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Content -->
+    <div class="col-lg-9">
+        <div class="tab-content">
+            <!-- General Settings -->
+            <div class="tab-pane fade show active" id="general">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3 class="card-title">General Settings</h3>
+                    </div>
+                    <form method="post" action="{% url 'settings' %}">
+                        {% csrf_token %}
+                        <div style="padding: 2rem;">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label">Language</label>
+                                    <select class="form-select">
+                                        <option selected>English</option>
+                                        <option>Spanish</option>
+                                        <option>French</option>
+                                        <option>German</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Timezone</label>
+                                    <select class="form-select">
+                                        <option selected>UTC (GMT +0:00)</option>
+                                        <option>EST (GMT -5:00)</option>
+                                        <option>PST (GMT -8:00)</option>
+                                        <option>IST (GMT +5:30)</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Date Format</label>
+                                    <select class="form-select">
+                                        <option selected>MM/DD/YYYY</option>
+                                        <option>DD/MM/YYYY</option>
+                                        <option>YYYY-MM-DD</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="darkMode">
+                                        <label class="form-check-label" for="darkMode">
+                                            Enable Dark Mode
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Notifications Settings -->
+            <div class="tab-pane fade" id="notifications">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Notification Preferences</h3>
+                    </div>
+                    <div style="padding: 2rem;">
+                        <div class="mb-4">
+                            <h5 class="mb-3">Email Notifications</h5>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="emailNewUser" checked>
+                                <label class="form-check-label" for="emailNewUser">
+                                    New user registrations
+                                </label>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="emailNewLead" checked>
+                                <label class="form-check-label" for="emailNewLead">
+                                    New leads
+                                </label>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="emailTaskAssigned" checked>
+                                <label class="form-check-label" for="emailTaskAssigned">
+                                    Tasks assigned to me
+                                </label>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="emailWeeklySummary">
+                                <label class="form-check-label" for="emailWeeklySummary">
+                                    Weekly summary reports
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5 class="mb-3">Push Notifications</h5>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="pushMessages" checked>
+                                <label class="form-check-label" for="pushMessages">
+                                    New messages
+                                </label>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="pushComments" checked>
+                                <label class="form-check-label" for="pushComments">
+                                    Comments on my posts
+                                </label>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Save Preferences
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Settings -->
+            <div class="tab-pane fade" id="security">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Security Settings</h3>
+                    </div>
+                    <div style="padding: 2rem;">
+                        <div class="mb-4">
+                            <h5 class="mb-3">Two-Factor Authentication</h5>
+                            <p class="text-muted mb-3">
+                                Add an extra layer of security to your account by enabling two-factor authentication.
+                            </p>
+                            <button class="btn btn-primary">
+                                <i class="bi bi-shield-check"></i> Enable 2FA
+                            </button>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5 class="mb-3">Active Sessions</h5>
+                            <div class="list-group">
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="bi bi-laptop me-2"></i>
+                                            <strong>MacBook Pro</strong> - San Francisco, US
+                                            <div class="small text-muted">Current session</div>
+                                        </div>
+                                        <span class="badge badge-success">Active</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5 class="mb-3">Login History</h5>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Location</th>
+                                            <th>IP Address</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Today, 10:42 AM</td>
+                                            <td>San Francisco, US</td>
+                                            <td>192.168.1.1</td>
+                                            <td><span class="badge badge-success">Success</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Billing Settings -->
+            <div class="tab-pane fade" id="billing">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Billing & Subscription</h3>
+                    </div>
+                    <div style="padding: 2rem;">
+                        <div class="alert alert-info mb-4">
+                            <i class="bi bi-info-circle me-2"></i>
+                            You are currently on the <strong>Professional Plan</strong>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5 class="mb-3">Payment Method</h5>
+                            <div class="d-flex align-items-center justify-content-between p-3 border rounded">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-credit-card fs-3 me-3"></i>
+                                    <div>
+                                        <div><strong>•••• •••• •••• 4242</strong></div>
+                                        <div class="small text-muted">Expires 12/25</div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-outline-primary btn-sm">Update</button>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5 class="mb-3">Billing History</h5>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Description</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                            <th>Invoice</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Jan 1, 2025</td>
+                                            <td>Professional Plan - Monthly</td>
+                                            <td>$79.00</td>
+                                            <td><span class="badge badge-success">Paid</span></td>
+                                            <td><a href="#" class="btn btn-sm btn-outline-primary">Download</a></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Integrations Settings -->
+            <div class="tab-pane fade" id="integrations">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Integrations</h3>
+                    </div>
+                    <div style="padding: 2rem;">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="border rounded p-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="bi bi-slack fs-3 me-3 text-primary"></i>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-0">Slack</h6>
+                                            <small class="text-muted">Team communication</small>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" checked>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="border rounded p-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="bi bi-google fs-3 me-3 text-danger"></i>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-0">Google Workspace</h6>
+                                            <small class="text-muted">Email & calendar</small>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

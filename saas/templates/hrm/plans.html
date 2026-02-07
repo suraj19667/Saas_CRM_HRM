@@ -1,0 +1,246 @@
+{% extends 'hrm/hrm_base.html' %}
+
+{% block title %}Plans{% endblock %}
+{% block page_title %}Choose Your Plan{% endblock %}
+
+{% block content %}
+<style>
+    .plan-selection-card {
+        background: white;
+        border-radius: 12px;
+        padding: 32px;
+        border: 2px solid var(--border-color);
+        transition: all 0.3s;
+        height: 100%;
+        position: relative;
+    }
+
+    .plan-selection-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+        border-color: var(--primary-color);
+    }
+
+    .plan-selection-card.popular {
+        border-color: var(--primary-color);
+        box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2);
+    }
+
+    .popular-badge {
+        position: absolute;
+        top: -14px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 6px 20px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+</style>
+
+<div class="text-center mb-5">
+    <h2 class="mb-3">Simple, Transparent Pricing</h2>
+    <p class="text-muted">Choose the perfect plan for your business needs</p>
+</div>
+
+<div class="row">
+    {% for plan in plans %}
+    <div class="col-md-4 mb-4">
+        <div class="plan-selection-card {% if forloop.counter == 2 %}popular{% endif %}">
+            {% if forloop.counter == 2 %}
+            <div class="popular-badge">Most Popular</div>
+            {% endif %}
+
+            <div class="text-center mb-4">
+                <h3 class="mb-2">{{ plan.name }}</h3>
+                <p class="text-muted">{{ plan.description|default:"Perfect for your team" }}</p>
+            </div>
+
+            <div class="text-center mb-4">
+                <div style="font-size: 48px; font-weight: 700; color: var(--primary-color);">
+                    ₹{{ plan.price_monthly }}
+                </div>
+                <div class="text-muted">per month</div>
+                <div class="mt-2">
+                    <small class="text-muted">or ₹{{ plan.price_yearly }}/year</small>
+                </div>
+            </div>
+
+            <ul class="list-unstyled mb-4">
+                <li class="mb-3 d-flex align-items-start">
+                    <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                    <span><strong>{{ plan.max_users }}</strong> Team Members</span>
+                </li>
+                <li class="mb-3 d-flex align-items-start">
+                    <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                    <span><strong>{{ plan.max_storage_mb|floatformat:0 }} MB</strong> Storage</span>
+                </li>
+                <li class="mb-3 d-flex align-items-start">
+                    <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                    <span><strong>{{ plan.max_projects }}</strong> Projects</span>
+                </li>
+                <li class="mb-3 d-flex align-items-start">
+                    <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                    <span>Email Support</span>
+                </li>
+                <li class="mb-3 d-flex align-items-start">
+                    <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                    <span>Mobile App Access</span>
+                </li>
+                {% if forloop.counter >= 2 %}
+                <li class="mb-3 d-flex align-items-start">
+                    <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                    <span>Priority Support</span>
+                </li>
+                {% endif %}
+                {% if forloop.counter == 3 %}
+                <li class="mb-3 d-flex align-items-start">
+                    <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                    <span>Advanced Analytics</span>
+                </li>
+                <li class="mb-3 d-flex align-items-start">
+                    <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                    <span>Custom Integrations</span>
+                </li>
+                {% endif %}
+            </ul>
+
+            <button class="btn btn-primary-custom w-100"
+                onclick="selectPlan({{ plan.id }}, '{{ plan.name }}', {{ plan.price_monthly }})">
+                Choose {{ plan.name }}
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="text-center mt-5">
+    <p class="text-muted mb-2">Need a custom enterprise solution?</p>
+    <a href="{% url 'hrm_support' %}" class="btn btn-outline-primary">
+        <i class="bi bi-headset"></i> Contact Sales
+    </a>
+</div>
+
+<!-- Payment Modal -->
+<div class="modal fade" id="paymentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Complete Your Purchase</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="paymentDetails">
+                    <!-- Payment details will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    let selectedPlan = null;
+
+    function selectPlan(planId, planName, price) {
+        selectedPlan = { id: planId, name: planName, price: price };
+
+        // Show billing cycle selection
+        if (confirm(`You selected ${planName} plan (₹${price}/month). Choose Monthly billing?`)) {
+            initializePayment('monthly');
+        } else {
+            // Calculate yearly price (assuming 10 months price for 12 months)
+            const yearlyPrice = price * 10;
+            if (confirm(`Switch to Yearly billing for ₹${yearlyPrice}/year? (Save 2 months!)`)) {
+                initializePayment('yearly');
+            }
+        }
+    }
+
+    function initializePayment(billingCycle) {
+        // Create order on backend
+        fetch('/payment/razorpay/create-order/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                plan_id: selectedPlan.id,
+                billing_cycle: billingCycle
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    openRazorpay(data.order_id, data.amount, data.key_id);
+                } else {
+                    alert('Error creating order: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to initialize payment');
+            });
+    }
+
+    function openRazorpay(orderId, amount, keyId) {
+        var options = {
+            key: keyId,
+            amount: amount,
+            currency: 'INR',
+            name: 'HRM System',
+            description: selectedPlan.name + ' Plan',
+            order_id: orderId,
+            handler: function (response) {
+                verifyPayment(response);
+            },
+            prefill: {
+                name: '{{ user.get_full_name }}',
+                email: '{{ user.email }}',
+            },
+            theme: {
+                color: '#6366f1'
+            }
+        };
+
+        var rzp = new Razorpay(options);
+        rzp.open();
+    }
+
+    function verifyPayment(response) {
+        fetch('/payment/razorpay/verify-payment/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Payment successful! Your subscription is now active.');
+                    window.location.href = '/hrm/overview/';
+                } else {
+                    alert('Payment verification failed: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Payment verification failed');
+            });
+    }
+</script>
+{% endblock %}

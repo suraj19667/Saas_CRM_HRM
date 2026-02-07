@@ -13,6 +13,7 @@ class Tenant(models.Model):
     contact_phone = models.CharField(max_length=15, blank=True, null=True, help_text="Contact Phone Number")
     address = models.TextField(blank=True, null=True, help_text="Company Address")
     status = models.CharField(max_length=10, choices=[('active', 'Active'), ('inactive', 'Inactive')], default='inactive')
+    is_flagged = models.BooleanField(default=False, help_text="Flag for companies requiring attention or review")
     subscription_plan = models.ForeignKey('Plan', on_delete=models.SET_NULL, null=True, blank=True, related_name='tenants')
     allow_email_notifications = models.BooleanField(default=True, help_text="Allow email notifications")
     allow_sms_notifications = models.BooleanField(default=False, help_text="Allow SMS notifications")

@@ -1,0 +1,64 @@
+{% extends 'hrm/hrm_base.html' %}
+
+{% block title %}Account Settings{% endblock %}
+{% block page_title %}Account Settings{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="stat-card">
+            <h5 class="mb-3">Company Information</h5>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Company Name</label>
+                    <input type="text" class="form-control" value="{{ tenant.name }}" name="company_name">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" value="{{ tenant.email }}" name="email">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Phone</label>
+                    <input type="tel" class="form-control" value="{{ tenant.phone|default:'' }}" name="phone">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Address</label>
+                    <textarea class="form-control" rows="3" name="address">{{ tenant.address|default:'' }}</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary-custom">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="stat-card mb-4">
+            <h5 class="mb-3">User Profile</h5>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">First Name</label>
+                    <input type="text" class="form-control" value="{{ user.first_name }}" name="first_name">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Last Name</label>
+                    <input type="text" class="form-control" value="{{ user.last_name }}" name="last_name">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" value="{{ user.email }}" name="user_email" readonly>
+                </div>
+                <button type="submit" class="btn btn-primary-custom">Update Profile</button>
+            </form>
+        </div>
+
+        <div class="stat-card">
+            <h5 class="mb-3">Security</h5>
+            <a href="{% url 'change_password' %}" class="btn btn-outline-primary">
+                <i class="bi bi-shield-lock"></i> Change Password
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

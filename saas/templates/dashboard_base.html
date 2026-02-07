@@ -1,0 +1,188 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard{% endblock %} - StaffGrid</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'saas/css/dashboard.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="{% url 'dashboard' %}" class="sidebar-logo">
+                <i class="bi bi-layers-fill"></i> SaasPlatform
+            </a>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="bi bi-list"></i>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <ul>
+                    <li class="nav-item">
+                        <a href="{% url 'dashboard' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                            <i class="bi bi-grid-fill"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'analytics' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'analytics' %}active{% endif %}">
+                            <i class="bi bi-graph-up"></i>
+                            <span>Analytics</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <ul>
+                    <li class="nav-item">
+                        <a href="{% url 'users_list' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'users_list' %}active{% endif %}">
+                            <i class="bi bi-people-fill"></i>
+                            <span>Users</span>
+                            {% if total_users %}
+                            <span class="badge badge-primary">{{ total_users }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'leads' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'leads' %}active{% endif %}">
+                            <i class="bi bi-person-lines-fill"></i>
+                            <span>Leads</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'deals' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'deals' %}active{% endif %}">
+                            <i class="bi bi-currency-dollar"></i>
+                            <span>Deals</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="bi bi-kanban-fill"></i>
+                            <span>Projects</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Settings</div>
+                <ul>
+                    <li class="nav-item">
+                        <a href="{% url 'access_management' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'access_management' %}active{% endif %}">
+                            <i class="bi bi-shield-lock-fill"></i>
+                            <span>Roles & Permissions</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'profile' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+                            <i class="bi bi-person-circle"></i>
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'settings' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'settings' %}active{% endif %}">
+                            <i class="bi bi-gear-fill"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Top Navbar -->
+    <nav class="dashboard-topbar">
+        <div class="topbar-search">
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" placeholder="Search..." aria-label="Search">
+            </div>
+        </div>
+
+        <div class="topbar-actions">
+            <div class="topbar-icon" data-tooltip="Notifications">
+                <i class="bi bi-bell-fill"></i>
+                <span class="badge-dot"></span>
+            </div>
+
+            <div class="topbar-icon" data-tooltip="Messages">
+                <i class="bi bi-chat-fill"></i>
+            </div>
+
+            <div class="dropdown">
+                <div class="user-menu" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="user-avatar">
+                        {% if request.user.profile_picture %}
+                        <img src="{{ request.user.profile_picture.url }}" alt="{{ request.user.get_full_name }}">
+                        {% else %}
+                        {{ request.user.first_name.0|upper }}{{ request.user.last_name.0|upper }}
+                        {% endif %}
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">{{ request.user.get_full_name|default:request.user.username }}</div>
+                        <div class="user-role">
+                            {% if request.user.is_superuser %}
+                            Admin
+                            {% elif request.user.is_staff %}
+                            Staff
+                            {% else %}
+                            User
+                            {% endif %}
+                        </div>
+                    </div>
+                    <i class="bi bi-chevron-down"></i>
+                </div>
+
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="bi bi-person"></i> Profile</a>
+                    </li>
+                    <li><a class="dropdown-item" href="{% url 'settings' %}"><i class="bi bi-gear"></i> Settings</a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i>
+                            Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'saas/js/dashboard.js' %}"></script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

@@ -1,0 +1,125 @@
+{% extends 'base_billing.html' %}
+
+{% block title %}Checkout - {{ plan.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Order Summary -->
+        <div class="col-md-4 order-md-2 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    <h4 class="mb-3">{{ plan.name }} Plan</h4>
+                    <p class="text-muted">{{ plan.description }}</p>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Monthly</span>
+                        <strong>${{ plan.price_monthly }}</strong>
+                    </div>
+
+                    {% if plan.price_yearly %}
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Yearly</span>
+                        <strong>${{ plan.price_yearly }}</strong>
+                    </div>
+                    {% endif %}
+
+                    <hr>
+
+                    <h6 class="mb-3">Features:</h6>
+                    <ul class="list-unstyled">
+                        {% if plan.employee_limit %}
+                        <li><i class="bi bi-check text-success"></i> Up to {{ plan.employee_limit }} employees</li>
+                        {% else %}
+                        <li><i class="bi bi-check text-success"></i> Unlimited employees</li>
+                        {% endif %}
+
+                        {% if plan.storage_gb %}
+                        <li><i class="bi bi-check text-success"></i> {{ plan.storage_gb }}GB storage</li>
+                        {% endif %}
+
+                        <li><i class="bi bi-check text-success"></i> Core HRM features</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checkout Form -->
+        <div class="col-md-8 order-md-1">
+            <h2 class="mb-4">Complete Your Subscription</h2>
+
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- Billing Cycle -->
+                        <h5 class="mb-3">Select Billing Cycle</h5>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="billing_cycle" id="monthly"
+                                        value="monthly" checked>
+                                    <label class="form-check-label" for="monthly">
+                                        <strong>Monthly</strong> - ${{ plan.price_monthly }}/month
+                                    </label>
+                                </div>
+                            </div>
+                            {% if plan.price_yearly %}
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="billing_cycle" id="yearly"
+                                        value="yearly">
+                                    <label class="form-check-label" for="yearly">
+                                        <strong>Yearly</strong> - ${{ plan.price_yearly }}/year
+                                        <span class="badge bg-success">Save 17%</span>
+                                    </label>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <hr>
+
+                        <!-- Company Information -->
+                        <h5 class="mb-3">Company Information</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Company Name</label>
+                            <input type="text" class="form-control" value="{{ tenant.name }}" readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" value="{{ tenant.email }}" readonly>
+                        </div>
+
+                        <hr>
+
+                        <!-- Terms -->
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="terms" required>
+                            <label class="form-check-label" for="terms">
+                                I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                            </label>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="bi bi-lock-fill"></i> Complete Subscription
+                        </button>
+
+                        <p class="text-center text-muted mt-3 mb-0">
+                            <small><i class="bi bi-shield-check"></i> Secure payment processing</small>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

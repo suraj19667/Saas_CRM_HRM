@@ -1,5 +1,5 @@
 """
-User management views with production-ready error handling, pagination, and query optimization.
+StaffGrid Dashboard Views with production-ready error handling, pagination, and query optimization.
 
 Requirements:
 - 401 Unauthorized: User not authenticated
@@ -475,3 +475,65 @@ def assign_user_role(request, user_id):
         error_message = f'Error assigning role: {str(e)}'
         messages.error(request, error_message)
         return redirect('users_list')
+
+
+# ============================================================================
+# STAFFGRID ADMIN DASHBOARD VIEWS
+# ============================================================================
+
+@login_required(login_url='auth:login')
+def staffgrid_dashboard_overview(request):
+    """
+    StaffGrid Main Dashboard Overview Page (THE ONLY DASHBOARD)
+    
+    Displays:
+    - Real-time statistics (fetched via API)
+    - Revenue charts (Chart.js with API data)
+    - Plan distribution charts (Chart.js with API data)
+    - Recent activity
+    
+    All data is loaded dynamically via AJAX calls to API endpoints.
+    No hardcoded or dummy data allowed.
+    
+    This is the primary and ONLY dashboard for the application.
+    """
+    context = {
+        'page_title': 'Dashboard Overview - StaffGrid',
+        'current_page': 'overview',
+        'user': request.user,
+    }
+    
+    return render(request, 'dashboard/staffgrid_overview.html', context)
+
+
+@login_required(login_url='auth:login')
+def staffgrid_tenants(request):
+    """StaffGrid Tenants Management Page"""
+    context = {
+        'page_title': 'Tenants Management - StaffGrid',
+        'current_page': 'tenants',
+    }
+    
+    return render(request, 'dashboard/staffgrid_tenants.html', context)
+
+
+@login_required(login_url='auth:login')
+def staffgrid_plans(request):
+    """StaffGrid Plans Management Page"""
+    context = {
+        'page_title': 'Plan Management - StaffGrid',
+        'current_page': 'plans',
+    }
+    
+    return render(request, 'dashboard/staffgrid_plans.html', context)
+
+
+@login_required(login_url='auth:login')
+def staffgrid_subscriptions(request):
+    """StaffGrid Subscriptions Management Page"""
+    context = {
+        'page_title': 'Subscriptions - StaffGrid',
+        'current_page': 'subscriptions',
+    }
+    
+    return render(request, 'dashboard/staffgrid_subscriptions.html', context)

@@ -1,0 +1,463 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard Overview - StaffGrid{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #4e73df;
+        --success-color: #1cc88a;
+        --info-color: #36b9cc;
+        --warning-color: #f6c23e;
+        --danger-color: #e74a3b;
+        --dark-color: #5a5c69;
+        --light-color: #f8f9fc;
+    }
+
+    .dashboard-container {
+        padding: 20px;
+        background-color: var(--light-color);
+    }
+
+    .page-header {
+        margin-bottom: 30px;
+    }
+
+    .page-header h1 {
+        font-size: 28px;
+        font-weight: 400;
+        color: var(--dark-color);
+    }
+
+    /* Stats Cards */
+    .stats-row {
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid var(--primary-color);
+        transition: transform 0.2s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-card.success {
+        border-left-color: var(--success-color);
+    }
+
+    .stat-card.info {
+        border-left-color: var(--info-color);
+    }
+
+    .stat-card.warning {
+        border-left-color: var(--warning-color);
+    }
+
+    .stat-card.danger {
+        border-left-color: var(--danger-color);
+    }
+
+    .stat-card .stat-icon {
+        font-size: 32px;
+        opacity: 0.3;
+        float: right;
+    }
+
+    .stat-card .stat-label {
+        font-size: 12px;
+        text-transform: uppercase;
+        color: var(--primary-color);
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .stat-card .stat-value {
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--dark-color);
+    }
+
+    /* Chart Cards */
+    .chart-card {
+        background: white;
+        border-radius: 8px;
+        padding: 25px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+
+    .chart-card .chart-header {
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e3e6f0;
+    }
+
+    .chart-card h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin: 0;
+    }
+
+    .chart-container {
+        position: relative;
+        height: 300px;
+    }
+
+    .loading-spinner {
+        text-align: center;
+        padding: 40px;
+        color: var(--dark-color);
+    }
+
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+    }
+
+    .error-message {
+        text-align: center;
+        padding: 20px;
+        color: var(--danger-color);
+        background: #ffe6e6;
+        border-radius: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="page-header">
+        <h1>📊 Dashboard Overview</h1>
+        <p class="text-muted">Real-time analytics and insights for StaffGrid</p>
+    </div>
+
+    <!-- Statistics Cards - Row 1 -->
+    <div class="row stats-row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card">
+                <div class="stat-icon">🏢</div>
+                <div class="stat-label text-primary">Total Companies</div>
+                <div class="stat-value" id="totalCompanies">
+                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card success">
+                <div class="stat-icon">✓</div>
+                <div class="stat-label text-success">Active Subscriptions</div>
+                <div class="stat-value" id="activeSubscriptions">
+                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card info">
+                <div class="stat-icon">💰</div>
+                <div class="stat-label text-info">Monthly Revenue</div>
+                <div class="stat-value" id="monthlyRevenue">
+                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card warning">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-label text-warning">Active Trials</div>
+                <div class="stat-value" id="activeTrials">
+                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards - Row 2 -->
+    <div class="row stats-row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card danger">
+                <div class="stat-icon">⏸</div>
+                <div class="stat-label text-danger">Suspended Accounts</div>
+                <div class="stat-value" id="suspendedAccounts">
+                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card success">
+                <div class="stat-icon">📈</div>
+                <div class="stat-label text-success">Trial Conversion Rate</div>
+                <div class="stat-value" id="conversionRate">
+                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-label text-primary">Total Admin Users</div>
+                <div class="stat-value" id="totalAdminUsers">
+                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card danger">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-label text-danger">Churn Risk</div>
+                <div class="stat-value" id="churnRisk">
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row">
+            <!-- Revenue Chart -->
+            <div class="col-xl-8 col-lg-7">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>📈 Revenue Overview</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plan Distribution Chart -->
+            <div class="col-xl-4 col-lg-5">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>📊 Plan Distribution</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="planChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+
+    {% block extra_js %}
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <script>
+        // Global chart instances
+        let revenueChart = null;
+        let planChart = null;
+
+        // Fetch Dashboard Statistics
+        async function fetchDashboardStats() {
+            try {
+                const response = await fetch('/api/dashboard/stats/');
+                const data = await response.json();
+
+                if (data.success) {
+                    const stats = data.data;
+
+                    // Update all 8 stat cards
+                    document.getElementById('totalCompanies').textContent = stats.total_companies.toLocaleString();
+                    document.getElementById('activeSubscriptions').textContent = stats.active_subscriptions.toLocaleString();
+                    document.getElementById('monthlyRevenue').textContent = '$' + stats.monthly_revenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    document.getElementById('activeTrials').textContent = stats.active_trials.toLocaleString();
+                    document.getElementById('suspendedAccounts').textContent = stats.suspended_accounts.toLocaleString();
+                    document.getElementById('conversionRate').textContent = stats.conversion_rate + '%';
+                    document.getElementById('totalAdminUsers').textContent = stats.total_admin_users.toLocaleString();
+                    document.getElementById('churnRisk').textContent = stats.churn_risk.toLocaleString();
+                } else {
+                    console.error('Failed to fetch dashboard stats');
+                    showAllErrors();
+                }
+            } catch (error) {
+                console.error('Error fetching dashboard stats:', error);
+                showAllErrors();
+            }
+        }
+
+        // Show errors on all stat cards
+        function showAllErrors() {
+            const ids = ['totalCompanies', 'activeSubscriptions', 'monthlyRevenue', 'activeTrials',
+                'suspendedAccounts', 'conversionRate', 'totalAdminUsers', 'churnRisk'];
+            ids.forEach(id => showError(id));
+        }
+
+        // Fetch Revenue Data and Render Chart
+        async function fetchRevenueData() {
+            try {
+                const response = await fetch('/api/dashboard/revenue/?limit=12');
+                const data = await response.json();
+
+                if (data.success && data.data.labels.length > 0) {
+                    renderRevenueChart(data.data);
+                } else {
+                    showChartError('revenueChart', 'No revenue data available');
+                }
+            } catch (error) {
+                console.error('Error fetching revenue data:', error);
+                showChartError('revenueChart', 'Failed to load revenue data');
+            }
+        }
+
+        // Fetch Plan Distribution Data and Render Chart
+        async function fetchPlanDistribution() {
+            try {
+                const response = await fetch('/api/dashboard/plan-distribution/');
+                const data = await response.json();
+
+                if (data.success && data.data.labels.length > 0) {
+                    renderPlanChart(data.data);
+                } else {
+                    showChartError('planChart', 'No plan data available');
+                }
+            } catch (error) {
+                console.error('Error fetching plan distribution:', error);
+                showChartError('planChart', 'Failed to load plan data');
+            }
+        }
+
+        // Render Revenue Bar Chart
+        function renderRevenueChart(data) {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+
+            // Destroy existing chart if it exists
+            if (revenueChart) {
+                revenueChart.destroy();
+            }
+
+            revenueChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels.reverse(),
+                    datasets: [{
+                        label: 'Revenue ($)',
+                        data: data.values.reverse(),
+                        backgroundColor: 'rgba(78, 115, 223, 0.8)',
+                        borderColor: 'rgba(78, 115, 223, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return 'Revenue: $' + context.parsed.y.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function (value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Render Plan Distribution Donut Chart
+        function renderPlanChart(data) {
+            const ctx = document.getElementById('planChart').getContext('2d');
+
+            // Destroy existing chart if it exists
+            if (planChart) {
+                planChart.destroy();
+            }
+
+            planChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.values,
+                        backgroundColor: [
+                            'rgba(78, 115, 223, 0.8)',
+                            'rgba(28, 200, 138, 0.8)',
+                            'rgba(54, 185, 204, 0.8)',
+                            'rgba(246, 194, 62, 0.8)',
+                            'rgba(231, 74, 59, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(78, 115, 223, 1)',
+                            'rgba(28, 200, 138, 1)',
+                            'rgba(54, 185, 204, 1)',
+                            'rgba(246, 194, 62, 1)',
+                            'rgba(231, 74, 59, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return label + ': ' + value + ' (' + percentage + '%)';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Show error in stat card
+        function showError(elementId) {
+            document.getElementById(elementId).innerHTML = '<span style="color: var(--danger-color); font-size: 18px;">Error</span>';
+        }
+
+        // Show error in chart
+        function showChartError(canvasId, message) {
+            const canvas = document.getElementById(canvasId);
+            const parent = canvas.parentElement;
+            parent.innerHTML = `<div class="error-message">${message}</div>`;
+        }
+
+        // Initialize Dashboard
+        document.addEventListener('DOMContentLoaded', function () {
+            // Fetch all data on page load
+            fetchDashboardStats();
+            fetchRevenueData();
+            fetchPlanDistribution();
+
+            // Refresh stats every 30 seconds
+            setInterval(fetchDashboardStats, 30000);
+        });
+    </script>
+    {% endblock %}

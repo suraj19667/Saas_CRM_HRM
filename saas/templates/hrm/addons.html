@@ -1,0 +1,167 @@
+{% extends 'hrm/hrm_base.html' %}
+
+{% block title %}Add-ons{% endblock %}
+{% block page_title %}Add-ons{% endblock %}
+
+{% block content %}
+<style>
+    .addon-card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        border: 1px solid var(--border-color);
+        transition: all 0.3s;
+        height: 100%;
+    }
+
+    .addon-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .addon-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        margin-bottom: 16px;
+    }
+</style>
+
+<p class="text-muted mb-4">Enhance your HRM system with powerful add-ons and integrations.</p>
+
+<div class="row">
+    {% if available_addons %}
+    {% for addon in available_addons %}
+    <div class="col-md-4 mb-4">
+        <div class="addon-card">
+            <div class="addon-icon bg-primary bg-opacity-10 text-primary">
+                <i class="bi bi-puzzle"></i>
+            </div>
+
+            <h5 class="mb-2">{{ addon.name }}</h5>
+            <p class="text-muted mb-3">{{ addon.description }}</p>
+
+            <div class="mb-3">
+                <span style="font-size: 28px; font-weight: 700; color: var(--primary-color);">
+                    ₹{{ addon.price }}
+                </span>
+                <span class="text-muted">/month</span>
+            </div>
+
+            {% if addon in active_addons %}
+            <button class="btn btn-secondary w-100" disabled>
+                <i class="bi bi-check-circle"></i> Active
+            </button>
+            {% else %}
+            <button class="btn btn-primary-custom w-100" onclick="activateAddon('{{ addon.id }}', '{{ addon.name }}')">
+                <i class="bi bi-plus-circle"></i> Add to Plan
+            </button>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <!-- Default add-ons if none in database -->
+    <div class="col-md-4 mb-4">
+        <div class="addon-card">
+            <div class="addon-icon bg-primary bg-opacity-10 text-primary">
+                <i class="bi bi-clock-history"></i>
+            </div>
+            <h5 class="mb-2">Time Tracking</h5>
+            <p class="text-muted mb-3">Track employee hours and productivity</p>
+            <div class="mb-3">
+                <span style="font-size: 28px; font-weight: 700; color: var(--primary-color);">₹499</span>
+                <span class="text-muted">/month</span>
+            </div>
+            <button class="btn btn-primary-custom w-100" onclick="alert('Coming soon!')">
+                <i class="bi bi-plus-circle"></i> Add to Plan
+            </button>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="addon-card">
+            <div class="addon-icon bg-success bg-opacity-10 text-success">
+                <i class="bi bi-cash-stack"></i>
+            </div>
+            <h5 class="mb-2">Payroll Management</h5>
+            <p class="text-muted mb-3">Automated payroll processing and reports</p>
+            <div class="mb-3">
+                <span style="font-size: 28px; font-weight: 700; color: var(--primary-color);">₹999</span>
+                <span class="text-muted">/month</span>
+            </div>
+            <button class="btn btn-primary-custom w-100" onclick="alert('Coming soon!')">
+                <i class="bi bi-plus-circle"></i> Add to Plan
+            </button>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="addon-card">
+            <div class="addon-icon bg-warning bg-opacity-10 text-warning">
+                <i class="bi bi-calendar-check"></i>
+            </div>
+            <h5 class="mb-2">Leave Management</h5>
+            <p class="text-muted mb-3">Advanced leave tracking and approval</p>
+            <div class="mb-3">
+                <span style="font-size: 28px; font-weight: 700; color: var(--primary-color);">₹399</span>
+                <span class="text-muted">/month</span>
+            </div>
+            <button class="btn btn-primary-custom w-100" onclick="alert('Coming soon!')">
+                <i class="bi bi-plus-circle"></i> Add to Plan
+            </button>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="addon-card">
+            <div class="addon-icon bg-info bg-opacity-10 text-info">
+                <i class="bi bi-bar-chart-fill"></i>
+            </div>
+            <h5 class="mb-2">Advanced Analytics</h5>
+            <p class="text-muted mb-3">Deep insights and custom reports</p>
+            <div class="mb-3">
+                <span style="font-size: 28px; font-weight: 700; color: var(--primary-color);">₹799</span>
+                <span class="text-muted">/month</span>
+            </div>
+            <button class="btn btn-primary-custom w-100" onclick="alert('Coming soon!')">
+                <i class="bi bi-plus-circle"></i> Add to Plan
+            </button>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="addon-card">
+            <div class="addon-icon bg-danger bg-opacity-10 text-danger">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <h5 class="mb-2">Recruitment Module</h5>
+            <p class="text-muted mb-3">Applicant tracking and hiring workflow</p>
+            <div class="mb-3">
+                <span style="font-size: 28px; font-weight: 700; color: var(--primary-color);">₹1,299</span>
+                <span class="text-muted">/month</span>
+            </div>
+            <button class="btn btn-primary-custom w-100" onclick="alert('Coming soon!')">
+                <i class="bi bi-plus-circle"></i> Add to Plan
+            </button>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function activateAddon(addonId, addonName) {
+        if (confirm(`Activate ${addonName}? This will be added to your next billing cycle.`)) {
+            // TODO: Implement addon activation API
+            alert('Add-on activation feature coming soon!');
+        }
+    }
+</script>
+{% endblock %}

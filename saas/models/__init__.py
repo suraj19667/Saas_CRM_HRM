@@ -18,6 +18,7 @@ from .planfeature import PlanFeature
 from .addon import Addon
 from .invoice import Invoice
 from .discount import Discount
+from .revenue import Revenue
 
 # OTP Verification model
 from django.db import models

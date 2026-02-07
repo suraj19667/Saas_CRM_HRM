@@ -12,40 +12,40 @@
         align-items: center;
         padding: 20px 0;
     }
-    
+
     .payment-card {
         background: white;
         border-radius: 15px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         overflow: hidden;
         max-width: 600px;
         width: 100%;
         margin: 0 auto;
     }
-    
+
     .card-header {
         background: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);
         color: white;
         padding: 30px;
         text-align: center;
     }
-    
+
     .card-header h2 {
         margin: 0;
         font-size: 28px;
         font-weight: 600;
     }
-    
+
     .card-header p {
         margin: 10px 0 0;
         opacity: 0.9;
         font-size: 16px;
     }
-    
+
     .card-body {
         padding: 40px;
     }
-    
+
     .order-summary {
         background: #f8f9fa;
         border-radius: 10px;
@@ -53,14 +53,14 @@
         margin-bottom: 30px;
         border-left: 4px solid #27AE60;
     }
-    
+
     .order-summary h4 {
         color: #2C3E50;
         margin: 0 0 20px;
         font-weight: 600;
         text-align: center;
     }
-    
+
     .summary-row {
         display: flex;
         justify-content: space-between;
@@ -68,7 +68,7 @@
         padding-bottom: 10px;
         border-bottom: 1px solid #e9ecef;
     }
-    
+
     .summary-row:last-child {
         border-bottom: none;
         margin-bottom: 0;
@@ -76,7 +76,7 @@
         font-size: 18px;
         color: #27AE60;
     }
-    
+
     .company-info {
         text-align: center;
         margin-bottom: 30px;
@@ -84,18 +84,18 @@
         background: #f8f9fa;
         border-radius: 10px;
     }
-    
+
     .company-info h5 {
         color: #2C3E50;
         margin: 0 0 10px;
         font-weight: 600;
     }
-    
+
     .company-info p {
         margin: 5px 0;
         color: #666;
     }
-    
+
     .btn-pay {
         background: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);
         border: none;
@@ -108,18 +108,18 @@
         cursor: pointer;
         transition: all 0.3s ease;
     }
-    
+
     .btn-pay:hover {
         transform: translateY(-2px);
         box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
     }
-    
+
     .btn-pay:disabled {
         opacity: 0.6;
         cursor: not-allowed;
         transform: none;
     }
-    
+
     .security-badges {
         display: flex;
         justify-content: center;
@@ -127,26 +127,26 @@
         margin-top: 20px;
         gap: 20px;
     }
-    
+
     .security-badge {
         display: flex;
         align-items: center;
         color: #666;
         font-size: 14px;
     }
-    
+
     .security-badge i {
         margin-right: 5px;
         color: #27AE60;
     }
-    
+
     .payment-methods {
         text-align: center;
         margin-top: 20px;
         color: #666;
         font-size: 14px;
     }
-    
+
     .loading-overlay {
         display: none;
         position: fixed;
@@ -154,19 +154,19 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(0,0,0,0.5);
+        background: rgba(0, 0, 0, 0.5);
         z-index: 9999;
         align-items: center;
         justify-content: center;
     }
-    
+
     .loading-spinner {
         background: white;
         padding: 30px;
         border-radius: 10px;
         text-align: center;
     }
-    
+
     .spinner {
         border: 3px solid #f3f3f3;
         border-top: 3px solid #27AE60;
@@ -176,10 +176,15 @@
         animation: spin 1s linear infinite;
         margin: 0 auto 15px;
     }
-    
+
     @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
     }
 </style>
 {% endblock %}
@@ -192,7 +197,7 @@
                 <h2>Complete Your Payment</h2>
                 <p>Secure payment powered by Razorpay</p>
             </div>
-            
+
             <div class="card-body">
                 <!-- Company Information -->
                 <div class="company-info">
@@ -200,37 +205,37 @@
                     <p>{{ tenant.contact_email }}</p>
                     <p>{{ tenant.contact_phone }}</p>
                 </div>
-                
+
                 <!-- Order Summary -->
                 <div class="order-summary">
                     <h4>Order Summary</h4>
-                    
+
                     <div class="summary-row">
                         <span>Plan:</span>
                         <span>{{ plan.name }}</span>
                     </div>
-                    
+
                     <div class="summary-row">
                         <span>Billing Cycle:</span>
                         <span>{{ billing_cycle|capfirst }}</span>
                     </div>
-                    
+
                     <div class="summary-row">
                         <span>Duration:</span>
                         <span>{% if billing_cycle == 'yearly' %}12 months{% else %}1 month{% endif %}</span>
                     </div>
-                    
+
                     <div class="summary-row">
                         <span><strong>Total Amount:</strong></span>
                         <span><strong>₹{{ amount }}</strong></span>
                     </div>
                 </div>
-                
+
                 <!-- Payment Button -->
                 <button type="button" class="btn-pay" id="payBtn" onclick="startPayment()">
                     Pay ₹{{ amount }} Now
                 </button>
-                
+
                 <!-- Security Badges -->
                 <div class="security-badges">
                     <div class="security-badge">
@@ -246,7 +251,7 @@
                         Multiple Methods
                     </div>
                 </div>
-                
+
                 <!-- Payment Methods -->
                 <div class="payment-methods">
                     Supports Credit Cards, Debit Cards, Net Banking, UPI, and Wallets
@@ -268,93 +273,94 @@
 {% block extra_js %}
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-function startPayment() {
-    const payBtn = document.getElementById('payBtn');
-    const loadingOverlay = document.getElementById('loadingOverlay');
-    
-    payBtn.disabled = true;
-    loadingOverlay.style.display = 'flex';
-    
-    const options = {
-        key: '{{ razorpay_key_id }}',
-        amount: {{ amount|floatformat:0 }}00, // Amount in paise
+    function startPayment() {
+        const payBtn = document.getElementById('payBtn');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        payBtn.disabled = true;
+        loadingOverlay.style.display = 'flex';
+
+        const options = {
+            key: '{{ razorpay_key_id }}',
+            amount: {{ amount| floatformat: 0
+    }}00, // Amount in paise
         currency: 'INR',
-        name: 'SaaS Platform',
-        description: '{{ plan.name }} Subscription',
-        order_id: '{{ order_id }}',
-        handler: function(response) {
-            // Payment successful
-            handlePaymentSuccess(response);
-        },
-        prefill: {
-            name: '{{ tenant.name }}',
+            name: 'SaaS Platform',
+                description: '{{ plan.name }} Subscription',
+                    order_id: '{{ order_id }}',
+                        handler: function(response) {
+                            // Payment successful
+                            handlePaymentSuccess(response);
+                        },
+    prefill: {
+        name: '{{ tenant.name }}',
             email: '{{ tenant.contact_email }}',
-            contact: '{{ tenant.contact_phone }}'
-        },
-        theme: {
-            color: '#27AE60'
-        },
-        modal: {
-            ondismiss: function() {
-                // Payment cancelled
-                payBtn.disabled = false;
-                loadingOverlay.style.display = 'none';
-            }
+                contact: '{{ tenant.contact_phone }}'
+    },
+    theme: {
+        color: '#27AE60'
+    },
+    modal: {
+        ondismiss: function() {
+            // Payment cancelled
+            payBtn.disabled = false;
+            loadingOverlay.style.display = 'none';
         }
+    }
     };
-    
+
     const razorpay = new Razorpay(options);
     razorpay.open();
 }
 
-function handlePaymentSuccess(response) {
-    // Send payment details to backend for verification
-    const formData = new FormData();
-    formData.append('razorpay_payment_id', response.razorpay_payment_id);
-    formData.append('razorpay_order_id', response.razorpay_order_id);
-    formData.append('razorpay_signature', response.razorpay_signature);
-    
-    fetch('{% url "tenant_mgmt:razorpay_callback" %}', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        loadingOverlay.style.display = 'none';
-        
-        if (data.status === 'success') {
-            // Show success message and redirect
-            alert(data.message);
-            window.location.href = data.redirect_url;
-        } else {
-            // Show error message
-            alert('Payment verification failed: ' + data.message);
-            document.getElementById('payBtn').disabled = false;
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        document.getElementById('loadingOverlay').style.display = 'none';
-        alert('Payment processing failed. Please try again.');
-        document.getElementById('payBtn').disabled = false;
-    });
-}
+    function handlePaymentSuccess(response) {
+        // Send payment details to backend for verification
+        const formData = new FormData();
+        formData.append('razorpay_payment_id', response.razorpay_payment_id);
+        formData.append('razorpay_order_id', response.razorpay_order_id);
+        formData.append('razorpay_signature', response.razorpay_signature);
 
-// Add CSRF token for AJAX requests
-document.addEventListener('DOMContentLoaded', function() {
-    // Create hidden CSRF token input if it doesn't exist
-    if (!document.querySelector('[name=csrfmiddlewaretoken]')) {
-        const csrfToken = '{% csrf_token %}';
-        const tokenInput = document.createElement('input');
-        tokenInput.type = 'hidden';
-        tokenInput.name = 'csrfmiddlewaretoken';
-        tokenInput.value = csrfToken.split("'")[1];
-        document.body.appendChild(tokenInput);
+        fetch('{% url "tenant_mgmt:razorpay_callback" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                const loadingOverlay = document.getElementById('loadingOverlay');
+                loadingOverlay.style.display = 'none';
+
+                if (data.status === 'success') {
+                    // Show success message and redirect
+                    alert(data.message);
+                    window.location.href = data.redirect_url;
+                } else {
+                    // Show error message
+                    alert('Payment verification failed: ' + data.message);
+                    document.getElementById('payBtn').disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('loadingOverlay').style.display = 'none';
+                alert('Payment processing failed. Please try again.');
+                document.getElementById('payBtn').disabled = false;
+            });
     }
-});
+
+    // Add CSRF token for AJAX requests
+    document.addEventListener('DOMContentLoaded', function () {
+        // Create hidden CSRF token input if it doesn't exist
+        if (!document.querySelector('[name=csrfmiddlewaretoken]')) {
+            const csrfToken = '{% csrf_token %}';
+            const tokenInput = document.createElement('input');
+            tokenInput.type = 'hidden';
+            tokenInput.name = 'csrfmiddlewaretoken';
+            tokenInput.value = csrfToken.split("'")[1];
+            document.body.appendChild(tokenInput);
+        }
+    });
 </script>
 {% endblock %}
